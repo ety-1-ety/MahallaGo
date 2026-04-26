@@ -78,7 +78,7 @@ bot.on('message:text', handleMainMenuMessage);
 
 // Fallback на любое остальное
 bot.on('message', async (ctx) => {
-  if (!ctx.session.language_chosen) {
+  if (!ctx.session.language_chosen || !ctx.user?.phone) {
     await ctx.conversation.enter('chooseLanguage');
     return;
   }

@@ -1,12 +1,17 @@
 import { mainMenuKeyboard } from '../keyboards/mainMenu.js';
 
 /**
- * /start. Если язык в session ещё не установлен — запускаем chooseLanguage.
- * Иначе показываем главное меню.
+ * /start. Запускает регистрацию (chooseLanguage), если:
+ *   1) язык ещё не выбран, ИЛИ
+ *   2) у покупателя нет телефона (нужен продавцу для связи).
+ * Иначе — показываем главное меню.
+ *
+ * chooseLanguage сам пропускает уже завершённые шаги, поэтому
+ * существующему пользователю без телефона прилетит только phone-step.
  */
 export function registerStart(bot) {
   bot.command('start', async (ctx) => {
-    if (!ctx.session.language_chosen) {
+    if (!ctx.session.language_chosen || !ctx.user?.phone) {
       await ctx.conversation.enter('chooseLanguage');
       return;
     }
