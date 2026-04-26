@@ -29,12 +29,21 @@ export async function callFn(fnName, params = [], { client } = {}) {
 
 /**
  * Вызвать SQL-функцию, возвращающую одну composite-строку.
- * Использует SELECT (<fn>($1,$2,...)).* для распаковки composite-типа
- * в колонки. Возвращает первую строку или null.
+ *
+ * ВАЖНО: используем `SELECT * FROM <fn>(...)`, а НЕ `SELECT (<fn>(...)).*`.
+ * Второй синтаксис — известная ловушка PostgreSQL: композитное проектирование
+ * `(...).*` заставляет PG вызвать функцию по разу на каждую колонку
+ * композитного типа. Для функций с side-effects (INSERT в add_product,
+ * UPDATE в update_status и т.п.) это означает 10+ выполнений вместо одного,
+ * что либо создаёт лавину дубликатов (без UNIQUE), либо валится с
+ * unique_violation (при наличии индекса).
+ *
+ * `SELECT * FROM fn(...)` распаковывает composite-результат в колонки,
+ * вызывая функцию ровно один раз.
  */
 export async function callFnRow(fnName, params = [], { client } = {}) {
   const placeholders = params.map((_, i) => `$${i + 1}`).join(', ');
-  const sql = `SELECT (${fnName}(${placeholders})).*`;
+  const sql = `SELECT * FROM ${fnName}(${placeholders})`;
   const exec = client || getPool();
   try {
     const { rows } = await exec.query(sql, params);

@@ -152,6 +152,8 @@ async function addProductConv(conversation, ctx) {
       return {
         ok: false,
         code: err && err.code ? err.code : null,
+        constraint: err && err.constraint ? err.constraint : null,
+        detail: err && err.detail ? err.detail : null,
         message: err && err.message ? err.message : String(err),
       };
     }
