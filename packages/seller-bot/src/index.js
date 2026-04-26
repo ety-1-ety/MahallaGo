@@ -48,6 +48,14 @@ bot.use(onboarding);
 bot.use(addProduct);
 bot.use(editSetting);
 
+// /start всегда сбрасывает активную conversation, иначе пользователь
+// может застрять в незавершённом онбординге и каждое следующее
+// сообщение будет интерпретироваться как ответ на текущий шаг.
+bot.command('start', async (ctx, next) => {
+  await ctx.conversation.exit();
+  return next();
+});
+
 // ─── Handlers ──────────────────────────────────────────────────────
 registerStart(bot);
 

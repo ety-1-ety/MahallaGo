@@ -34,6 +34,21 @@ export class AuthService {
     }
   }
 
+  async devLogin(tgId: number): Promise<{ ok: boolean; error?: string }> {
+    try {
+      const res = await firstValueFrom(
+        this.http.post<{ user: AdminUser }>(`${environment.apiUrl}/api/auth/dev-login`, { tg_id: tgId }, {
+          withCredentials: true,
+        }),
+      );
+      this.user.set(res.user as AdminUser);
+      return { ok: true };
+    } catch (err: unknown) {
+      const e = err as { error?: { error?: string }, status?: number };
+      return { ok: false, error: e.error?.error || `HTTP_${e.status}` };
+    }
+  }
+
   async fetchMe(): Promise<AdminUser | null> {
     this.checking.set(true);
     try {

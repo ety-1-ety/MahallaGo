@@ -15,7 +15,7 @@ export async function askLocation(ctx) {
     reply_markup: new Keyboard()
       .requestLocation(t('buyer.find_shops.location_button'))
       .row()
-      .text(lang === 'uz' ? '↩️ Bosh menyu' : '↩️ Главное меню')
+      .text(t('common.main_menu'))
       .resized().oneTime(),
   });
 }

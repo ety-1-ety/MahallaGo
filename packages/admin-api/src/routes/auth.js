@@ -67,6 +67,49 @@ export default async function authRoutes(app) {
     return { user: { id: user.id, telegram_id: tgId, first_name: user.first_name, language_code: user.language_code } };
   });
 
+  // Dev-only login: обходит Telegram Login Widget (полезно когда домен бота
+  // не настроен или работаешь на localhost). Доступен только если
+  // NODE_ENV=development. Принимает tg_id в теле, проверяет что он в
+  // ADMIN_TG_IDS, выпускает JWT.
+  app.post('/auth/dev-login', async (request, reply) => {
+    if (process.env.NODE_ENV !== 'development') {
+      return reply.code(404).send({ error: 'NOT_FOUND' });
+    }
+
+    const tgId = Number(request.body?.tg_id);
+    if (!Number.isFinite(tgId)) {
+      return reply.code(400).send({ error: 'INVALID_TELEGRAM_ID' });
+    }
+
+    if (!app.adminTgIds.includes(tgId)) {
+      return reply.code(403).send({ error: 'NOT_IN_WHITELIST' });
+    }
+
+    const user = await callFnRow('auth.upsert_user', [
+      tgId,
+      request.body?.username || null,
+      request.body?.first_name || 'Dev',
+      request.body?.last_name || 'Admin',
+      null,
+    ]);
+    if (!user.is_admin) {
+      await callFnRow('auth.mark_as_admin', [tgId, true]);
+    }
+
+    const token = app.jwt.sign({ sub: user.id, tg: tgId, name: user.first_name });
+
+    const cookieName = process.env.COOKIE_NAME || 'mhs_admin';
+    reply.setCookie(cookieName, token, {
+      httpOnly: true,
+      secure: process.env.COOKIE_SECURE === 'true',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 24 * 60 * 60,
+    });
+
+    return { user: { id: user.id, telegram_id: tgId, first_name: user.first_name, language_code: user.language_code }, dev: true };
+  });
+
   app.post('/auth/logout', async (request, reply) => {
     const cookieName = process.env.COOKIE_NAME || 'mhs_admin';
     reply.clearCookie(cookieName, { path: '/' });

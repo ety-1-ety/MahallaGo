@@ -27,6 +27,15 @@ import { environment } from '../../../environments/environment';
 
           <div class="widget-wrap" #widget></div>
 
+          @if (!isProduction) {
+            <div class="dev-login">
+              <button mat-stroked-button color="primary" (click)="devLogin()">
+                🔓 Dev login (без Telegram)
+              </button>
+              <small>Доступно только при NODE_ENV=development</small>
+            </div>
+          }
+
           @if (loading()) {
             <div class="loading">
               <mat-spinner diameter="32"></mat-spinner>
@@ -62,6 +71,10 @@ import { environment } from '../../../environments/environment';
     .loading { display: flex; align-items: center; gap: 12px; justify-content: center; margin-top: 16px; }
     .err { color: var(--mat-sys-error); margin-top: 12px; text-align: center; }
     .actions { display: flex; justify-content: center; gap: 8px; margin-top: 16px; }
+    .dev-login { display: flex; flex-direction: column; align-items: center; gap: 6px;
+                 margin-top: 16px; padding-top: 16px;
+                 border-top: 1px dashed var(--mat-sys-outline-variant); }
+    .dev-login small { color: var(--mat-sys-on-surface-variant); font-size: 11px; }
   `],
 })
 export class Login implements AfterViewInit {
@@ -74,6 +87,20 @@ export class Login implements AfterViewInit {
 
   protected readonly loading = signal(false);
   protected readonly errorKey = signal<string | null>(null);
+  protected readonly isProduction = environment.production;
+
+  async devLogin() {
+    this.loading.set(true);
+    this.errorKey.set(null);
+    // Hardcoded admin tg_id из ADMIN_TG_IDS env. Локально это разработчик.
+    const res = await this.auth.devLogin(35767754);
+    this.loading.set(false);
+    if (res.ok) {
+      this.router.navigate(['/dashboard']);
+    } else {
+      this.errorKey.set('login.failed');
+    }
+  }
 
   ngAfterViewInit() {
     // Регистрируем глобальный callback для Telegram Login Widget

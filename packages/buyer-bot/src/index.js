@@ -42,6 +42,14 @@ bot.use(conversations());
 bot.use(chooseLanguage);
 bot.use(checkout);
 
+// /start всегда сбрасывает активную conversation. Без этого пользователь
+// может застрять в чек-ауте/выборе языка и каждое сообщение будет
+// интерпретироваться как ответ на текущий шаг.
+bot.command('start', async (ctx, next) => {
+  await ctx.conversation.exit();
+  return next();
+});
+
 registerStart(bot);
 
 // Inline-callback'и
