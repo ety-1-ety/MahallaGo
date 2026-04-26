@@ -57,6 +57,7 @@ export class ApiService {
   // Analytics
   shopsGrowth()    { return this.get<ShopsGrowthPoint[]>('/analytics/shops-growth'); }
   topCategories()  { return this.get<TopCategoryRow[]>('/analytics/top-categories'); }
+  activeShopsMap() { return this.get<MapShopRow[]>('/analytics/active-shops-map'); }
 
   // Settings
   admins()         { return this.get<AdminRow[]>('/settings/admins'); }
@@ -212,6 +213,16 @@ export interface TopCategoryRow {
   shops: number;
   products: number;
   revenue: number;
+}
+
+export interface MapShopRow {
+  id: string;
+  name: string;
+  category?: string;
+  slug: string;
+  lat: number;
+  lng: number;
+  is_accepting_orders: boolean;
 }
 
 export interface AdminRow {

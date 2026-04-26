@@ -133,6 +133,10 @@ export const uz: Record<string, string> = {
   'users.confirm.revoke_admin': '{name} foydalanuvchidan adminlik olib tashlansinmi?',
 
   'map.title': 'Doʻkonlar xaritasi',
+  'map.counter': 'Faol doʻkonlar: {n}',
+  'map.popup.open': 'Doʻkonni ochish',
+  'map.popup.accepting': 'Buyurtmalarni qabul qilyapti',
+  'map.popup.not_accepting': 'Qabul qilmayapti',
 
   'analytics.title': 'Tahlil',
   'analytics.shops_growth': 'Doʻkonlar oʻsishi (90 kun)',

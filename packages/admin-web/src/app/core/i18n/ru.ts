@@ -133,6 +133,10 @@ export const ru: Record<string, string> = {
   'users.confirm.revoke_admin': 'Снять админ-права у пользователя {name}?',
 
   'map.title': 'Карта магазинов',
+  'map.counter': 'Активных магазинов: {n}',
+  'map.popup.open': 'Открыть магазин',
+  'map.popup.accepting': 'Принимает заказы',
+  'map.popup.not_accepting': 'Не принимает',
 
   'analytics.title': 'Аналитика',
   'analytics.shops_growth': 'Рост магазинов (90 дней)',

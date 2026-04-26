@@ -19,7 +19,7 @@ export const routes: Routes = [
       { path: 'orders',     loadComponent: () => import('./features/orders/orders-list').then((m) => m.OrdersList) },
       { path: 'orders/:id', loadComponent: () => import('./features/orders/order-detail').then((m) => m.OrderDetail) },
       { path: 'users',      loadComponent: () => import('./features/users/users-list').then((m) => m.UsersList) },
-      { path: 'map',        loadComponent: () => import('./features/stub/stub').then((m) => m.Stub), data: { titleKey: 'map.title' } },
+      { path: 'map',        loadComponent: () => import('./features/map/map').then((m) => m.Map) },
       { path: 'analytics',  loadComponent: () => import('./features/analytics/analytics').then((m) => m.Analytics) },
       { path: 'settings',   loadComponent: () => import('./features/settings/settings').then((m) => m.Settings) },
     ],
