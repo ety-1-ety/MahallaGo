@@ -100,6 +100,17 @@ export async function handleOrderCallback(ctx) {
   const [, action, orderId] = data.split(':');
   if (!orderId) return ctx.answerCallbackQuery();
 
+  // Отмена режима reject — обрабатывается ПЕРВОЙ, до маппинга в статус,
+  // т.к. reject_cancel не входит в statusMap.
+  if (action === 'reject_cancel') {
+    delete ctx.session.rejecting_order_id;
+    await ctx.answerCallbackQuery(
+      ctx.locale === 'uz' ? '↩️ Bekor qilindi' : '↩️ Отменено',
+    );
+    try { await ctx.editMessageReplyMarkup({ reply_markup: undefined }); } catch {}
+    return;
+  }
+
   // Маппинг action → новый статус
   const statusMap = {
     accept:     'accepted',
@@ -128,16 +139,6 @@ export async function handleOrderCallback(ctx) {
         ),
       },
     );
-    return;
-  }
-
-  // Отмена режима reject (inline-кнопка)
-  if (action === 'reject_cancel') {
-    delete ctx.session.rejecting_order_id;
-    await ctx.answerCallbackQuery(
-      ctx.locale === 'uz' ? '↩️ Bekor qilindi' : '↩️ Отменено',
-    );
-    try { await ctx.editMessageReplyMarkup({ reply_markup: undefined }); } catch {}
     return;
   }
 
