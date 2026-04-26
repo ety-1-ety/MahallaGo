@@ -18,7 +18,8 @@ async function chooseLanguageConv(conversation, ctx) {
   const lang = cb.callbackQuery.data.split(':')[1];
   await cb.answerCallbackQuery();
 
-  await callFnRow('auth.set_language', [ctx.user.id, lang]);
+  // UPDATE через external — replay не должен повторно дёргать БД.
+  await conversation.external(() => callFnRow('auth.set_language', [ctx.user.id, lang]));
   ctx.session.language = lang;
   ctx.session.language_chosen = true;
   ctx.locale = lang;

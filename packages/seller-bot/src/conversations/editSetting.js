@@ -39,7 +39,8 @@ async function editSettingConv(conversation, ctx) {
       const day = { open: '09:00', close: '22:00' };
       hours = { mon: day, tue: day, wed: day, thu: day, fri: day, sat: day, sun: day };
     }
-    await applySettingUpdate(ctx, 'hours', JSON.stringify(hours));
+    // UPDATE через external — replay не должен переоткрывать транзакцию.
+    await conversation.external(() => applySettingUpdate(ctx, 'hours', JSON.stringify(hours)));
     await ctx.reply(t('seller.settings.saved'));
     delete ctx.session.editing_setting_field;
     await ctx.reply(t('seller.settings.title'), {
@@ -113,7 +114,9 @@ async function editSettingConv(conversation, ctx) {
     value = field === 'radius' ? Math.round(n) : Math.round(n * 100) / 100;
   }
 
-  await applySettingUpdate(ctx, field, value === 'CLEAR' ? null : value);
+  // UPDATE через external — replay не должен переоткрывать транзакцию.
+  const finalValue = value === 'CLEAR' ? null : value;
+  await conversation.external(() => applySettingUpdate(ctx, field, finalValue));
   await ctx.reply(t('seller.settings.saved'), { reply_markup: { remove_keyboard: true } });
 
   delete ctx.session.editing_setting_field;

@@ -55,7 +55,9 @@ async function onboardingConv(conversation, ctx) {
   const shopName = nameMsg.message.text.trim();
 
   // ── 2/6 Категория ──────────────────────────────────────────
-  const cats = await fetchCategories();
+  // Чтения БД из conversations должны идти через conversation.external(),
+  // иначе при replay результат будет перевыполняться и может расходиться.
+  const cats = await conversation.external(() => fetchCategories());
   const catKb = new InlineKeyboard();
   for (const c of cats) {
     catKb.text(categoryLabel(c, lang), `onb:cat:${c.slug}`).row();
@@ -197,7 +199,8 @@ async function onboardingConv(conversation, ctx) {
   // 24x7 → пустой объект = всегда открыт
 
   // ── Регистрация в БД ───────────────────────────────────────
-  const shop = await callFnRow('shops.register', [
+  // INSERT обязательно через external — иначе при replay создастся дубликат магазина.
+  const shop = await conversation.external(() => callFnRow('shops.register', [
     ctx.user.id,
     shopName,
     catSlug,
@@ -209,7 +212,7 @@ async function onboardingConv(conversation, ctx) {
     lng,
     JSON.stringify(workingHours),
     'Asia/Tashkent',
-  ]);
+  ]));
 
   ctx.session.shop_id = shop.id;
   ctx.shop = shop;

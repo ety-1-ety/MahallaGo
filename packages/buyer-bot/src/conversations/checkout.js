@@ -94,9 +94,12 @@ async function checkoutConv(conversation, ctx) {
   }
 
   // ── 3. Подтверждение ───────────────────────────────────────
-  // Получаем магазин и считаем итог для предпросмотра
-  const { rows: shopRows } = await query('SELECT * FROM shops.shops WHERE id = $1', [cart.shop_id]);
-  const shop = shopRows[0];
+  // Получаем магазин и считаем итог для предпросмотра.
+  // SELECT через external — между replay'ями состояние магазина может смениться.
+  const shop = await conversation.external(async () => {
+    const { rows } = await query('SELECT * FROM shops.shops WHERE id = $1', [cart.shop_id]);
+    return rows[0] || null;
+  });
   if (!shop) {
     await ctx.reply(t('buyer.errors.SHOP_NOT_AVAILABLE'),
       { reply_markup: { remove_keyboard: true } });
@@ -139,44 +142,61 @@ async function checkoutConv(conversation, ctx) {
   }
 
   // ── 4. Создание заказа в БД ────────────────────────────────
+  // INSERT через external — replay не должен создать второй заказ.
+  // Ошибки тоже фиксируем внутри external, чтобы наружу выехало стабильное значение.
   const itemsJson = cart.items.map((i) => ({ product_id: i.product_id, qty: i.qty }));
 
-  let order;
-  try {
-    order = await callFnRow('orders.create_order', [
-      ctx.user.id,
-      cart.shop_id,
-      JSON.stringify(itemsJson),
-      lat,
-      lng,
-      addressText,
-      notes,
-      'cash',
-    ]);
-  } catch (err) {
-    await handleCreateOrderError(ctx, shop, err);
+  const result = await conversation.external(async () => {
+    try {
+      const o = await callFnRow('orders.create_order', [
+        ctx.user.id,
+        cart.shop_id,
+        JSON.stringify(itemsJson),
+        lat,
+        lng,
+        addressText,
+        notes,
+        'cash',
+      ]);
+      return { ok: true, order: o };
+    } catch (err) {
+      return {
+        ok: false,
+        code: err && err.code ? err.code : null,
+        name: err && err.name ? err.name : null,
+        message: err && err.message ? err.message : String(err),
+      };
+    }
+  });
+
+  if (!result.ok) {
+    await handleCreateOrderError(ctx, shop, result);
     try { await ctx.editMessageReplyMarkup({ reply_markup: undefined }); } catch {}
     return;
   }
+  const order = result.order;
 
   // ── 5. Успех: pubsub + сообщение покупателю + очистка корзины ──
   ctx.session.cart = { shop_id: null, items: [] };
   ctx.session.current_shop_id = null;
 
-  // Публикуем в Redis pub/sub для seller-bot
-  try {
-    const redis = getRedis();
-    const ownerTgId = await getOwnerTelegramId(shop.owner_id);
-    const channel = process.env.REDIS_CHANNEL_NEW_ORDER || 'orders:new';
-    await redis.publish(channel, JSON.stringify({
-      order_id: order.id,
-      shop_id: shop.id,
-      owner_telegram_id: ownerTgId,
-    }));
-  } catch (err) {
-    // Не критично: продавец увидит заказ при следующем открытии «Заказы»
-    // (логируется в errorHandler через bot.catch)
-  }
+  // Публикуем в Redis pub/sub для seller-bot.
+  // external() — replay не должен публиковать дубликат сообщения.
+  await conversation.external(async () => {
+    try {
+      const redis = getRedis();
+      const ownerTgId = await getOwnerTelegramId(shop.owner_id);
+      const channel = process.env.REDIS_CHANNEL_NEW_ORDER || 'orders:new';
+      await redis.publish(channel, JSON.stringify({
+        order_id: order.id,
+        shop_id: shop.id,
+        owner_telegram_id: ownerTgId,
+      }));
+    } catch (err) {
+      // Не критично: продавец увидит заказ при следующем открытии «Заказы»
+      // (логируется в errorHandler через bot.catch)
+    }
+  });
 
   await ctx.reply(t('buyer.checkout.success', { number: order.number }), {
     parse_mode: 'Markdown',
@@ -192,12 +212,16 @@ async function getOwnerTelegramId(ownerUserId) {
 /**
  * Маппинг ошибок orders.create_order на локализованные сообщения.
  * Поддерживаются ВСЕ 6 валидаций из SPEC.md.
+ *
+ * Принимает плоский объект с code/name (приходит из conversation.external),
+ * либо настоящий Error/DomainError (на случай прямого вызова).
  */
 async function handleCreateOrderError(ctx, shop, err) {
   const t = ctx.t;
   const lang = ctx.locale;
 
-  if (!(err instanceof DomainError)) {
+  const isDomain = err instanceof DomainError || err?.name === 'DomainError';
+  if (!isDomain) {
     await ctx.reply(t('common.error_unknown'));
     return;
   }

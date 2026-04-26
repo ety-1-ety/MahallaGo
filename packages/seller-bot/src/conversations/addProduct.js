@@ -51,7 +51,9 @@ async function addProductConv(conversation, ctx) {
   const name = nameMsg.message.text.trim();
 
   // ── 2/5 Категория ──────────────────────────────────────────
-  const cats = await fetchCategories();
+  // Чтения БД через conversation.external(), чтобы не было повторного запроса
+  // при replay (категории могут смениться между прогонами).
+  const cats = await conversation.external(() => fetchCategories());
   const catKb = new InlineKeyboard();
   for (const c of cats) {
     catKb.text(`${c.emoji || '📦'} ${lang === 'uz' ? c.name_uz : c.name_ru}`, `addp:cat:${c.id}`).row();
@@ -129,9 +131,10 @@ async function addProductConv(conversation, ctx) {
   }
 
   // ── Создание ───────────────────────────────────────────────
-  const product = await callFnRow('catalog.add_product', [
+  // INSERT через external — replay не должен создать второй товар.
+  const product = await conversation.external(() => callFnRow('catalog.add_product', [
     ctx.shop.id, categoryId, name, null, photoFileId, price, stock,
-  ]);
+  ]));
 
   await ctx.reply(t('seller.products.added', { name: product.name, price: formatUZS(product.price, lang) }), {
     parse_mode: 'Markdown',
