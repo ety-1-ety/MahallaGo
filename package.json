@@ -1,0 +1,24 @@
+{
+  "name": "mahallashop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Hyperlocal маркетплейс магазинов в Telegram для Узбекистана",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@9.12.0",
+  "scripts": {
+    "migrate": "node scripts/migrate.js",
+    "seed": "node scripts/seed.js",
+    "refresh-functions": "node scripts/refresh-functions.js",
+    "dev:buyer-bot": "pnpm --filter @mahallashop/buyer-bot dev",
+    "dev:seller-bot": "pnpm --filter @mahallashop/seller-bot dev",
+    "dev:admin-api": "pnpm --filter @mahallashop/admin-api dev",
+    "dev:admin-web": "pnpm --filter @mahallashop/admin-web start",
+    "start:buyer-bot": "pnpm --filter @mahallashop/buyer-bot start",
+    "start:seller-bot": "pnpm --filter @mahallashop/seller-bot start",
+    "start:admin-api": "pnpm --filter @mahallashop/admin-api start",
+    "build:admin-web": "pnpm --filter @mahallashop/admin-web build"
+  }
+}

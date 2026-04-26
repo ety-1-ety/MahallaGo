@@ -1,0 +1,49 @@
+# Зависимости
+node_modules/
+.pnpm-store/
+
+# Сборка
+dist/
+build/
+out/
+*.tsbuildinfo
+
+# Окружение
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Логи
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+logs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Angular
+packages/admin-web/.angular/
+packages/admin-web/coverage/
+packages/admin-web/dist/
+
+# pnpm
+.pnpm-debug.log
+
+# Локальные бэкапы и временные файлы
+*.bak
+*.tmp
+backups/
+
+# Локальные настройки редактора
+.vscode/settings.local.json

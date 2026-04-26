@@ -1,0 +1,11 @@
+{
+  "name": "@mahallashop/admin-web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Angular 21 SPA для админ-панели MahallaShop",
+  "scripts": {
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development"
+  }
+}
