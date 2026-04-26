@@ -10,8 +10,17 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import { fileURLToPath } from 'node:url';
 
-const DEFAULT_BASE_DIR = path.resolve(process.cwd(), 'data', 'photos');
+// Якорим путь к расположению ЭТОГО файла, а не к process.cwd().
+// CWD у seller-bot и buyer-bot разный (каждый — своя package-папка),
+// поэтому если опереться на cwd, фотки seller'а уезжают в его подпапку,
+// а buyer туда не смотрит.
+//   packages/shared/src/storage/photos.js → подняться 4 уровня → repo root.
+const __filename = fileURLToPath(import.meta.url);
+const __dirname  = path.dirname(__filename);
+const PROJECT_ROOT = path.resolve(__dirname, '..', '..', '..', '..');
+const DEFAULT_BASE_DIR = path.join(PROJECT_ROOT, 'data', 'photos');
 
 /**
  * Возвращает абсолютный путь к каталогу фото.

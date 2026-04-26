@@ -137,13 +137,46 @@ async function addProductConv(conversation, ctx) {
 
   // ── Создание ───────────────────────────────────────────────
   // INSERT через external — replay не должен создать второй товар.
-  const product = await conversation.external(() => callFnRow('catalog.add_product', [
-    ctx.shop.id, categoryId, name, null, photoFileId, price, stock,
-  ]));
+  // Уникальный индекс uniq_products_shop_name_active отвергает повторное
+  // имя в том же активном магазине; ловим SQLSTATE 23505 (unique_violation)
+  // и показываем дружелюбное сообщение пользователю.
+  const result = await conversation.external(async () => {
+    try {
+      const p = await callFnRow('catalog.add_product', [
+        ctx.shop.id, categoryId, name, null, photoFileId, price, stock,
+      ]);
+      return { ok: true, product: p };
+    } catch (err) {
+      // pg ошибки сериализуем в плоский объект (DomainError instances не
+      // переживают границу external() в grammY conversations).
+      return {
+        ok: false,
+        code: err && err.code ? err.code : null,
+        message: err && err.message ? err.message : String(err),
+      };
+    }
+  });
 
-  // Если есть фото — скачиваем байты на диск, чтобы buyer-bot тоже мог
-  // отобразить (Telegram file_id привязан к загрузчику и не работает
-  // в другом боте). Также через external — чтобы при replay не качать дважды.
+  if (!result.ok) {
+    if (result.code === '23505') {
+      await lastCtx.reply(t('seller.products.duplicate_name', { name }), {
+        parse_mode: 'Markdown',
+        reply_markup: mainMenuKeyboard(ctx),
+      });
+    } else {
+      await lastCtx.reply(t('common.error_unknown'), {
+        reply_markup: mainMenuKeyboard(ctx),
+      });
+    }
+    return;
+  }
+
+  const product = result.product;
+
+  // Если есть фото — скачиваем байты в общее хранилище data/photos/
+  // (anchor'ится к project root, не CWD), чтобы buyer-bot тоже мог
+  // отобразить. Telegram file_id привязан к загрузчику и не работает
+  // в другом боте, поэтому без байтов на диске у покупателя фото не появится.
   if (photoFileId) {
     try {
       const photoPath = await conversation.external(() => downloadTelegramPhoto({
@@ -154,7 +187,12 @@ async function addProductConv(conversation, ctx) {
         'UPDATE catalog.products SET photo_path = $1 WHERE id = $2',
         [photoPath, product.id],
       ));
-    } catch { /* не критично — фото просто не появится у buyer */ }
+    } catch (err) {
+      // Не критично для создания товара (он уже в БД), но хотим видеть
+      // реальные сбои (network / 401 / disk full) в логах.
+      // eslint-disable-next-line no-console
+      console.warn('downloadTelegramPhoto failed:', err && err.message ? err.message : err);
+    }
   }
 
   // Возвращаем главное меню, чтобы пользователь мог сразу добавить

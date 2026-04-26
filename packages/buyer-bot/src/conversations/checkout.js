@@ -106,6 +106,83 @@ async function checkoutConv(conversation, ctx) {
     return;
   }
 
+  // ── Pre-checkout валидация cart-items ──────────────────────
+  // Корзина в Redis может содержать продукты, которые продавец удалил/скрыл
+  // или у которых не хватает stock. Проверяем НА СТАРТЕ checkout, чтобы не
+  // дать пользователю увидеть старый summary и не упасть с ITEM_NOT_AVAILABLE
+  // в SQL. Если что-то изменилось — поправляем cart и выходим, пользователь
+  // увидит реальное состояние при следующем нажатии «Оформить».
+  const validation = await conversation.external(async () => {
+    const ids = cart.items.map((i) => i.product_id);
+    const { rows } = await query(
+      'SELECT id, name, is_active, stock, price FROM catalog.products WHERE id = ANY($1::uuid[])',
+      [ids],
+    );
+    return rows;
+  });
+  const byId = new Map(validation.map((r) => [r.id, r]));
+  const removed = [];
+  const adjusted = [];
+  const newItems = [];
+  for (const item of cart.items) {
+    const p = byId.get(item.product_id);
+    if (!p || !p.is_active) {
+      removed.push(item.name);
+      continue;
+    }
+    if (Number(p.stock) <= 0) {
+      removed.push(item.name);
+      continue;
+    }
+    if (Number(p.stock) < Number(item.qty)) {
+      adjusted.push({ name: item.name, available: Number(p.stock) });
+      newItems.push({ ...item, qty: Number(p.stock), price: Number(p.price) });
+      continue;
+    }
+    newItems.push({ ...item, price: Number(p.price) });
+  }
+
+  if (removed.length > 0 || adjusted.length > 0) {
+    // Сохраняем поправленный cart через session — мутация ctx.session не
+    // персистится в conversations 1.x, нужно через текущий wait-ctx или
+    // через external().
+    await conversation.external(async () => {
+      // sessionMiddleware уже сохранил session при входе; нам нужно ОБНОВИТЬ
+      // запись. Пишем напрямую в Redis под тем же ключом.
+      const { getRedis } = await import('@mahallashop/shared');
+      const redis = getRedis();
+      const prefix = process.env.REDIS_PREFIX || 'buyer:';
+      const key = `${prefix}sess:${ctx.from.id}`;
+      const raw = await redis.get(key);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        parsed.cart = parsed.cart || {};
+        parsed.cart.items = newItems;
+        if (newItems.length === 0) {
+          parsed.cart.shop_id = null;
+        }
+        await redis.set(key, JSON.stringify(parsed), 'EX', 60 * 60 * 24 * 30);
+      }
+    });
+
+    if (removed.length > 0) {
+      await ctx.reply(t('buyer.checkout.items_removed', { names: removed.join(', ') }),
+        { reply_markup: { remove_keyboard: true } });
+    }
+    if (adjusted.length > 0) {
+      const summary = adjusted.map((a) => `${a.name} → ${a.available}`).join(', ');
+      await ctx.reply(t('buyer.checkout.items_adjusted', { summary }));
+    }
+    if (newItems.length === 0) {
+      await ctx.reply(t('buyer.checkout.cart_now_empty'),
+        { reply_markup: { remove_keyboard: true } });
+    }
+    return;
+  }
+
+  // На этом шаге cart прошёл валидацию — можно обновить локальную копию
+  // (для расчёта summary) актуальными ценами из БД.
+  cart.items = newItems;
   const subtotal = cart.items.reduce((s, i) => s + Number(i.price) * Number(i.qty), 0);
   let deliveryFee = Number(shop.delivery_fee || 0);
   if (shop.free_delivery_from !== null && subtotal >= Number(shop.free_delivery_from)) {

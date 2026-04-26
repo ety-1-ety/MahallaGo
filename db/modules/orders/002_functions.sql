@@ -158,13 +158,21 @@ BEGIN
        AND shop_id = p_shop_id
      FOR UPDATE;
 
-    IF NOT FOUND
-       OR v_product.is_active = FALSE
-       OR v_product.stock < v_qty
-    THEN
+    -- Различаем два разных случая:
+    --   1) Товар отсутствует или скрыт — ITEM_NOT_AVAILABLE.
+    --      Случается когда продавец удалил/скрыл товар после того,
+    --      как покупатель добавил его в корзину.
+    --   2) Товар есть и активен, но stock < qty — ITEM_OUT_OF_STOCK.
+    -- У этих ошибок принципиально разная UX-реакция в боте.
+    IF NOT FOUND OR v_product.is_active = FALSE THEN
+      RAISE EXCEPTION 'ITEM_NOT_AVAILABLE'
+        USING DETAIL = 'product_id=' || (v_item ->> 'product_id');
+    END IF;
+
+    IF v_product.stock < v_qty THEN
       RAISE EXCEPTION 'ITEM_OUT_OF_STOCK'
         USING DETAIL = 'product_id=' || (v_item ->> 'product_id') || ', requested=' || v_qty::TEXT
-                       || ', available=' || COALESCE(v_product.stock::TEXT, 'NULL');
+                       || ', available=' || v_product.stock::TEXT;
     END IF;
 
     v_line_total := v_product.price * v_qty;

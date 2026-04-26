@@ -62,7 +62,10 @@
       "ask_notes": "✍️ Buyurtmaga izoh qoldiring (yoki «Oʻtkazib yuborish»):",
       "confirm_title": "Buyurtmani tasdiqlaysizmi?",
       "confirm_button": "✅ Tasdiqlash",
-      "success": "✅ Buyurtma #{number} qabul qilindi! Doʻkon tez orada javob beradi."
+      "success": "✅ Buyurtma #{number} qabul qilindi! Doʻkon tez orada javob beradi.",
+      "items_removed": "⚠️ Endi sotilmaydigan mahsulotlar savatchadan olib tashlandi: {names}\n\nBuyurtmani tekshirib, qaytadan «Buyurtma berish»ni bosing.",
+      "items_adjusted": "⚠️ Quyidagi mahsulotlar uchun miqdor kamaytirildi: {summary}\n\nBuyurtmani tekshirib, qaytadan «Buyurtma berish»ni bosing.",
+      "cart_now_empty": "🛒 Tekshiruvdan keyin savatcha boʻsh qoldi. Doʻkonni qaytadan toping."
     },
     "errors": {
       "SHOP_NOT_AVAILABLE":     "❌ Doʻkon hozir buyurtma qabul qilmayapti.",
@@ -70,7 +73,8 @@
       "BELOW_MIN_ORDER":        "❌ Minimal buyurtma summasi: {min}",
       "ABOVE_MAX_ORDER":        "❌ Maksimal buyurtma summasi: {max}",
       "SHOP_CLOSED_NOW":        "❌ Doʻkon hozir yopiq. Ish vaqtidan keyin urinib koʻring.",
-      "ITEM_OUT_OF_STOCK":      "❌ Mahsulotlardan biri tugagan. Savatchani yangilang."
+      "ITEM_OUT_OF_STOCK":      "❌ Mahsulotlardan biri uchun omborda yetarli emas. Savatchadagi miqdorni kamaytiring.",
+      "ITEM_NOT_AVAILABLE":     "❌ Savatchadagi mahsulotlardan biri endi sotilmaydi. Savatchani tozalab, buyurtmani qaytadan tuzing."
     },
     "orders": {
       "title": "📦 *Buyurtmalarim*",
@@ -119,7 +123,8 @@
       "add_step_price":    "💰 Narxini kiriting (faqat raqam):",
       "add_step_stock":    "📊 Skladdagi miqdorini kiriting:",
       "add_step_photo":    "📷 Mahsulot fotosuratini yuboring (yoki «Oʻtkazib yuborish»):",
-      "added": "✅ Mahsulot qoʻshildi: {name} — {price}"
+      "added": "✅ Mahsulot qoʻshildi: {name} — {price}",
+      "duplicate_name": "❌ «{name}» nomli mahsulot doʻkoningizda allaqachon bor. Tahrirlash uchun «📦 Mahsulotlarim»ga oʻting yoki boshqa nom tanlang."
     },
     "settings": {
       "title": "⚙️ *Doʻkon sozlamalari*",

@@ -6,7 +6,8 @@
 // маппинга в локализованные сообщения для пользователя.
 // ─────────────────────────────────────────────────────────────────
 
-// Коды ошибок orders.create_order (6 валидаций из SPEC.md)
+// Коды ошибок orders.create_order (6 валидаций из SPEC.md +
+// дополнительные проверки)
 export const ORDER_ERRORS = Object.freeze({
   SHOP_NOT_AVAILABLE:    'SHOP_NOT_AVAILABLE',
   OUT_OF_DELIVERY_RANGE: 'OUT_OF_DELIVERY_RANGE',
@@ -14,6 +15,9 @@ export const ORDER_ERRORS = Object.freeze({
   ABOVE_MAX_ORDER:       'ABOVE_MAX_ORDER',
   SHOP_CLOSED_NOW:       'SHOP_CLOSED_NOW',
   ITEM_OUT_OF_STOCK:     'ITEM_OUT_OF_STOCK',
+  // Товар отсутствует (удалён) или скрыт продавцом — НЕ то же самое
+  // что ITEM_OUT_OF_STOCK (товар есть, но мало).
+  ITEM_NOT_AVAILABLE:    'ITEM_NOT_AVAILABLE',
   EMPTY_CART:            'EMPTY_CART',
   INVALID_DELIVERY_ADDRESS: 'INVALID_DELIVERY_ADDRESS',
   INVALID_ITEM_QTY:      'INVALID_ITEM_QTY',
