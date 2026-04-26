@@ -28,6 +28,47 @@ async function checkoutConv(conversation, ctx) {
     return;
   }
 
+  // ── 0. Телефон (только если ещё не сохранён) ───────────────
+  // Продавцу нужно как-то связаться с покупателем — собираем номер
+  // один раз при первом checkout и сохраняем в auth.users.phone.
+  // На последующих заказах этот шаг скипается.
+  if (!ctx.user?.phone) {
+    await ctx.reply(t('buyer.checkout.ask_phone'), {
+      reply_markup: new Keyboard()
+        .requestContact(t('buyer.checkout.phone_button'))
+        .row()
+        .text(t('common.cancel'))
+        .resized().oneTime(),
+    });
+    let phone = null;
+    while (phone === null) {
+      const m = await conversation.wait();
+      if (m.message?.text === t('common.cancel')) {
+        await ctx.reply(t('common.cancel'), { reply_markup: mainMenuKeyboard(ctx) });
+        return;
+      }
+      if (m.message?.contact?.phone_number) {
+        phone = m.message.contact.phone_number;
+        break;
+      }
+      if (m.message?.text && /^\+?\d{9,15}$/.test(m.message.text.trim())) {
+        phone = m.message.text.trim();
+        break;
+      }
+      await ctx.reply(t('buyer.checkout.phone_invalid'));
+    }
+
+    // UPDATE через external — replay не должен повторно дёрнуть БД.
+    await conversation.external(() => query(
+      'UPDATE auth.users SET phone = $1, updated_at = NOW() WHERE id = $2',
+      [phone, ctx.user.id],
+    ));
+    // Локально отразим обновление, чтобы дальше в conversation
+    // ctx.user.phone был уже заполнен (не критично, но чище).
+    ctx.user.phone = phone;
+    await ctx.reply(t('buyer.checkout.phone_saved'));
+  }
+
   // ── 1. Адрес ───────────────────────────────────────────────
   // Если у покупателя есть прошлые заказы — предлагаем выбрать один
   // из 3 недавних адресов (inline-кнопками). Параллельно — обычный

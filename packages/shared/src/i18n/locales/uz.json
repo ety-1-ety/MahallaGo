@@ -58,6 +58,10 @@
       "cleared": "🗑 Savatcha tozalandi"
     },
     "checkout": {
+      "ask_phone": "📞 Sotuvchi siz bilan bog'lanishi uchun telefon raqamingizni ulashing:",
+      "phone_button": "📞 Raqamni ulashish",
+      "phone_invalid": "❌ Noto'g'ri raqam. Kontakt orqali ulashing yoki +998901234567 koʻrinishida kiriting.",
+      "phone_saved": "✅ Raqam saqlandi",
       "ask_address": "🏠 Yetkazib berish manzilini yuboring (matn yoki joylashuv).",
       "ask_notes": "✍️ Buyurtmaga izoh qoldiring (yoki «Oʻtkazib yuborish»):",
       "confirm_title": "Buyurtmani tasdiqlaysizmi?",
