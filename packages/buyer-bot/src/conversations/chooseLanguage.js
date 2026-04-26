@@ -25,10 +25,13 @@ async function chooseLanguageConv(conversation, ctx) {
   ctx.locale = lang;
   ctx.t = (k, v) => tFn(lang, k, v);
 
-  await ctx.editMessageText(tFn(lang, 'language.saved'));
-  await ctx.reply(tFn(lang, 'buyer.menu.title'), {
+  // Редактируем сообщение через cb (callback-контекст), а НЕ ctx.
+  // ctx — это контекст /start (текстового сообщения пользователя), и
+  // editMessageText на нём попытается отредактировать user-сообщение → ошибка.
+  await cb.editMessageText(tFn(lang, 'language.saved'));
+  await cb.reply(tFn(lang, 'buyer.menu.title'), {
     parse_mode: 'Markdown',
-    reply_markup: mainMenuKeyboard({ ...ctx, locale: lang, t: ctx.t }),
+    reply_markup: mainMenuKeyboard({ locale: lang, t: ctx.t }),
   });
 }
 

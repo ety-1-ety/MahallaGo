@@ -136,7 +136,8 @@ async function checkoutConv(conversation, ctx) {
   const cb = await conversation.waitForCallbackQuery(/^checkout:/);
   await cb.answerCallbackQuery();
   if (cb.callbackQuery.data === 'checkout:cancel') {
-    try { await ctx.editMessageReplyMarkup({ reply_markup: undefined }); } catch {}
+    // Edit через cb (callback-контекст), не ctx — ctx уже устаревший /start.
+    try { await cb.editMessageReplyMarkup({ reply_markup: undefined }); } catch {}
     await ctx.reply(t('common.cancel'), { reply_markup: { remove_keyboard: true } });
     return;
   }
@@ -171,7 +172,7 @@ async function checkoutConv(conversation, ctx) {
 
   if (!result.ok) {
     await handleCreateOrderError(ctx, shop, result);
-    try { await ctx.editMessageReplyMarkup({ reply_markup: undefined }); } catch {}
+    try { await cb.editMessageReplyMarkup({ reply_markup: undefined }); } catch {}
     return;
   }
   const order = result.order;
