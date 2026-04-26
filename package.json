@@ -2,6 +2,7 @@
   "name": "mahallashop",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "description": "Hyperlocal маркетплейс магазинов в Telegram для Узбекистана",
   "engines": {
     "node": ">=20.0.0",
@@ -20,5 +21,9 @@
     "start:seller-bot": "pnpm --filter @mahallashop/seller-bot start",
     "start:admin-api": "pnpm --filter @mahallashop/admin-api start",
     "build:admin-web": "pnpm --filter @mahallashop/admin-web build"
+  },
+  "dependencies": {
+    "dotenv": "16",
+    "pg": "8"
   }
 }
