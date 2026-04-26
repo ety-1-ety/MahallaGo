@@ -142,8 +142,6 @@ export async function handleProductCallback(ctx) {
     }
   }
 
-  // Был ли это переход 0→1+ items? Тогда напомним покупателю про корзину.
-  const wasEmpty = (ctx.session.cart?.items?.length || 0) === 0;
   ctx.session.cart = cart;
 
   // Обновим клавиатуру inline-карточки
@@ -159,13 +157,13 @@ export async function handleProductCallback(ctx) {
       : (ctx.locale === 'uz' ? '✓ Olib tashlandi' : '✓ Удалено'),
   );
 
-  // После прохода inc/add — если корзина перешла из пустого состояния
-  // в заполненное, отправляем подсказку с быстрым переходом в корзину.
-  if ((action === 'inc' || action === 'add') && wasEmpty && cart.items.length > 0) {
+  // На каждый inc/add — отправляем reminder с быстрым переходом в корзину.
+  // Шумнее, но пользователю всегда виден способ дальше пройти в checkout.
+  if ((action === 'inc' || action === 'add') && cart.items.length > 0) {
     const subtotal = cart.items.reduce((s, i) => s + Number(i.price) * Number(i.qty), 0);
     const text = ctx.locale === 'uz'
-      ? `🛒 *Savatchada ${cart.items.length} ta mahsulot* (${formatUZS(subtotal, 'uz')})\n\nDavom etish uchun tugmani bosing yoki 🛒 menyusiga oʻting.`
-      : `🛒 *В корзине ${cart.items.length} товар(ов)* (${formatUZS(subtotal, 'ru')})\n\nНажмите кнопку для оформления или откройте 🛒 в меню.`;
+      ? `🛒 *Savatchada ${cart.items.length} ta mahsulot* (${formatUZS(subtotal, 'uz')})`
+      : `🛒 *В корзине ${cart.items.length} товар(ов)* (${formatUZS(subtotal, 'ru')})`;
     await ctx.reply(text, {
       parse_mode: 'Markdown',
       reply_markup: new InlineKeyboard()

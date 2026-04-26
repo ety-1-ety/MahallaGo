@@ -1,7 +1,39 @@
 import { InlineKeyboard } from 'grammy';
-import { callFn, callFnRow, query, formatUZS, tOrderStatus } from '@mahallashop/shared';
+import { callFn, callFnRow, query, formatUZS, tOrderStatus, getRedis } from '@mahallashop/shared';
 import { orderCardKeyboard } from '../keyboards/orderCard.js';
 import { mainMenuLabels } from '../keyboards/mainMenu.js';
+
+/**
+ * Уведомить покупателя о смене статуса заказа через Redis pub/sub.
+ * buyer-bot подписан на канал и шлёт локализованное сообщение.
+ *
+ * Отдельная функция чтобы не путать с прямым ответом в Telegram —
+ * pub/sub нужен потому что seller-bot и buyer-bot работают как
+ * разные процессы с разными bot-токенами.
+ */
+async function publishStatusUpdate(orderId, newStatus, reason) {
+  try {
+    // Найдём telegram_id покупателя по заказу.
+    const { rows } = await query(
+      `SELECT u.telegram_id
+         FROM orders.orders o
+         JOIN auth.users u ON u.id = o.buyer_id
+        WHERE o.id = $1`,
+      [orderId],
+    );
+    const buyerTgId = rows[0]?.telegram_id;
+    if (!buyerTgId) return;
+
+    const redis = getRedis();
+    const channel = process.env.REDIS_CHANNEL_ORDER_STATUS || 'orders:status';
+    await redis.publish(channel, JSON.stringify({
+      order_id: orderId,
+      buyer_telegram_id: Number(buyerTgId),
+      new_status: newStatus,
+      reason: reason || null,
+    }));
+  } catch { /* не критично — buyer увидит статус при следующем открытии «Мои заказы» */ }
+}
 
 const ACTIVE_STATUSES = ['pending', 'accepted', 'ready', 'delivering'];
 
@@ -149,6 +181,8 @@ export async function handleOrderCallback(ctx) {
     await ctx.answerCallbackQuery(
       ctx.locale === 'uz' ? 'Yangilandi ✓' : 'Обновлено ✓',
     );
+    // Уведомление покупателю через pub/sub.
+    await publishStatusUpdate(orderId, newStatus, null);
     // Обновим карточку: новая клавиатура (или удалим если финал)
     const newKb = orderCardKeyboard(ctx, updated);
     try {
@@ -189,6 +223,8 @@ export async function handleRejectReason(ctx, next) {
 
   try {
     await callFnRow('orders.update_status', [orderId, 'rejected', ctx.user.id, reason]);
+    // Уведомляем покупателя с причиной отказа.
+    await publishStatusUpdate(orderId, 'rejected', reason);
     delete ctx.session.rejecting_order_id;
     await ctx.reply(ctx.locale === 'uz'
       ? '✅ Buyurtma rad etildi'

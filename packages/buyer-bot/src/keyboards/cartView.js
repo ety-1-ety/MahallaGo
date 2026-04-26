@@ -3,7 +3,9 @@ import { formatUZS } from '@mahallashop/shared';
 
 /**
  * Отрисовать корзину как карточку с inline-кнопками.
- * Корзина ссылается на один shop_id (из session.cart.shop_id).
+ *
+ * Каждый item получает строку c [➖] qty [➕] [🗑], плюс общие кнопки
+ * под суммой: оформить, очистить.
  */
 export function cartView(ctx, shop) {
   const t = ctx.t;
@@ -42,10 +44,21 @@ export function cartView(ctx, shop) {
   lines.push(`${t('buyer.cart.delivery')}  ${formatUZS(deliveryFee, lang)}`);
   lines.push(`${t('buyer.cart.total')}  ${formatUZS(total, lang)}`);
 
-  const kb = new InlineKeyboard()
-    .text(t('buyer.cart.edit'),     'cart:edit')
-    .text(t('buyer.cart.clear'),    'cart:clear').row()
-    .text(t('buyer.cart.checkout'), 'cart:checkout');
+  // Inline-клавиатура: для каждого товара — отдельная строка с +/-/🗑.
+  // В конце — оформить и очистить.
+  const kb = new InlineKeyboard();
+  for (const it of cart.items) {
+    // Имя обрезаем до 18 символов чтобы строка не вылезала за ширину.
+    const labelName = it.name.length > 18 ? it.name.slice(0, 17) + '…' : it.name;
+    kb.text(`${labelName}`, `cart:noop`).row();
+    kb.text('➖', `cart:dec:${it.product_id}`)
+      .text(`${it.qty}`, `cart:noop`)
+      .text('➕', `cart:inc:${it.product_id}`)
+      .text(t('buyer.cart_item.remove'), `cart:rm:${it.product_id}`)
+      .row();
+  }
+  kb.text(t('buyer.cart.checkout'), 'cart:checkout').row();
+  kb.text(t('buyer.cart.clear'),    'cart:clear');
 
   return { text: lines.join('\n'), keyboard: kb };
 }

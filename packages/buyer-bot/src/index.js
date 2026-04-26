@@ -17,6 +17,7 @@ import { handleLocation, handleReuseLocation } from './handlers/findShops.js';
 import { handleOpenShop, handleCategory, handleProductCallback } from './handlers/browseShop.js';
 import { handleCartCallback } from './handlers/cart.js';
 import { handleLanguageCallback } from './handlers/settings.js';
+import { startBuyerNotifier } from './notifier.js';
 
 const log = createLogger('buyer-bot');
 
@@ -27,6 +28,7 @@ const cfg = loadConfig({
     LOG_LEVEL: 'info',
     REDIS_PREFIX: 'buyer:',
     REDIS_CHANNEL_NEW_ORDER: 'orders:new',
+    REDIS_CHANNEL_ORDER_STATUS: 'orders:status',
     RATE_LIMIT_PER_SEC: 10,
   },
   numbers: ['RATE_LIMIT_PER_SEC'],
@@ -84,6 +86,9 @@ bot.on('message', async (ctx) => {
 });
 
 bot.catch(errorHandler(log));
+
+// Подписка на уведомления о смене статуса заказа от seller-bot.
+startBuyerNotifier(bot, log);
 
 async function shutdown(signal) {
   log.info({ signal }, 'shutting down');

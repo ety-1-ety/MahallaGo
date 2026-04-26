@@ -87,6 +87,17 @@
       "status_completed":  "✅ Yetkazildi",
       "status_rejected":   "❌ Rad etildi",
       "status_cancelled":  "🚫 Bekor qilindi"
+    },
+    "order_status_notif": {
+      "accepted":   "🟢 *Buyurtma #{number} qabul qilindi*\n\n{shop} buyurtmangizni qabul qildi va tayyorlay boshladi.",
+      "ready":      "📦 *Buyurtma #{number} tayyor*\n\n{shop} buyurtmangizni jamladi. Kuryer tez orada oladi.",
+      "delivering": "🚚 *Buyurtma #{number} yo'lda*\n\n{shop} buyurtmangizni kuryerga berdi. Tez orada keladi!",
+      "completed":  "✅ *Buyurtma #{number} yetkazib berildi*\n\n{shop} doʻkonidan xarid qilganingiz uchun rahmat!",
+      "rejected":   "❌ *Buyurtma #{number} rad etildi*\n\n{shop} buyurtmangizni rad etdi.\nSabab: {reason}",
+      "cancelled":  "🚫 *Buyurtma #{number} bekor qilindi*\n\n{shop}: {reason}"
+    },
+    "cart_item": {
+      "remove": "🗑"
     }
   },
   "seller": {

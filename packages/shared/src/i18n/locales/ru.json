@@ -48,7 +48,7 @@
     "cart": {
       "title": "🛒 *Ваша корзина — {shop_name}*",
       "empty": "Корзина пуста. Выберите товары в магазине.",
-      "subtotal": "Подытог:",
+      "subtotal": "Сумма:",
       "delivery": "Доставка:",
       "total": "*Итого:*",
       "edit": "✏️ Изменить",
@@ -87,6 +87,17 @@
       "status_completed":  "✅ Доставлен",
       "status_rejected":   "❌ Отклонён",
       "status_cancelled":  "🚫 Отменён"
+    },
+    "order_status_notif": {
+      "accepted":   "🟢 *Заказ #{number} принят*\n\n{shop} принял ваш заказ и начал готовить.",
+      "ready":      "📦 *Заказ #{number} готов*\n\n{shop} собрал ваш заказ. Курьер скоро его заберёт.",
+      "delivering": "🚚 *Заказ #{number} в пути*\n\n{shop} передал заказ курьеру. Скоро у вас!",
+      "completed":  "✅ *Заказ #{number} доставлен*\n\nСпасибо за покупку в {shop}!",
+      "rejected":   "❌ *Заказ #{number} отклонён*\n\n{shop} отклонил ваш заказ.\nПричина: {reason}",
+      "cancelled":  "🚫 *Заказ #{number} отменён*\n\n{shop}: {reason}"
+    },
+    "cart_item": {
+      "remove": "🗑"
     }
   },
   "seller": {
@@ -144,7 +155,7 @@
       "phone": "📞 {phone}",
       "address": "📍 {address} ({distance})",
       "items_header": "📦 Состав:",
-      "subtotal": "Подытог:",
+      "subtotal": "Сумма:",
       "delivery": "Доставка:",
       "total": "*Итого: {amount}*",
       "accept": "✅ Принять",
