@@ -1,6 +1,7 @@
 import { createConversation } from '@grammyjs/conversations';
 import { Keyboard, InlineKeyboard } from 'grammy';
 import { callFnRow, query, formatUZS } from '@mahallashop/shared';
+import { mainMenuKeyboard } from '../keyboards/mainMenu.js';
 
 /**
  * 5-шаговый wizard добавления товара.
@@ -112,10 +113,14 @@ async function addProductConv(conversation, ctx) {
     reply_markup: new Keyboard().text(t('common.skip')).text(t('common.cancel')).resized().oneTime(),
   });
   let photoFileId = null;
+  let lastCtx = ctx;
   while (true) {
     const photoMsg = await conversation.wait();
+    lastCtx = photoMsg;
     if (photoMsg.message?.text === t('common.cancel')) {
-      await ctx.reply(t('common.cancel'), { reply_markup: { remove_keyboard: true } });
+      await photoMsg.reply(t('common.cancel'), {
+        reply_markup: mainMenuKeyboard(ctx),
+      });
       return;
     }
     if (photoMsg.message?.text === t('common.skip')) {
@@ -125,7 +130,7 @@ async function addProductConv(conversation, ctx) {
       photoFileId = photoMsg.message.photo[photoMsg.message.photo.length - 1].file_id;
       break;
     }
-    await ctx.reply(lang === 'uz'
+    await photoMsg.reply(lang === 'uz'
       ? '❌ Iltimos, mahsulot suratini yuboring yoki «Oʻtkazib yuborish».'
       : '❌ Пришлите фото товара или нажмите «Пропустить».');
   }
@@ -136,9 +141,11 @@ async function addProductConv(conversation, ctx) {
     ctx.shop.id, categoryId, name, null, photoFileId, price, stock,
   ]));
 
-  await ctx.reply(t('seller.products.added', { name: product.name, price: formatUZS(product.price, lang) }), {
+  // Возвращаем главное меню, чтобы пользователь мог сразу добавить
+  // ещё один товар или перейти в другой раздел.
+  await lastCtx.reply(t('seller.products.added', { name: product.name, price: formatUZS(product.price, lang) }), {
     parse_mode: 'Markdown',
-    reply_markup: { remove_keyboard: true },
+    reply_markup: mainMenuKeyboard(ctx),
   });
 }
 

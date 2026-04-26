@@ -46,13 +46,20 @@ export async function handleCategory(ctx, categoryId) {
   for (const p of products) {
     const currentQty = getCartQty(ctx, p.id);
     const card = productCard(ctx, p, currentQty);
+    // file_id привязан к боту-загрузчику; пытаемся отправить как фото,
+    // если не получилось — fallback на текст.
+    let sent = false;
     if (p.photo_file_id) {
-      await ctx.replyWithPhoto(p.photo_file_id, {
-        caption: card.text,
-        parse_mode: 'Markdown',
-        reply_markup: card.keyboard,
-      });
-    } else {
+      try {
+        await ctx.replyWithPhoto(p.photo_file_id, {
+          caption: card.text,
+          parse_mode: 'Markdown',
+          reply_markup: card.keyboard,
+        });
+        sent = true;
+      } catch { /* fallthrough */ }
+    }
+    if (!sent) {
       await ctx.reply(card.text, {
         parse_mode: 'Markdown',
         reply_markup: card.keyboard,

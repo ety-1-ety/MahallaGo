@@ -49,13 +49,21 @@ export async function handleLocation(ctx) {
 
   for (const s of shops) {
     const card = shopCard(ctx, s);
+    // Photo file_id привязан к боту-загрузчику (seller-bot). Buyer-bot
+    // не может отправить тот же file_id — Telegram вернёт ошибку
+    // «wrong file identifier». Поэтому пытаемся, но мягко падаем на text.
+    let sent = false;
     if (s.photo_file_id) {
-      await ctx.replyWithPhoto(s.photo_file_id, {
-        caption: card.text,
-        parse_mode: 'Markdown',
-        reply_markup: card.keyboard,
-      });
-    } else {
+      try {
+        await ctx.replyWithPhoto(s.photo_file_id, {
+          caption: card.text,
+          parse_mode: 'Markdown',
+          reply_markup: card.keyboard,
+        });
+        sent = true;
+      } catch { /* fallthrough к text-only */ }
+    }
+    if (!sent) {
       await ctx.reply(card.text, {
         parse_mode: 'Markdown',
         reply_markup: card.keyboard,
