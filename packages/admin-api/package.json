@@ -10,6 +10,12 @@
     "start": "node src/index.js"
   },
   "dependencies": {
-    "@mahallashop/shared": "workspace:*"
+    "@mahallashop/shared": "workspace:*",
+    "fastify": "^5.0.0",
+    "fastify-plugin": "^5.0.1",
+    "@fastify/cors": "^10.0.1",
+    "@fastify/cookie": "^11.0.1",
+    "@fastify/jwt": "^9.0.1",
+    "dotenv": "^16.4.5"
   }
 }
