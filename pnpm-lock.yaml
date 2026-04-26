@@ -25,9 +25,24 @@ importers:
 
   packages/buyer-bot:
     dependencies:
+      '@grammyjs/conversations':
+        specifier: ^1.2.0
+        version: 1.2.0(grammy@1.42.0)
+      '@grammyjs/storage-redis':
+        specifier: ^2.4.2
+        version: 2.5.1
       '@mahallashop/shared':
         specifier: workspace:*
         version: link:../shared
+      dotenv:
+        specifier: ^16.4.5
+        version: 16.6.1
+      grammy:
+        specifier: ^1.30.0
+        version: 1.42.0
+      ioredis:
+        specifier: ^5.4.1
+        version: 5.10.1
 
   packages/seller-bot:
     dependencies:
