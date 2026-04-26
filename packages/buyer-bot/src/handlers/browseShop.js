@@ -157,17 +157,42 @@ export async function handleProductCallback(ctx) {
       : (ctx.locale === 'uz' ? '✓ Olib tashlandi' : '✓ Удалено'),
   );
 
-  // На каждый inc/add — отправляем reminder с быстрым переходом в корзину.
-  // Шумнее, но пользователю всегда виден способ дальше пройти в checkout.
+  // На каждый inc/add — обновляем «sticky» reminder корзины. Если уже
+  // есть message_id в session — пытаемся отредактировать его, иначе
+  // отправляем новое и сохраняем id в session для будущих обновлений.
   if ((action === 'inc' || action === 'add') && cart.items.length > 0) {
-    const subtotal = cart.items.reduce((s, i) => s + Number(i.price) * Number(i.qty), 0);
-    const text = ctx.locale === 'uz'
-      ? `🛒 *Savatchada ${cart.items.length} ta mahsulot* (${formatUZS(subtotal, 'uz')})`
-      : `🛒 *В корзине ${cart.items.length} товар(ов)* (${formatUZS(subtotal, 'ru')})`;
-    await ctx.reply(text, {
-      parse_mode: 'Markdown',
-      reply_markup: new InlineKeyboard()
-        .text(ctx.locale === 'uz' ? '🛒 Savatchaga oʻtish' : '🛒 Перейти в корзину', 'cart:show'),
-    });
+    await refreshCartReminder(ctx);
   }
+}
+
+async function refreshCartReminder(ctx) {
+  const cart = ctx.session.cart;
+  if (!cart?.items?.length) return;
+  const subtotal = cart.items.reduce((s, i) => s + Number(i.price) * Number(i.qty), 0);
+  const text = ctx.locale === 'uz'
+    ? `🛒 *Savatchada ${cart.items.length} ta mahsulot* (${formatUZS(subtotal, 'uz')})`
+    : `🛒 *В корзине ${cart.items.length} товар(ов)* (${formatUZS(subtotal, 'ru')})`;
+  const kb = new InlineKeyboard()
+    .text(ctx.locale === 'uz' ? '🛒 Savatchaga oʻtish' : '🛒 Перейти в корзину', 'cart:show');
+
+  const savedMsgId = ctx.session.cart_reminder_msg_id;
+  const chatId = ctx.chat?.id;
+
+  if (savedMsgId && chatId) {
+    try {
+      await ctx.api.editMessageText(chatId, savedMsgId, text, {
+        parse_mode: 'Markdown',
+        reply_markup: kb,
+      });
+      return;  // редакция удалась — id остаётся прежним
+    } catch {
+      // сообщение могло быть удалено / устарело / сменился чат — пошлём новое
+    }
+  }
+
+  const sent = await ctx.reply(text, {
+    parse_mode: 'Markdown',
+    reply_markup: kb,
+  });
+  ctx.session.cart_reminder_msg_id = sent.message_id;
 }

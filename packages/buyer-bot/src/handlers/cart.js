@@ -27,6 +27,7 @@ export async function handleCart(ctx) {
  */
 export async function handleClearCart(ctx) {
   ctx.session.cart = { shop_id: null, items: [] };
+  delete ctx.session.cart_reminder_msg_id;
   await ctx.answerCallbackQuery(ctx.t('buyer.cart.cleared'));
   try {
     await ctx.editMessageText(ctx.t('buyer.cart.empty'));

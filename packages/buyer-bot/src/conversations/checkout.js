@@ -8,6 +8,7 @@ import {
   ORDER_ERRORS,
   getRedis,
 } from '@mahallashop/shared';
+import { mainMenuKeyboard } from '../keyboards/mainMenu.js';
 
 /**
  * Checkout flow:
@@ -28,6 +29,42 @@ async function checkoutConv(conversation, ctx) {
   }
 
   // ── 1. Адрес ───────────────────────────────────────────────
+  // Если у покупателя есть прошлые заказы — предлагаем выбрать один
+  // из 3 недавних адресов (inline-кнопками). Параллельно — обычный
+  // запрос геолокации/текста для нового адреса.
+  const recentAddrs = await conversation.external(async () => {
+    const { rows } = await query(
+      `SELECT delivery_address,
+              ST_Y(delivery_location::GEOMETRY) AS lat,
+              ST_X(delivery_location::GEOMETRY) AS lng
+         FROM orders.orders
+        WHERE buyer_id = $1
+          AND delivery_address IS NOT NULL
+        GROUP BY delivery_address, delivery_location
+        ORDER BY MAX(created_at) DESC
+        LIMIT 3`,
+      [ctx.user.id],
+    );
+    return rows;
+  });
+
+  if (recentAddrs.length > 0) {
+    const kb = new InlineKeyboard();
+    for (let i = 0; i < recentAddrs.length; i++) {
+      const a = recentAddrs[i];
+      const label = a.delivery_address.length > 40
+        ? a.delivery_address.slice(0, 39) + '…'
+        : a.delivery_address;
+      kb.text(`📍 ${label}`, `addr:reuse:${i}`).row();
+    }
+    await ctx.reply(
+      lang === 'uz'
+        ? '🏠 Avvalgi manzilni tanlang yoki yangi yuboring:'
+        : '🏠 Выберите прошлый адрес или отправьте новый:',
+      { reply_markup: kb },
+    );
+  }
+
   await ctx.reply(t('buyer.checkout.ask_address'), {
     reply_markup: new Keyboard()
       .requestLocation(t('buyer.find_shops.location_button'))
@@ -39,8 +76,24 @@ async function checkoutConv(conversation, ctx) {
   let lat, lng, addressText;
   while (true) {
     const m = await conversation.wait();
+
+    // Inline-кнопка «использовать прошлый адрес»
+    if (m.callbackQuery?.data?.startsWith('addr:reuse:')) {
+      const idx = Number(m.callbackQuery.data.split(':')[2]);
+      const chosen = recentAddrs[idx];
+      await m.answerCallbackQuery();
+      if (!chosen) {
+        await ctx.reply(t('common.error_unknown'));
+        continue;
+      }
+      lat = Number(chosen.lat);
+      lng = Number(chosen.lng);
+      addressText = chosen.delivery_address;
+      break;
+    }
+
     if (m.message?.text === t('common.cancel')) {
-      await ctx.reply(t('common.cancel'), { reply_markup: { remove_keyboard: true } });
+      await ctx.reply(t('common.cancel'), { reply_markup: mainMenuKeyboard(ctx) });
       return;
     }
 
@@ -53,7 +106,7 @@ async function checkoutConv(conversation, ctx) {
         : '🏠 Введите адрес текстом:');
       const addrMsg = await conversation.waitFor('message:text');
       if (addrMsg.message.text === t('common.cancel')) {
-        await ctx.reply(t('common.cancel'), { reply_markup: { remove_keyboard: true } });
+        await ctx.reply(t('common.cancel'), { reply_markup: mainMenuKeyboard(ctx) });
         return;
       }
       addressText = addrMsg.message.text.trim();
@@ -86,7 +139,7 @@ async function checkoutConv(conversation, ctx) {
   let notes = null;
   const noteMsg = await conversation.waitFor('message:text');
   if (noteMsg.message.text === t('common.cancel')) {
-    await ctx.reply(t('common.cancel'), { reply_markup: { remove_keyboard: true } });
+    await ctx.reply(t('common.cancel'), { reply_markup: mainMenuKeyboard(ctx) });
     return;
   }
   if (noteMsg.message.text !== t('common.skip')) {
@@ -102,7 +155,7 @@ async function checkoutConv(conversation, ctx) {
   });
   if (!shop) {
     await ctx.reply(t('buyer.errors.SHOP_NOT_AVAILABLE'),
-      { reply_markup: { remove_keyboard: true } });
+      { reply_markup: mainMenuKeyboard(ctx) });
     return;
   }
 
@@ -167,7 +220,7 @@ async function checkoutConv(conversation, ctx) {
 
     if (removed.length > 0) {
       await ctx.reply(t('buyer.checkout.items_removed', { names: removed.join(', ') }),
-        { reply_markup: { remove_keyboard: true } });
+        { reply_markup: mainMenuKeyboard(ctx) });
     }
     if (adjusted.length > 0) {
       const summary = adjusted.map((a) => `${a.name} → ${a.available}`).join(', ');
@@ -175,7 +228,7 @@ async function checkoutConv(conversation, ctx) {
     }
     if (newItems.length === 0) {
       await ctx.reply(t('buyer.checkout.cart_now_empty'),
-        { reply_markup: { remove_keyboard: true } });
+        { reply_markup: mainMenuKeyboard(ctx) });
     }
     return;
   }
@@ -215,7 +268,7 @@ async function checkoutConv(conversation, ctx) {
   if (cb.callbackQuery.data === 'checkout:cancel') {
     // Edit через cb (callback-контекст), не ctx — ctx уже устаревший /start.
     try { await cb.editMessageReplyMarkup({ reply_markup: undefined }); } catch {}
-    await ctx.reply(t('common.cancel'), { reply_markup: { remove_keyboard: true } });
+    await ctx.reply(t('common.cancel'), { reply_markup: mainMenuKeyboard(ctx) });
     return;
   }
 
@@ -258,6 +311,9 @@ async function checkoutConv(conversation, ctx) {
   // Мутируем cb.session — мутации ctx.session не персистятся в conversations 1.x.
   cb.session.cart = { shop_id: null, items: [] };
   cb.session.current_shop_id = null;
+  // Сброс id «sticky» reminder'а корзины — следующий цикл «добавил → reminder»
+  // должен начаться с чистого сообщения.
+  delete cb.session.cart_reminder_msg_id;
 
   // Публикуем в Redis pub/sub для seller-bot.
   // external() — replay не должен публиковать дубликат сообщения.
@@ -279,7 +335,7 @@ async function checkoutConv(conversation, ctx) {
 
   await cb.reply(t('buyer.checkout.success', { number: order.number }), {
     parse_mode: 'Markdown',
-    reply_markup: { remove_keyboard: true },
+    reply_markup: mainMenuKeyboard(ctx),
   });
 }
 
@@ -318,7 +374,7 @@ async function handleCreateOrderError(ctx, shop, err) {
     msg = t('common.error_unknown');
   }
 
-  await ctx.reply(msg, { reply_markup: { remove_keyboard: true } });
+  await ctx.reply(msg, { reply_markup: mainMenuKeyboard(ctx) });
 }
 
 export const checkout = createConversation(checkoutConv, 'checkout');

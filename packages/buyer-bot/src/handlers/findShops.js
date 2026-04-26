@@ -1,18 +1,38 @@
 import { Keyboard, InlineKeyboard } from 'grammy';
-import { callFn } from '@mahallashop/shared';
+import { callFn, query } from '@mahallashop/shared';
 import { shopCard } from '../keyboards/shopCard.js';
 
 const DEFAULT_RADIUS_M = 2000;
 const LOCATION_CACHE_MS = 30 * 60 * 1000;  // 30 минут
+const RECENT_SHOPS_LIMIT = 5;
 
 /**
- * Запрос геолокации покупателя.
- * Если в session есть свежая (< 30 минут) — предлагаем использовать её.
+ * Запрос геолокации покупателя + быстрый доступ к магазинам, из которых
+ * он уже заказывал.
+ *
+ * Покупатель чаще ходит в одни и те же магазины, поэтому начинаем
+ * с inline-списка «ваши магазины». Если ничего нет — обычный location-prompt.
  */
 export async function askLocation(ctx) {
   const t = ctx.t;
   const lang = ctx.locale;
 
+  // 1) Магазины, из которых покупатель уже заказывал (5 последних).
+  const recentShops = ctx.user?.id ? await fetchRecentShops(ctx.user.id) : [];
+  if (recentShops.length > 0) {
+    const kb = new InlineKeyboard();
+    for (const s of recentShops) {
+      kb.text(`🏪 ${s.name}`, `shop:open:${s.id}`).row();
+    }
+    await ctx.reply(
+      lang === 'uz'
+        ? '🛒 *Avval buyurtma berganingiz doʻkonlar:*'
+        : '🛒 *Магазины, где вы уже заказывали:*',
+      { parse_mode: 'Markdown', reply_markup: kb },
+    );
+  }
+
+  // 2) Свежая геолокация в session — короткий путь.
   const last = ctx.session.last_location;
   const fresh = last && last.ts && (Date.now() - last.ts) < LOCATION_CACHE_MS;
 
@@ -42,6 +62,21 @@ export async function askLocation(ctx) {
       .text(t('common.main_menu'))
       .resized().oneTime(),
   });
+}
+
+async function fetchRecentShops(buyerId) {
+  const { rows } = await query(
+    `SELECT s.id, s.name, MAX(o.created_at) AS last_at
+       FROM orders.orders o
+       JOIN shops.shops  s ON s.id = o.shop_id
+      WHERE o.buyer_id = $1
+        AND s.status = 'active'
+      GROUP BY s.id, s.name
+      ORDER BY last_at DESC
+      LIMIT $2`,
+    [buyerId, RECENT_SHOPS_LIMIT],
+  );
+  return rows;
 }
 
 /**
