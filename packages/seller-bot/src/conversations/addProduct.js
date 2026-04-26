@@ -1,6 +1,6 @@
 import { createConversation } from '@grammyjs/conversations';
 import { Keyboard, InlineKeyboard } from 'grammy';
-import { callFnRow, query, formatUZS } from '@mahallashop/shared';
+import { callFnRow, query, formatUZS, downloadTelegramPhoto } from '@mahallashop/shared';
 import { mainMenuKeyboard } from '../keyboards/mainMenu.js';
 
 /**
@@ -140,6 +140,22 @@ async function addProductConv(conversation, ctx) {
   const product = await conversation.external(() => callFnRow('catalog.add_product', [
     ctx.shop.id, categoryId, name, null, photoFileId, price, stock,
   ]));
+
+  // Если есть фото — скачиваем байты на диск, чтобы buyer-bot тоже мог
+  // отобразить (Telegram file_id привязан к загрузчику и не работает
+  // в другом боте). Также через external — чтобы при replay не качать дважды.
+  if (photoFileId) {
+    try {
+      const photoPath = await conversation.external(() => downloadTelegramPhoto({
+        token: process.env.BOT_TOKEN,
+        fileId: photoFileId,
+      }));
+      await conversation.external(() => query(
+        'UPDATE catalog.products SET photo_path = $1 WHERE id = $2',
+        [photoPath, product.id],
+      ));
+    } catch { /* не критично — фото просто не появится у buyer */ }
+  }
 
   // Возвращаем главное меню, чтобы пользователь мог сразу добавить
   // ещё один товар или перейти в другой раздел.

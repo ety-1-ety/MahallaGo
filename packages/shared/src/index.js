@@ -19,3 +19,8 @@ export {
   closeTimeToday,
   formatUZS,
 } from './time.js';
+export {
+  downloadTelegramPhoto,
+  resolvePhotoPath,
+  getPhotoDir,
+} from './storage/photos.js';

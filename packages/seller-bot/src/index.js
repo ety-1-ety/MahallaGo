@@ -12,11 +12,13 @@ import { statusGuard }    from './middleware/statusGuard.js';
 import { onboarding }     from './conversations/onboarding.js';
 import { addProduct }     from './conversations/addProduct.js';
 import { editSetting }    from './conversations/editSetting.js';
+import { editProduct }    from './conversations/editProduct.js';
 
 import { registerStart }  from './handlers/start.js';
 import { handleMainMenuMessage } from './handlers/menu.js';
 import { handleOrderCallback, handleRejectReason } from './handlers/orders.js';
 import { applySettingUpdate } from './handlers/settings.js';
+import { handleProductMgrCallback } from './handlers/myProducts.js';
 
 import { startNotifier } from './notifier.js';
 
@@ -47,6 +49,7 @@ bot.use(conversations());
 bot.use(onboarding);
 bot.use(addProduct);
 bot.use(editSetting);
+bot.use(editProduct);
 
 // /start всегда сбрасывает активную conversation, иначе пользователь
 // может застрять в незавершённом онбординге и каждое следующее
@@ -62,6 +65,9 @@ registerStart(bot);
 // Callback-кнопки заказов: накладываем guard вручную (чтобы не ловить
 // onboarding/настройки)
 bot.callbackQuery(/^order:/, statusGuard(), handleOrderCallback);
+
+// Кнопки управления товарами в /myProducts (price/stock/toggle/delete)
+bot.callbackQuery(/^prod_mgr:/, statusGuard(), handleProductMgrCallback);
 
 // Inline-меню настроек: запуск editSetting через session.field
 bot.callbackQuery(/^set:/, async (ctx) => {

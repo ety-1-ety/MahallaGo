@@ -47,3 +47,6 @@ backups/
 
 # Локальные настройки редактора
 .vscode/settings.local.json
+
+# Загруженные фото товаров/магазинов (downloadTelegramPhoto → data/photos)
+data/photos/

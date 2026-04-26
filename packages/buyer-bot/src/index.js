@@ -13,7 +13,7 @@ import { checkout }       from './conversations/checkout.js';
 
 import { registerStart }  from './handlers/start.js';
 import { handleMainMenuMessage } from './handlers/menu.js';
-import { handleLocation } from './handlers/findShops.js';
+import { handleLocation, handleReuseLocation } from './handlers/findShops.js';
 import { handleOpenShop, handleCategory, handleProductCallback } from './handlers/browseShop.js';
 import { handleCartCallback } from './handlers/cart.js';
 import { handleLanguageCallback } from './handlers/settings.js';
@@ -66,6 +66,7 @@ bot.callbackQuery(/^cat:/, async (ctx) => {
 });
 bot.callbackQuery(/^prod:/, handleProductCallback);
 bot.callbackQuery(/^cart:/, handleCartCallback);
+bot.callbackQuery('loc:reuse', handleReuseLocation);
 
 // Геолокация для поиска магазинов
 bot.on('message:location', handleLocation);

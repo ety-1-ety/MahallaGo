@@ -1,4 +1,5 @@
-import { callFn, query } from '@mahallashop/shared';
+import { callFn, query, formatUZS, resolvePhotoPath } from '@mahallashop/shared';
+import { InlineKeyboard, InputFile } from 'grammy';
 import { categoriesInline, productCard } from '../keyboards/productCard.js';
 
 /**
@@ -46,10 +47,21 @@ export async function handleCategory(ctx, categoryId) {
   for (const p of products) {
     const currentQty = getCartQty(ctx, p.id);
     const card = productCard(ctx, p, currentQty);
-    // file_id привязан к боту-загрузчику; пытаемся отправить как фото,
-    // если не получилось — fallback на текст.
+    // Приоритет: photo_path (общий диск) → photo_file_id (своего бота, маловероятно)
+    // → text-only fallback.
     let sent = false;
-    if (p.photo_file_id) {
+    const photoPath = await resolvePhotoPath(p.photo_path);
+    if (photoPath) {
+      try {
+        await ctx.replyWithPhoto(new InputFile(photoPath), {
+          caption: card.text,
+          parse_mode: 'Markdown',
+          reply_markup: card.keyboard,
+        });
+        sent = true;
+      } catch { /* fallthrough */ }
+    }
+    if (!sent && p.photo_file_id) {
       try {
         await ctx.replyWithPhoto(p.photo_file_id, {
           caption: card.text,
@@ -130,6 +142,8 @@ export async function handleProductCallback(ctx) {
     }
   }
 
+  // Был ли это переход 0→1+ items? Тогда напомним покупателю про корзину.
+  const wasEmpty = (ctx.session.cart?.items?.length || 0) === 0;
   ctx.session.cart = cart;
 
   // Обновим клавиатуру inline-карточки
@@ -144,4 +158,18 @@ export async function handleProductCallback(ctx) {
       ? (ctx.locale === 'uz' ? '✓ Qoʻshildi' : '✓ Добавлено')
       : (ctx.locale === 'uz' ? '✓ Olib tashlandi' : '✓ Удалено'),
   );
+
+  // После прохода inc/add — если корзина перешла из пустого состояния
+  // в заполненное, отправляем подсказку с быстрым переходом в корзину.
+  if ((action === 'inc' || action === 'add') && wasEmpty && cart.items.length > 0) {
+    const subtotal = cart.items.reduce((s, i) => s + Number(i.price) * Number(i.qty), 0);
+    const text = ctx.locale === 'uz'
+      ? `🛒 *Savatchada ${cart.items.length} ta mahsulot* (${formatUZS(subtotal, 'uz')})\n\nDavom etish uchun tugmani bosing yoki 🛒 menyusiga oʻting.`
+      : `🛒 *В корзине ${cart.items.length} товар(ов)* (${formatUZS(subtotal, 'ru')})\n\nНажмите кнопку для оформления или откройте 🛒 в меню.`;
+    await ctx.reply(text, {
+      parse_mode: 'Markdown',
+      reply_markup: new InlineKeyboard()
+        .text(ctx.locale === 'uz' ? '🛒 Savatchaga oʻtish' : '🛒 Перейти в корзину', 'cart:show'),
+    });
+  }
 }

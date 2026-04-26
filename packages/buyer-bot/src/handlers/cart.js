@@ -44,6 +44,11 @@ export async function handleCartCallback(ctx) {
     return handleClearCart(ctx);
   }
 
+  if (data === 'cart:show') {
+    await ctx.answerCallbackQuery();
+    return handleCart(ctx);
+  }
+
   if (data === 'cart:edit') {
     // Возвращаем пользователя в просмотр магазина
     const cart = ctx.session.cart;
