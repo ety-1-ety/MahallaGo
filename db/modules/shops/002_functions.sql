@@ -279,16 +279,38 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
 DECLARE
-  v_shop shops.shops;
+  v_current shops.shops;
+  v_shop    shops.shops;
+  v_new_min NUMERIC(15,2);
+  v_new_max NUMERIC(15,2);
 BEGIN
+  -- Блокируем строку и читаем текущие значения, чтобы валидация
+  -- видела согласованное состояние, а не «гонку» между параллельными
+  -- update_settings разных полей.
+  SELECT * INTO v_current FROM shops.shops WHERE id = p_shop_id FOR UPDATE;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'SHOP_NOT_FOUND';
+  END IF;
+
+  v_new_min := COALESCE(p_min_order_amount, v_current.min_order_amount);
+
+  IF p_clear_max_order THEN
+    v_new_max := NULL;
+  ELSIF p_max_order_amount IS NOT NULL THEN
+    v_new_max := p_max_order_amount;
+  ELSE
+    v_new_max := v_current.max_order_amount;
+  END IF;
+
+  -- Валидация ДО применения, на уже посчитанных конечных значениях.
+  IF v_new_max IS NOT NULL AND v_new_max < v_new_min THEN
+    RAISE EXCEPTION 'MAX_ORDER_LESS_THAN_MIN';
+  END IF;
+
   UPDATE shops.shops
      SET
-       min_order_amount   = COALESCE(p_min_order_amount,   min_order_amount),
-       max_order_amount   = CASE
-                              WHEN p_clear_max_order      THEN NULL
-                              WHEN p_max_order_amount IS NOT NULL THEN p_max_order_amount
-                              ELSE max_order_amount
-                            END,
+       min_order_amount   = v_new_min,
+       max_order_amount   = v_new_max,
        delivery_fee       = COALESCE(p_delivery_fee,       delivery_fee),
        free_delivery_from = CASE
                               WHEN p_clear_free_delivery  THEN NULL
@@ -300,15 +322,6 @@ BEGIN
        updated_at         = NOW()
    WHERE id = p_shop_id
    RETURNING * INTO v_shop;
-
-  IF NOT FOUND THEN
-    RAISE EXCEPTION 'SHOP_NOT_FOUND';
-  END IF;
-
-  -- Валидация после применения
-  IF v_shop.max_order_amount IS NOT NULL AND v_shop.max_order_amount < v_shop.min_order_amount THEN
-    RAISE EXCEPTION 'MAX_ORDER_LESS_THAN_MIN';
-  END IF;
 
   RETURN v_shop;
 END;

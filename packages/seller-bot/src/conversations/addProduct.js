@@ -110,13 +110,22 @@ async function addProductConv(conversation, ctx) {
     reply_markup: new Keyboard().text(t('common.skip')).text(t('common.cancel')).resized().oneTime(),
   });
   let photoFileId = null;
-  const photoMsg = await conversation.wait();
-  if (photoMsg.message?.text === t('common.cancel')) {
-    await ctx.reply(t('common.cancel'), { reply_markup: { remove_keyboard: true } });
-    return;
-  }
-  if (photoMsg.message?.photo?.length > 0) {
-    photoFileId = photoMsg.message.photo[photoMsg.message.photo.length - 1].file_id;
+  while (true) {
+    const photoMsg = await conversation.wait();
+    if (photoMsg.message?.text === t('common.cancel')) {
+      await ctx.reply(t('common.cancel'), { reply_markup: { remove_keyboard: true } });
+      return;
+    }
+    if (photoMsg.message?.text === t('common.skip')) {
+      break;
+    }
+    if (photoMsg.message?.photo?.length > 0) {
+      photoFileId = photoMsg.message.photo[photoMsg.message.photo.length - 1].file_id;
+      break;
+    }
+    await ctx.reply(lang === 'uz'
+      ? '❌ Iltimos, mahsulot suratini yuboring yoki «Oʻtkazib yuborish».'
+      : '❌ Пришлите фото товара или нажмите «Пропустить».');
   }
 
   // ── Создание ───────────────────────────────────────────────

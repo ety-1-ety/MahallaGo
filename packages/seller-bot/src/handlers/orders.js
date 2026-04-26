@@ -1,5 +1,7 @@
+import { InlineKeyboard } from 'grammy';
 import { callFn, callFnRow, query, formatUZS, tOrderStatus } from '@mahallashop/shared';
 import { orderCardKeyboard } from '../keyboards/orderCard.js';
+import { mainMenuLabels } from '../keyboards/mainMenu.js';
 
 const ACTIVE_STATUSES = ['pending', 'accepted', 'ready', 'delivering'];
 
@@ -111,12 +113,31 @@ export async function handleOrderCallback(ctx) {
 
   // Для reject спросим причину через короткий prompt
   if (newStatus === 'rejected') {
-    // Сохраним order_id в session и попросим написать причину
+    // Сохраним order_id в session и попросим написать причину.
+    // Inline-кнопка отмены позволяет выйти из режима без отправки текста.
     ctx.session.rejecting_order_id = orderId;
     await ctx.answerCallbackQuery();
-    await ctx.reply(ctx.locale === 'uz'
-      ? '❌ Rad etish sababini yozing:'
-      : '❌ Напишите причину отклонения:');
+    await ctx.reply(
+      ctx.locale === 'uz'
+        ? '❌ Rad etish sababini yozing:'
+        : '❌ Напишите причину отклонения:',
+      {
+        reply_markup: new InlineKeyboard().text(
+          ctx.t('common.cancel'),
+          `order:reject_cancel:${orderId}`,
+        ),
+      },
+    );
+    return;
+  }
+
+  // Отмена режима reject (inline-кнопка)
+  if (action === 'reject_cancel') {
+    delete ctx.session.rejecting_order_id;
+    await ctx.answerCallbackQuery(
+      ctx.locale === 'uz' ? '↩️ Bekor qilindi' : '↩️ Отменено',
+    );
+    try { await ctx.editMessageReplyMarkup({ reply_markup: undefined }); } catch {}
     return;
   }
 
@@ -140,12 +161,25 @@ export async function handleOrderCallback(ctx) {
 /**
  * Если в session.rejecting_order_id есть id — следующее текстовое
  * сообщение трактуем как причину отклонения.
+ *
+ * Тексты главного меню НЕ принимаются как причина — иначе нажатие на
+ * любую reply-кнопку («🛒 Заказы», «⚙️ Настройки», и т.п.) во время
+ * ожидания причины случайно отклонило бы заказ.
  */
 export async function handleRejectReason(ctx, next) {
   const orderId = ctx.session?.rejecting_order_id;
   if (!orderId || !ctx.message?.text) return next();
 
   const reason = ctx.message.text.trim();
+
+  // Защита: текст совпал с reply-кнопкой главного меню → не причина,
+  // выходим из режима и пропускаем сообщение в обычный router.
+  const labels = Object.values(mainMenuLabels(ctx));
+  if (labels.includes(reason)) {
+    delete ctx.session.rejecting_order_id;
+    return next();
+  }
+
   if (reason.length < 2) {
     await ctx.reply(ctx.locale === 'uz'
       ? '❌ Sabab juda qisqa.' : '❌ Слишком короткая причина.');

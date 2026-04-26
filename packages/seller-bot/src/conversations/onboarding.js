@@ -96,14 +96,32 @@ async function onboardingConv(conversation, ctx) {
   const lat = locationMsg.message.location.latitude;
   const lng = locationMsg.message.location.longitude;
 
-  // Адрес текстом (опционально)
-  await ctx.reply(lang === 'uz'
-    ? '🏠 Manzilni matn bilan yuboring (masalan: Yangi koʻcha 12)'
-    : '🏠 Отправьте адрес текстом (например: ул. Новая, 12)',
-    { reply_markup: { remove_keyboard: true } },
+  // Адрес текстом (опционально). Кнопка отмены обязательна — иначе
+  // пользователь, написавший «Отмена», получит «Отмена» в качестве адреса.
+  await ctx.reply(
+    lang === 'uz'
+      ? '🏠 Manzilni matn bilan yuboring (masalan: Yangi koʻcha 12)'
+      : '🏠 Отправьте адрес текстом (например: ул. Новая, 12)',
+    {
+      reply_markup: new Keyboard().text(t('common.cancel')).resized().oneTime(),
+    },
   );
-  const addrMsg = await conversation.waitFor('message:text');
-  const address = addrMsg.message.text.trim();
+  let address;
+  while (true) {
+    const addrMsg = await conversation.waitFor('message:text');
+    if (addrMsg.message.text === t('common.cancel')) {
+      await ctx.reply(t('common.cancel'), { reply_markup: { remove_keyboard: true } });
+      return;
+    }
+    const trimmed = addrMsg.message.text.trim();
+    if (trimmed.length >= 3) {
+      address = trimmed;
+      break;
+    }
+    await ctx.reply(lang === 'uz'
+      ? '❌ Manzil juda qisqa.'
+      : '❌ Слишком короткий адрес.');
+  }
 
   // ── 4/6 Телефон ────────────────────────────────────────────
   await ctx.reply(`${stepHeader(ctx, 4)}\n${t('seller.onboarding.ask_phone')}`, {
@@ -140,16 +158,25 @@ async function onboardingConv(conversation, ctx) {
     reply_markup: new Keyboard().text(t('common.skip')).text(t('common.cancel')).resized().oneTime(),
   });
   let photoFileId = null;
-  const photoMsg = await conversation.wait();
-  if (photoMsg.message?.text === t('common.cancel')) {
-    await ctx.reply(t('common.cancel'), { reply_markup: { remove_keyboard: true } });
-    return;
+  while (true) {
+    const photoMsg = await conversation.wait();
+    if (photoMsg.message?.text === t('common.cancel')) {
+      await ctx.reply(t('common.cancel'), { reply_markup: { remove_keyboard: true } });
+      return;
+    }
+    if (photoMsg.message?.text === t('common.skip')) {
+      break;
+    }
+    if (photoMsg.message?.photo?.length > 0) {
+      // Берём максимально большое фото (последний элемент)
+      photoFileId = photoMsg.message.photo[photoMsg.message.photo.length - 1].file_id;
+      break;
+    }
+    // Стикер, документ, гифка, голосовое — не подходят. Просим ещё раз.
+    await ctx.reply(lang === 'uz'
+      ? '❌ Iltimos, suratni yuboring yoki «Oʻtkazib yuborish».'
+      : '❌ Пришлите фото или нажмите «Пропустить».');
   }
-  if (photoMsg.message?.photo?.length > 0) {
-    // Берём максимально большое фото (последний элемент)
-    photoFileId = photoMsg.message.photo[photoMsg.message.photo.length - 1].file_id;
-  }
-  // Если text === skip — оставляем null
 
   // ── 6/6 Часы работы ────────────────────────────────────────
   await ctx.reply(`${stepHeader(ctx, 6)}\n${t('seller.onboarding.ask_hours')}`, {

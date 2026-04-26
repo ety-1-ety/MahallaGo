@@ -265,17 +265,21 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
 DECLARE
-  v_order  orders.orders;
-  v_valid  BOOLEAN;
-  v_item   orders.order_items;
+  v_order       orders.orders;
+  v_old_status  orders.order_status;
+  v_valid       BOOLEAN;
+  v_item        orders.order_items;
 BEGIN
   SELECT * INTO v_order FROM orders.orders WHERE id = p_order_id FOR UPDATE;
   IF NOT FOUND THEN
     RAISE EXCEPTION 'ORDER_NOT_FOUND';
   END IF;
 
+  -- Сохраняем предыдущий статус ДО UPDATE — иначе RETURNING вернёт уже новый.
+  v_old_status := v_order.status;
+
   -- Проверка допустимости перехода
-  v_valid := CASE v_order.status
+  v_valid := CASE v_old_status
     WHEN 'pending'    THEN p_new_status IN ('accepted', 'rejected', 'cancelled')
     WHEN 'accepted'   THEN p_new_status IN ('ready', 'cancelled')
     WHEN 'ready'      THEN p_new_status IN ('delivering', 'cancelled')
@@ -285,7 +289,7 @@ BEGIN
 
   IF NOT v_valid THEN
     RAISE EXCEPTION 'INVALID_STATUS_TRANSITION'
-      USING DETAIL = 'from=' || v_order.status::TEXT || ', to=' || p_new_status::TEXT;
+      USING DETAIL = 'from=' || v_old_status::TEXT || ', to=' || p_new_status::TEXT;
   END IF;
 
   -- Для rejected / cancelled нужна причина
@@ -312,7 +316,7 @@ BEGIN
    RETURNING * INTO v_order;
 
   INSERT INTO orders.status_history (order_id, prev_status, new_status, actor_id, reason)
-  VALUES (p_order_id, v_order.status, p_new_status, p_actor_id, p_reason);
+  VALUES (p_order_id, v_old_status, p_new_status, p_actor_id, p_reason);
 
   RETURN v_order;
 END;

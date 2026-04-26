@@ -1,5 +1,5 @@
 import { InlineKeyboard } from 'grammy';
-import { callFnRow } from '@mahallashop/shared';
+import { callFnRow, t as tFn } from '@mahallashop/shared';
 import { mainMenuKeyboard } from '../keyboards/mainMenu.js';
 
 /**
@@ -29,14 +29,12 @@ export async function handleLanguageCallback(ctx) {
   ctx.session.language = lang;
   ctx.session.language_chosen = true;
   ctx.locale = lang;
-  ctx.t      = (key, vars) => ctx.t.bind(ctx)(key, vars);  // re-bind не нужен; reload через middleware на след. update
+  ctx.t      = (key, vars) => tFn(lang, key, vars);
 
   await ctx.answerCallbackQuery();
-  // Обновляем главное меню новым языком
-  const { t } = await import('@mahallashop/shared');
-  await ctx.editMessageText(t(lang, 'language.saved'));
-  await ctx.reply(t(lang, 'buyer.menu.title'), {
+  await ctx.editMessageText(tFn(lang, 'language.saved'));
+  await ctx.reply(tFn(lang, 'buyer.menu.title'), {
     parse_mode: 'Markdown',
-    reply_markup: mainMenuKeyboard({ ...ctx, locale: lang, t: (k, v) => t(lang, k, v) }),
+    reply_markup: mainMenuKeyboard({ ...ctx, locale: lang, t: (k, v) => tFn(lang, k, v) }),
   });
 }

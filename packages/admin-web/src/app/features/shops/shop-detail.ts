@@ -38,18 +38,33 @@ import { RejectDialog } from '../moderation/reject-dialog';
               @if (shop()!.description) { <div class="row"><mat-icon>info</mat-icon> {{ shop()!.description }}</div> }
               <div class="row"><mat-icon>schedule</mat-icon>
                 {{ shop()!.is_accepting_orders ? '🟢' : '🔴' }}
-                {{ shop()!.is_accepting_orders ? 'Принимает заказы' : 'Не принимает' }}
+                {{ (shop()!.is_accepting_orders ? 'shops.detail.accepting' : 'shops.detail.not_accepting') | t }}
               </div>
               <hr>
-              <div class="row"><mat-icon>shopping_cart</mat-icon> Мин. заказ: {{ formatUZS(shop()!.min_order_amount) }}</div>
+              <div class="row">
+                <mat-icon>shopping_cart</mat-icon>
+                {{ 'shops.detail.min_order' | t }}: {{ formatUZS(shop()!.min_order_amount) }}
+              </div>
               @if (shop()!.max_order_amount) {
-                <div class="row"><mat-icon>diamond</mat-icon> Макс. заказ: {{ formatUZS(shop()!.max_order_amount!) }}</div>
+                <div class="row">
+                  <mat-icon>diamond</mat-icon>
+                  {{ 'shops.detail.max_order' | t }}: {{ formatUZS(shop()!.max_order_amount!) }}
+                </div>
               }
-              <div class="row"><mat-icon>local_shipping</mat-icon> Доставка: {{ formatUZS(shop()!.delivery_fee) }}</div>
+              <div class="row">
+                <mat-icon>local_shipping</mat-icon>
+                {{ 'shops.detail.delivery_fee' | t }}: {{ formatUZS(shop()!.delivery_fee) }}
+              </div>
               @if (shop()!.free_delivery_from) {
-                <div class="row"><mat-icon>card_giftcard</mat-icon> Бесплатно от: {{ formatUZS(shop()!.free_delivery_from!) }}</div>
+                <div class="row">
+                  <mat-icon>card_giftcard</mat-icon>
+                  {{ 'shops.detail.free_delivery_from' | t }}: {{ formatUZS(shop()!.free_delivery_from!) }}
+                </div>
               }
-              <div class="row"><mat-icon>radar</mat-icon> Радиус: {{ shop()!.delivery_radius_m }} м</div>
+              <div class="row">
+                <mat-icon>radar</mat-icon>
+                {{ 'shops.detail.radius' | t }}: {{ shop()!.delivery_radius_m }} {{ 'shops.detail.meters' | t }}
+              </div>
             </mat-card-content>
             <mat-card-actions>
               @if (shop()!.status === 'active') {
@@ -73,7 +88,7 @@ import { RejectDialog } from '../moderation/reject-dialog';
                     <div class="product-name">{{ p.emoji }} {{ p.name }}</div>
                     <div class="product-meta">
                       {{ formatUZS(p.price) }}  ·  📦 {{ p.stock }}
-                      @if (!p.is_active) { · ⚪ скрыт }
+                      @if (!p.is_active) { · ⚪ {{ 'shops.detail.hidden' | t }} }
                     </div>
                   </div>
                 }

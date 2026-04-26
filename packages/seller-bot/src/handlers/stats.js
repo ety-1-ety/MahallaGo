@@ -10,7 +10,7 @@ export async function handleStats(ctx) {
   const periods = ['today', 'week', 'month'];
   const labels = ctx.locale === 'uz'
     ? { today: 'Bugun', week: 'Hafta', month: 'Oy' }
-    : { today: 'Сегодня', week: 'Неделя', месяц: 'Месяц', month: 'Месяц' };
+    : { today: 'Сегодня', week: 'Неделя', month: 'Месяц' };
 
   const sections = [];
 
