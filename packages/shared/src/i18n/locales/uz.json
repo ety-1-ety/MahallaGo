@@ -1,0 +1,153 @@
+{
+  "common": {
+    "yes": "Ha",
+    "no": "Yoʻq",
+    "back": "← Orqaga",
+    "cancel": "❌ Bekor qilish",
+    "save": "💾 Saqlash",
+    "skip": "Oʻtkazib yuborish",
+    "loading": "⏳ Yuklanmoqda...",
+    "done": "✅ Tayyor",
+    "error_unknown": "Kutilmagan xatolik. Iltimos, keyinroq urinib koʻring.",
+    "rate_limit_hit": "Juda tez-tez xabar yuboryapsiz. Bir oz kuting va qayta urining.",
+    "blocked_user": "Hisobingiz bloklangan. Qoʻllab-quvvatlash bilan bogʻlaning.",
+    "main_menu": "🏠 Bosh menyu",
+    "currency_suffix": "soʻm"
+  },
+  "language": {
+    "choose_title": "🌐 *Til tanlang*",
+    "choose_uz": "🇺🇿 Oʻzbekcha",
+    "choose_ru": "🇷🇺 Русский",
+    "saved": "✅ Til oʻzbekchaga oʻzgartirildi"
+  },
+  "buyer": {
+    "menu": {
+      "title": "🏠 *Bosh menyu*",
+      "find_shops": "📍 Yaqin doʻkonlar",
+      "cart": "🛒 Savatcha",
+      "my_orders": "📦 Buyurtmalarim",
+      "settings": "⚙️ Sozlamalar"
+    },
+    "find_shops": {
+      "request_location": "📍 Yaqin doʻkonlarni topish uchun joylashuvingizni yuboring.",
+      "location_button": "📍 Joylashuvni yuborish",
+      "no_shops_nearby": "Atrofda hozircha doʻkonlar yoʻq. Keyinroq urinib koʻring.",
+      "found_count": "🛒 Yaqinda {count} ta doʻkon topildi"
+    },
+    "shop_card": {
+      "open_until": "🕐 {time} gacha ochiq",
+      "closed_now": "🔴 Hozir yopiq",
+      "min_order": "💰 Minimal buyurtma: {amount}",
+      "delivery": "🚚 Yetkazib berish: {fee}",
+      "delivery_free_from": "🚚 {amount} dan boshlab yetkazib berish bepul",
+      "delivery_always_free": "🚚 Yetkazib berish bepul",
+      "distance_m": "📍 Sizdan {distance} m",
+      "distance_km": "📍 Sizdan {distance} km",
+      "open_button": "Doʻkonni ochish →"
+    },
+    "cart": {
+      "title": "🛒 *Savatcha — {shop_name}*",
+      "empty": "Savatcha boʻsh. Doʻkondan mahsulot tanlang.",
+      "subtotal": "Jami:",
+      "delivery": "Yetkazib berish:",
+      "total": "*Umumiy:*",
+      "edit": "✏️ Oʻzgartirish",
+      "clear": "🗑 Tozalash",
+      "checkout": "✅ Buyurtma berish",
+      "removed": "❌ Mahsulot savatchadan olib tashlandi",
+      "cleared": "🗑 Savatcha tozalandi"
+    },
+    "checkout": {
+      "ask_address": "🏠 Yetkazib berish manzilini yuboring (matn yoki joylashuv).",
+      "ask_notes": "✍️ Buyurtmaga izoh qoldiring (yoki «Oʻtkazib yuborish»):",
+      "confirm_title": "Buyurtmani tasdiqlaysizmi?",
+      "confirm_button": "✅ Tasdiqlash",
+      "success": "✅ Buyurtma #{number} qabul qilindi! Doʻkon tez orada javob beradi."
+    },
+    "errors": {
+      "SHOP_NOT_AVAILABLE":     "❌ Doʻkon hozir buyurtma qabul qilmayapti.",
+      "OUT_OF_DELIVERY_RANGE":  "❌ Sizning manzilingiz doʻkonning yetkazib berish radiusidan tashqarida.",
+      "BELOW_MIN_ORDER":        "❌ Minimal buyurtma summasi: {min}",
+      "ABOVE_MAX_ORDER":        "❌ Maksimal buyurtma summasi: {max}",
+      "SHOP_CLOSED_NOW":        "❌ Doʻkon hozir yopiq. Ish vaqtidan keyin urinib koʻring.",
+      "ITEM_OUT_OF_STOCK":      "❌ Mahsulotlardan biri tugagan. Savatchani yangilang."
+    },
+    "orders": {
+      "title": "📦 *Buyurtmalarim*",
+      "none": "Sizda hali buyurtmalar yoʻq.",
+      "card_header": "*#{number}* — {shop_name}",
+      "status_pending":    "🟡 Kutilmoqda",
+      "status_accepted":   "🟢 Qabul qilindi",
+      "status_ready":      "📦 Tayyor",
+      "status_delivering": "🚚 Yetkazilmoqda",
+      "status_completed":  "✅ Yetkazildi",
+      "status_rejected":   "❌ Rad etildi",
+      "status_cancelled":  "🚫 Bekor qilindi"
+    }
+  },
+  "seller": {
+    "menu": {
+      "accepting_on":  "🟢 Buyurtmalarni qabul qilyapman",
+      "accepting_off": "🔴 Buyurtmalar qabul qilinmaydi",
+      "orders":        "🛒 Buyurtmalar",
+      "products":      "📦 Mahsulotlarim",
+      "add_product":   "➕ Mahsulot qoʻshish",
+      "stats":         "📊 Statistika",
+      "settings":      "⚙️ Sozlamalar"
+    },
+    "onboarding": {
+      "step_format": "Qadam {step} / {total}",
+      "ask_name": "🏪 *Doʻkon nomini kiriting:*",
+      "ask_category": "📂 *Doʻkon turini tanlang:*",
+      "ask_address": "📍 *Doʻkon manzilini yuboring (joylashuv):*",
+      "ask_phone": "📞 *Aloqa telefon raqamini kiriting:*",
+      "ask_photo": "📷 *Doʻkon fotosuratini yuboring (yoki «Oʻtkazib yuborish»):*",
+      "ask_hours": "🕐 *Ish vaqtini sozlang yoki «24/7»ni tanlang:*",
+      "submitted": "✅ Doʻkoningiz roʻyxatdan oʻtdi va moderatsiyada. Tasdiqlanganidan soʻng xabar beramiz."
+    },
+    "moderation": {
+      "approved": "🎉 Doʻkoningiz tasdiqlandi! Endi mahsulot qoʻshib, buyurtmalar qabul qila olasiz.",
+      "rejected": "❌ Doʻkoningiz rad etildi.\n\nSabab: {reason}\n\nMaʼlumotlarni toʻgʻrilab, qaytadan urinib koʻring.",
+      "suspended": "⛔ Doʻkoningiz vaqtinchalik bloklangan.\n\nSabab: {reason}",
+      "pending": "🟡 Doʻkoningiz hali moderatsiyada. Iltimos kuting."
+    },
+    "products": {
+      "title": "📦 *Mahsulotlarim*",
+      "empty": "Hali mahsulotlar yoʻq. «➕ Mahsulot qoʻshish» tugmasi orqali qoʻshing.",
+      "add_step_name":     "📝 Mahsulot nomini kiriting:",
+      "add_step_category": "📂 Kategoriyani tanlang:",
+      "add_step_price":    "💰 Narxini kiriting (faqat raqam):",
+      "add_step_stock":    "📊 Skladdagi miqdorini kiriting:",
+      "add_step_photo":    "📷 Mahsulot fotosuratini yuboring (yoki «Oʻtkazib yuborish»):",
+      "added": "✅ Mahsulot qoʻshildi: {name} — {price}"
+    },
+    "settings": {
+      "title": "⚙️ *Doʻkon sozlamalari*",
+      "min_order_label":     "💰 Min. buyurtma: {value}",
+      "max_order_label":     "💎 Maks. buyurtma: {value}",
+      "max_order_unset":     "belgilanmagan",
+      "delivery_fee_label":  "🚚 Yetkazib berish: {value}",
+      "free_delivery_label": "🆓 {value} dan boshlab bepul",
+      "free_delivery_unset": "belgilanmagan",
+      "radius_label":        "📍 Radius: {value} m",
+      "hours_label":         "🕐 Ish vaqti",
+      "saved": "✅ Sozlamalar saqlandi"
+    },
+    "new_order_notif": {
+      "title": "🔔 *YANGI BUYURTMA #{number}*",
+      "buyer": "👤 Mijoz: {name}",
+      "phone": "📞 {phone}",
+      "address": "📍 {address} ({distance})",
+      "items_header": "📦 Tarkib:",
+      "subtotal": "Jami:",
+      "delivery": "Yetkazib berish:",
+      "total": "*Umumiy: {amount}*",
+      "accept": "✅ Qabul qilish",
+      "reject": "❌ Rad etish"
+    },
+    "errors": {
+      "shop_not_approved": "⛔ Doʻkoningiz hali tasdiqlanmagan. Moderatsiyani kuting.",
+      "shop_suspended":    "⛔ Doʻkoningiz bloklangan. Sabab: {reason}"
+    }
+  }
+}

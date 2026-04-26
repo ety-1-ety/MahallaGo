@@ -15,5 +15,10 @@
     "./errors": "./src/errors.js",
     "./time": "./src/time.js"
   },
-  "dependencies": {}
+  "dependencies": {
+    "pg": "^8.13.0",
+    "ioredis": "^5.4.1",
+    "pino": "^9.5.0",
+    "pino-pretty": "^11.3.0"
+  }
 }
