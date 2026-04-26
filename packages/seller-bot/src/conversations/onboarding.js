@@ -214,10 +214,11 @@ async function onboardingConv(conversation, ctx) {
     'Asia/Tashkent',
   ]));
 
-  ctx.session.shop_id = shop.id;
-  ctx.shop = shop;
+  // Мутируем сессию через hoursCb — последний wait-ctx, его session
+  // персистится. ctx.session не сохранится в conversations 1.x.
+  hoursCb.session.shop_id = shop.id;
 
-  await ctx.reply(t('seller.onboarding.submitted'), {
+  await hoursCb.reply(t('seller.onboarding.submitted'), {
     parse_mode: 'Markdown',
     reply_markup: { remove_keyboard: true },
   });

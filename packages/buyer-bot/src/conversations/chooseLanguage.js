@@ -20,18 +20,21 @@ async function chooseLanguageConv(conversation, ctx) {
 
   // UPDATE через external — replay не должен повторно дёргать БД.
   await conversation.external(() => callFnRow('auth.set_language', [ctx.user.id, lang]));
-  ctx.session.language = lang;
-  ctx.session.language_chosen = true;
-  ctx.locale = lang;
-  ctx.t = (k, v) => tFn(lang, k, v);
 
-  // Редактируем сообщение через cb (callback-контекст), а НЕ ctx.
-  // ctx — это контекст /start (текстового сообщения пользователя), и
-  // editMessageText на нём попытается отредактировать user-сообщение → ошибка.
+  // ВАЖНО: мутируем сессию через cb, а НЕ ctx.
+  // ctx в grammY conversations 1.x — это исходный контекст, мутации
+  // его session не персистятся. Сохраняется session ПОСЛЕДНЕГО wait-ctx (cb).
+  cb.session.language = lang;
+  cb.session.language_chosen = true;
+  cb.locale = lang;
+  cb.t = (k, v) => tFn(lang, k, v);
+
+  // Редактируем сообщение тоже через cb — иначе попытается отредактировать
+  // /start пользователя, на что Telegram отвечает ошибкой.
   await cb.editMessageText(tFn(lang, 'language.saved'));
   await cb.reply(tFn(lang, 'buyer.menu.title'), {
     parse_mode: 'Markdown',
-    reply_markup: mainMenuKeyboard({ locale: lang, t: ctx.t }),
+    reply_markup: mainMenuKeyboard({ locale: lang, t: cb.t }),
   });
 }
 

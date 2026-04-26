@@ -178,8 +178,9 @@ async function checkoutConv(conversation, ctx) {
   const order = result.order;
 
   // ── 5. Успех: pubsub + сообщение покупателю + очистка корзины ──
-  ctx.session.cart = { shop_id: null, items: [] };
-  ctx.session.current_shop_id = null;
+  // Мутируем cb.session — мутации ctx.session не персистятся в conversations 1.x.
+  cb.session.cart = { shop_id: null, items: [] };
+  cb.session.current_shop_id = null;
 
   // Публикуем в Redis pub/sub для seller-bot.
   // external() — replay не должен публиковать дубликат сообщения.
@@ -199,7 +200,7 @@ async function checkoutConv(conversation, ctx) {
     }
   });
 
-  await ctx.reply(t('buyer.checkout.success', { number: order.number }), {
+  await cb.reply(t('buyer.checkout.success', { number: order.number }), {
     parse_mode: 'Markdown',
     reply_markup: { remove_keyboard: true },
   });

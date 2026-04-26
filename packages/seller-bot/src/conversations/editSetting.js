@@ -41,9 +41,11 @@ async function editSettingConv(conversation, ctx) {
     }
     // UPDATE через external — replay не должен переоткрывать транзакцию.
     await conversation.external(() => applySettingUpdate(ctx, 'hours', JSON.stringify(hours)));
-    await ctx.reply(t('seller.settings.saved'));
-    delete ctx.session.editing_setting_field;
-    await ctx.reply(t('seller.settings.title'), {
+    // Мутируем сессию + отвечаем через cb (последний wait-ctx),
+    // мутации ctx.session в conversations 1.x не персистятся.
+    delete cb.session.editing_setting_field;
+    await cb.reply(t('seller.settings.saved'));
+    await cb.reply(t('seller.settings.title'), {
       parse_mode: 'Markdown',
       reply_markup: settingsKeyboard(ctx),
     });
@@ -81,14 +83,18 @@ async function editSettingConv(conversation, ctx) {
 
   await ctx.reply(promptKey, { reply_markup: cancelBtn.resized().oneTime() });
 
+  // Будет хранить последний wait-ctx — на нём выполняем session-мутации
+  // и финальные reply, иначе изменения session не сохранятся.
+  let lastCtx = ctx;
   let value = null;
   while (value === null) {
     const m = await conversation.waitFor('message:text');
+    lastCtx = m;
     const txt = m.message.text.trim();
 
     if (txt === t('common.cancel')) {
-      await ctx.reply(t('common.cancel'), { reply_markup: { remove_keyboard: true } });
-      delete ctx.session.editing_setting_field;
+      delete m.session.editing_setting_field;
+      await m.reply(t('common.cancel'), { reply_markup: { remove_keyboard: true } });
       return;
     }
 
@@ -100,13 +106,13 @@ async function editSettingConv(conversation, ctx) {
     const cleaned = txt.replace(/\s+/g, '').replace(',', '.');
     const n = Number(cleaned);
     if (!Number.isFinite(n) || n < 0) {
-      await ctx.reply(lang === 'uz' ? '❌ Notoʻgʻri qiymat.' : '❌ Неверное значение.');
+      await m.reply(lang === 'uz' ? '❌ Notoʻgʻri qiymat.' : '❌ Неверное значение.');
       continue;
     }
 
     if (field === 'radius') {
       if (!Number.isInteger(n) || n < 50 || n > 10000) {
-        await ctx.reply(lang === 'uz' ? '❌ 50–10000 oraligʻida butun son.' : '❌ Целое число 50–10000.');
+        await m.reply(lang === 'uz' ? '❌ 50–10000 oraligʻida butun son.' : '❌ Целое число 50–10000.');
         continue;
       }
     }
@@ -117,10 +123,11 @@ async function editSettingConv(conversation, ctx) {
   // UPDATE через external — replay не должен переоткрывать транзакцию.
   const finalValue = value === 'CLEAR' ? null : value;
   await conversation.external(() => applySettingUpdate(ctx, field, finalValue));
-  await ctx.reply(t('seller.settings.saved'), { reply_markup: { remove_keyboard: true } });
 
-  delete ctx.session.editing_setting_field;
-  await ctx.reply(t('seller.settings.title'), {
+  // Мутации session + финальные reply на последнем wait-ctx.
+  delete lastCtx.session.editing_setting_field;
+  await lastCtx.reply(t('seller.settings.saved'), { reply_markup: { remove_keyboard: true } });
+  await lastCtx.reply(t('seller.settings.title'), {
     parse_mode: 'Markdown',
     reply_markup: settingsKeyboard(ctx),
   });
