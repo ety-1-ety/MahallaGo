@@ -4,8 +4,35 @@
   "private": true,
   "description": "Angular 21 SPA для админ-панели MahallaShop",
   "scripts": {
-    "start": "ng serve",
+    "ng": "ng",
+    "start": "ng serve --port 4200",
     "build": "ng build",
     "watch": "ng build --watch --configuration development"
+  },
+  "dependencies": {
+    "@angular/animations": "^21.0.0",
+    "@angular/common": "^21.0.0",
+    "@angular/compiler": "^21.0.0",
+    "@angular/core": "^21.0.0",
+    "@angular/forms": "^21.0.0",
+    "@angular/material": "^20.0.0",
+    "@angular/cdk": "^20.0.0",
+    "@angular/platform-browser": "^21.0.0",
+    "@angular/platform-browser-dynamic": "^21.0.0",
+    "@angular/router": "^21.0.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.15.0",
+    "chart.js": "^4.4.4",
+    "ng2-charts": "^8.0.0",
+    "leaflet": "^1.9.4"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^21.0.0",
+    "@angular/cli": "^21.0.0",
+    "@angular/compiler-cli": "^21.0.0",
+    "@types/leaflet": "^1.9.12",
+    "@types/node": "^22.0.0",
+    "typescript": "~5.9.0"
   }
 }

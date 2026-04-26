@@ -1,0 +1,107 @@
+@use '@angular/material' as mat;
+
+// ─── Кастомная палитра в цветах флага Узбекистана ──────────────
+// Зелёный #1eb53a (primary), синий #0099b5 (tertiary/accent)
+$uz-green: (
+  50:  #e7f7ec,
+  100: #c4ebd0,
+  200: #9cdfb3,
+  300: #71d495,
+  400: #4cc97c,
+  500: #1eb53a,  // основной
+  600: #19a634,
+  700: #11942c,
+  800: #098225,
+  900: #006318,
+  contrast: (
+    50: rgba(0,0,0,0.87), 100: rgba(0,0,0,0.87), 200: rgba(0,0,0,0.87),
+    300: rgba(0,0,0,0.87), 400: rgba(0,0,0,0.87),
+    500: white, 600: white, 700: white, 800: white, 900: white
+  )
+);
+
+$uz-blue: (
+  50:  #e0f3f6,
+  100: #b3e0e8,
+  200: #80ccd8,
+  300: #4db8c8,
+  400: #26a8bc,
+  500: #0099b5,  // акцент
+  600: #008aa3,
+  700: #00788d,
+  800: #006677,
+  900: #004957,
+  contrast: (
+    50: rgba(0,0,0,0.87), 100: rgba(0,0,0,0.87), 200: rgba(0,0,0,0.87),
+    300: rgba(0,0,0,0.87), 400: white, 500: white, 600: white,
+    700: white, 800: white, 900: white
+  )
+);
+
+html {
+  // Light theme (default)
+  @include mat.theme((
+    color: (
+      primary:  $uz-green,
+      tertiary: $uz-blue,
+    ),
+    typography: 'Inter, sans-serif',
+    density: 0,
+  ));
+
+  &.dark-theme {
+    color-scheme: dark;
+    @include mat.theme((
+      color: (
+        primary:  $uz-green,
+        tertiary: $uz-blue,
+        theme-type: dark,
+      ),
+      typography: 'Inter, sans-serif',
+      density: 0,
+    ));
+  }
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+}
+
+a { color: var(--mat-sys-primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.flex { display: flex; }
+.flex-col { display: flex; flex-direction: column; }
+.gap-1 { gap: 8px; } .gap-2 { gap: 16px; } .gap-3 { gap: 24px; }
+.grow { flex: 1 1 auto; }
+.text-muted { color: var(--mat-sys-on-surface-variant); }
+
+.page-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0 0 24px 0;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+@media (max-width: 768px) {
+  .page-container { padding: 16px; }
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
+}
