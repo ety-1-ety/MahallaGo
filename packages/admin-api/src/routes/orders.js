@@ -1,12 +1,22 @@
 import { query } from '@mahallashop/shared';
 
 export default async function orderRoutes(app) {
-  // Список заказов с фильтрами
+  // Список заказов с фильтрами. status может быть либо одним значением,
+  // либо списком через запятую (например "pending,accepted,ready").
   app.get('/orders', { preHandler: app.requireAuth }, async (request) => {
     const { status, shop_id, page = 1, per_page = 20 } = request.query;
     const params = [];
     const conds  = [];
-    if (status)  { params.push(status);  conds.push(`status = $${params.length}::orders.order_status`); }
+    if (status) {
+      const statuses = String(status).split(',').map((s) => s.trim()).filter(Boolean);
+      if (statuses.length === 1) {
+        params.push(statuses[0]);
+        conds.push(`status = $${params.length}::orders.order_status`);
+      } else if (statuses.length > 1) {
+        params.push(statuses);
+        conds.push(`status = ANY($${params.length}::orders.order_status[])`);
+      }
+    }
     if (shop_id) { params.push(shop_id); conds.push(`shop_id = $${params.length}`); }
     const where = conds.length ? `WHERE ${conds.join(' AND ')}` : '';
 
