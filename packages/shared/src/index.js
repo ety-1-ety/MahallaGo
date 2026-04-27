@@ -24,3 +24,8 @@ export {
   resolvePhotoPath,
   getPhotoDir,
 } from './storage/photos.js';
+export {
+  sweepStaleConversations,
+  clearConversationFromSession,
+  CONVERSATION_TTL_MS,
+} from './sessionHygiene.js';

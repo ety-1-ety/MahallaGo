@@ -1,9 +1,13 @@
-import { DomainError, t, ORDER_ERRORS } from '@mahallashop/shared';
+import { DomainError, t, ORDER_ERRORS, clearConversationFromSession } from '@mahallashop/shared';
 
 /**
  * Глобальный обработчик ошибок для buyer-bot.
  * Если ошибка из orders.create_order — она уже обрабатывается в handler
  * checkout с локализованным сообщением. Сюда попадают только неожиданные.
+ *
+ * Дополнительно: при любой неожиданной ошибке стираем conversation-blob
+ * из session — иначе следующий update пользователя пойдёт в replay
+ * битого state и зациклит обработку.
  */
 export function errorHandler(log) {
   return async (err) => {
@@ -28,6 +32,17 @@ export function errorHandler(log) {
       update_id: ctx?.update?.update_id,
       from: ctx?.from?.id,
     }, 'unhandled error in handler');
+
+    // Стираем conversation-blob, если ошибка случилась в процессе flow.
+    // Без этого следующий update пользователя замёрз бы в replay сломанного state.
+    try {
+      await clearConversationFromSession({
+        prefix: process.env.REDIS_PREFIX || 'buyer:',
+        telegramId: ctx?.from?.id,
+      });
+    } catch (cleanupErr) {
+      log.warn({ err: cleanupErr.message }, 'failed to clear conversation blob');
+    }
 
     try {
       await ctx.reply(t(locale, 'common.error_unknown'));

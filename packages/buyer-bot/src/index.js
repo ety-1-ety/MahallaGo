@@ -1,7 +1,10 @@
 import 'dotenv/config';
 import { Bot } from 'grammy';
 import { conversations } from '@grammyjs/conversations';
-import { createLogger, loadConfig, closePool, closeRedis } from '@mahallashop/shared';
+import {
+  createLogger, loadConfig, closePool, closeRedis,
+  sweepStaleConversations, clearConversationFromSession,
+} from '@mahallashop/shared';
 
 import { buildSession }   from './middleware/session.js';
 import { buildAuthI18n }  from './middleware/i18n.js';
@@ -52,6 +55,23 @@ bot.command('start', async (ctx, next) => {
   return next();
 });
 
+// /reset — ручная очистка застрявшего conversation-state в Redis.
+// Если /start не помогает (баг или несовместимость state), пользователь
+// может выбраться через /reset и продолжить работу.
+bot.command('reset', async (ctx) => {
+  await ctx.conversation.exit();
+  await clearConversationFromSession({
+    prefix: process.env.REDIS_PREFIX || 'buyer:',
+    telegramId: ctx.from?.id,
+  });
+  await ctx.reply(
+    ctx.locale === 'uz'
+      ? '🔄 Holat tozalandi. /start ni bosing.'
+      : '🔄 Состояние очищено. Нажмите /start.',
+    { reply_markup: { remove_keyboard: true } },
+  );
+});
+
 registerStart(bot);
 
 // Inline-callback'и
@@ -100,6 +120,15 @@ async function shutdown(signal) {
 
 process.on('SIGINT',  () => shutdown('SIGINT'));
 process.on('SIGTERM', () => shutdown('SIGTERM'));
+
+// Перед стартом — чистим Redis от протухших conversation-state.
+// Если предыдущая сессия бота крашнулась посреди checkout/onboarding,
+// в session.conversation останется битый replay-state, который при
+// следующем сообщении пользователя зацикливает обработку updates.
+await sweepStaleConversations({
+  prefix: cfg.REDIS_PREFIX || 'buyer:',
+  log,
+}).catch((err) => log.warn({ err: err.message }, 'sweep failed'));
 
 bot.start({
   drop_pending_updates: true,
