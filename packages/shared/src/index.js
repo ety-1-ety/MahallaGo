@@ -29,3 +29,4 @@ export {
   clearConversationFromSession,
   CONVERSATION_TTL_MS,
 } from './sessionHygiene.js';
+export { normalizePhone, formatPhone } from './phone.js';

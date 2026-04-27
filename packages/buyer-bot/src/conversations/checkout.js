@@ -7,6 +7,7 @@ import {
   DomainError,
   ORDER_ERRORS,
   getRedis,
+  normalizePhone,
 } from '@mahallashop/shared';
 import { mainMenuKeyboard } from '../keyboards/mainMenu.js';
 
@@ -48,13 +49,17 @@ async function checkoutConv(conversation, ctx) {
         return;
       }
       if (m.message?.contact?.phone_number) {
-        phone = m.message.contact.phone_number;
-        break;
+        phone = normalizePhone(m.message.contact.phone_number);
+        if (phone) break;
       }
-      if (m.message?.text && /^\+?\d{9,15}$/.test(m.message.text.trim())) {
-        phone = m.message.text.trim();
-        break;
+      if (m.message?.text) {
+        const candidate = normalizePhone(m.message.text);
+        if (candidate && /^\+\d{9,15}$/.test(candidate)) {
+          phone = candidate;
+          break;
+        }
       }
+      phone = null;
       await ctx.reply(t('buyer.checkout.phone_invalid'));
     }
 

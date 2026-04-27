@@ -117,7 +117,10 @@
     "onboarding": {
       "step_format": "Qadam {step} / {total}",
       "ask_name": "🏪 *Doʻkon nomini kiriting:*",
-      "ask_category": "📂 *Doʻkon turini tanlang:*",
+      "ask_category": "📂 *Doʻkon toifalarini tanlang (bir nechta mumkin):*\n\nRoʻyxatdan tegishli toifalarni belgilang ✅ — soʻngra «Tayyor».",
+      "category_done": "✅ Tayyor",
+      "category_min_one": "❌ Kamida bitta toifani tanlang.",
+      "category_chosen": "✓ Tanlandi: {names}",
       "ask_address": "📍 *Doʻkon manzilini yuboring (joylashuv):*",
       "ask_phone": "📞 *Aloqa telefon raqamini kiriting:*",
       "ask_photo": "📷 *Doʻkon fotosuratini yuboring (yoki «Oʻtkazib yuborish»):*",

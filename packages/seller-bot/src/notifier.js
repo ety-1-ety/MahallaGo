@@ -1,4 +1,4 @@
-import { getRedisSubscriber, query, t, tError, formatUZS, tOrderStatus } from '@mahallashop/shared';
+import { getRedisSubscriber, query, t, tError, formatUZS, tOrderStatus, formatPhone } from '@mahallashop/shared';
 import { orderCardKeyboard } from './keyboards/orderCard.js';
 
 /**
@@ -90,7 +90,7 @@ async function handleNewOrder(bot, log, { order_id, owner_telegram_id }) {
     t(lang, 'seller.new_order_notif.title', { number: order.number }),
     '',
     t(lang, 'seller.new_order_notif.buyer', { name: order.buyer_first_name || '—' }),
-    t(lang, 'seller.new_order_notif.phone', { phone: order.buyer_phone || '—' }),
+    t(lang, 'seller.new_order_notif.phone', { phone: formatPhone(order.buyer_phone) }),
     t(lang, 'seller.new_order_notif.address', {
       address: order.delivery_address,
       distance: distLabel,

@@ -1,5 +1,5 @@
 import { InlineKeyboard } from 'grammy';
-import { callFn, callFnRow, query, formatUZS, tOrderStatus, getRedis } from '@mahallashop/shared';
+import { callFn, callFnRow, query, formatUZS, tOrderStatus, getRedis, formatPhone } from '@mahallashop/shared';
 import { orderCardKeyboard } from '../keyboards/orderCard.js';
 import { mainMenuLabels } from '../keyboards/mainMenu.js';
 
@@ -88,7 +88,7 @@ export async function sendOrderCard(ctx, order, opts = {}) {
     ctx.t('seller.new_order_notif.title', { number: order.number }),
     '',
     ctx.t('seller.new_order_notif.buyer', { name: order.buyer_first_name || '—' }),
-    ctx.t('seller.new_order_notif.phone', { phone: order.buyer_phone || '—' }),
+    ctx.t('seller.new_order_notif.phone', { phone: formatPhone(order.buyer_phone) }),
     ctx.t('seller.new_order_notif.address', {
       address: order.delivery_address,
       distance: distLabel,

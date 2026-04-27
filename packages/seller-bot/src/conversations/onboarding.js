@@ -54,25 +54,75 @@ async function onboardingConv(conversation, ctx) {
   }
   const shopName = nameMsg.message.text.trim();
 
-  // ── 2/6 Категория ──────────────────────────────────────────
+  // ── 2/6 Категории (multi-select) ───────────────────────────
   // Чтения БД из conversations должны идти через conversation.external(),
   // иначе при replay результат будет перевыполняться и может расходиться.
   const cats = await conversation.external(() => fetchCategories());
-  const catKb = new InlineKeyboard();
-  for (const c of cats) {
-    catKb.text(categoryLabel(c, lang), `onb:cat:${c.slug}`).row();
+  const selected = new Set();
+
+  function buildCatKeyboard() {
+    const kb = new InlineKeyboard();
+    for (const c of cats) {
+      const mark = selected.has(c.slug) ? '✅ ' : '⬜ ';
+      kb.text(`${mark}${categoryLabel(c, lang)}`, `onb:cat:${c.slug}`).row();
+    }
+    kb.text(t('seller.onboarding.category_done'), 'onb:cat:__done__');
+    return kb;
   }
+
   await ctx.reply(`${stepHeader(ctx, 2)}\n${t('seller.onboarding.ask_category')}`, {
     parse_mode: 'Markdown',
-    reply_markup: catKb,
+    reply_markup: buildCatKeyboard(),
   });
-  const catCb = await conversation.waitForCallbackQuery(/^onb:cat:/);
-  const catSlug = catCb.callbackQuery.data.split(':')[2];
-  const chosenCat = cats.find((c) => c.slug === catSlug);
-  await catCb.answerCallbackQuery();
-  await ctx.api.editMessageReplyMarkup(catCb.chat.id, catCb.callbackQuery.message.message_id, {
-    reply_markup: new InlineKeyboard().text(`✓ ${categoryLabel(chosenCat, lang)}`, 'noop'),
-  });
+
+  let catCb;
+  while (true) {
+    catCb = await conversation.waitForCallbackQuery(/^onb:cat:/);
+    const slug = catCb.callbackQuery.data.split(':')[2];
+
+    if (slug === '__done__') {
+      if (selected.size === 0) {
+        await catCb.answerCallbackQuery({
+          text: t('seller.onboarding.category_min_one'),
+          show_alert: true,
+        });
+        continue;
+      }
+      await catCb.answerCallbackQuery();
+      break;
+    }
+
+    if (selected.has(slug)) selected.delete(slug);
+    else selected.add(slug);
+
+    await catCb.answerCallbackQuery();
+    try {
+      await ctx.api.editMessageReplyMarkup(
+        catCb.chat.id,
+        catCb.callbackQuery.message.message_id,
+        { reply_markup: buildCatKeyboard() },
+      );
+    } catch { /* старое сообщение */ }
+  }
+
+  const chosenSlugs = Array.from(selected);
+  const chosenNames = cats
+    .filter((c) => selected.has(c.slug))
+    .map((c) => (lang === 'uz' ? c.name_uz : c.name_ru))
+    .join(', ');
+  // Закрепим итог в исходном сообщении
+  try {
+    await ctx.api.editMessageReplyMarkup(
+      catCb.chat.id,
+      catCb.callbackQuery.message.message_id,
+      {
+        reply_markup: new InlineKeyboard().text(
+          t('seller.onboarding.category_chosen', { names: chosenNames }),
+          'noop',
+        ),
+      },
+    );
+  } catch { /* ignore */ }
 
   // ── 3/6 Геолокация ─────────────────────────────────────────
   await ctx.reply(`${stepHeader(ctx, 3)}\n${t('seller.onboarding.ask_address')}`, {
@@ -203,7 +253,7 @@ async function onboardingConv(conversation, ctx) {
   const shop = await conversation.external(() => callFnRow('shops.register', [
     ctx.user.id,
     shopName,
-    catSlug,
+    chosenSlugs,           // TEXT[] — slug-и выбранных категорий
     null,                  // description
     photoFileId,
     phone,

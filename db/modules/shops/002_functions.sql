@@ -6,6 +6,11 @@
 -- shops.register
 -- Создаёт магазин со статусом pending_approval. Вызывается seller-bot
 -- по завершении 6-шагового онбординга.
+--
+-- ВАЖНО: с миграции catalog/007_shop_categories_and_register_v2.sql
+-- эта функция переопределяется с сигнатурой p_category_slugs TEXT[],
+-- а её определение здесь оставлено только для bootstrap (чтобы первый
+-- запуск миграций имел рабочую функцию до применения 007).
 -- ─────────────────────────────────────────────────────────────────
 CREATE OR REPLACE FUNCTION shops.register(
   p_owner_id            UUID,
@@ -63,6 +68,10 @@ COMMENT ON FUNCTION shops.register IS 'Регистрация нового ма�
 -- shops.find_nearby
 -- Ищет активные магазины в радиусе вокруг координаты покупателя.
 -- Возвращает магазины + расстояние в метрах, отсортированные по близости.
+--
+-- ВАЖНО: с миграции catalog/007_shop_categories_and_register_v2.sql
+-- эта функция переопределяется с дополнительным полем categories TEXT[]
+-- и более строгим фильтром по delivery_radius_m магазина.
 -- ─────────────────────────────────────────────────────────────────
 CREATE OR REPLACE FUNCTION shops.find_nearby(
   p_lat       DOUBLE PRECISION,

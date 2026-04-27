@@ -165,6 +165,17 @@ export async function handleProductCallback(ctx) {
   }
 }
 
+/**
+ * Sticky cart reminder. Стратегия: ВСЕГДА удаляем предыдущее напоминание
+ * и шлём новое — иначе оно остаётся выше в чате и пользователь его
+ * не видит после нескольких прокруток вниз. Зеркальный эффект «иногда
+ * появляется два раза» получался когда editMessageText падал и мы
+ * слали новое, не убирая старое.
+ *
+ * deleteMessage может упасть (сообщение старше 48h, удалено пользователем) —
+ * это не критично, главное чтобы всегда было ровно одно «последнее»
+ * напоминание внизу чата.
+ */
 async function refreshCartReminder(ctx) {
   const cart = ctx.session.cart;
   if (!cart?.items?.length) return;
@@ -178,15 +189,14 @@ async function refreshCartReminder(ctx) {
   const savedMsgId = ctx.session.cart_reminder_msg_id;
   const chatId = ctx.chat?.id;
 
-  if (savedMsgId && chatId) {
-    try {
-      await ctx.api.editMessageText(chatId, savedMsgId, text, {
-        parse_mode: 'Markdown',
-        reply_markup: kb,
-      });
-      return;  // редакция удалась — id остаётся прежним
-    } catch {
-      // сообщение могло быть удалено / устарело / сменился чат — пошлём новое
+  // Сначала очищаем id чтобы конкурентный inc/add не удалил уже новое
+  // напоминание (когда пользователь быстро жмёт +/+).
+  if (savedMsgId) {
+    ctx.session.cart_reminder_msg_id = null;
+    if (chatId) {
+      try {
+        await ctx.api.deleteMessage(chatId, savedMsgId);
+      } catch { /* старше 48h / уже удалено / нет прав — не критично */ }
     }
   }
 
