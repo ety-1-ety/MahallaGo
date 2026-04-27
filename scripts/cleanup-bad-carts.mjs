@@ -42,7 +42,15 @@ const prefix      = process.env.REDIS_PREFIX || 'buyer:';
 const pool  = new pg.Pool({ connectionString: databaseUrl });
 const redis = new Redis(redisUrl);
 
-const sessKeys = await redis.keys(`${prefix}sess:*`);
+// ioredis-клиент бота использует keyPrefix=`${prefix}` (см. shared/redis/client.js),
+// поэтому реальные ключи в Redis выглядят как `<prefix><prefix>sess:<id>`
+// (двойной prefix). Ищем оба варианта чтобы быть устойчивыми и к запуску
+// со своим keyPrefix, и без.
+const sessKeysSet = new Set([
+  ...(await redis.keys(`${prefix}sess:*`)),
+  ...(await redis.keys(`${prefix}${prefix}sess:*`)),
+]);
+const sessKeys = Array.from(sessKeysSet);
 console.log(`Найдено сессий: ${sessKeys.length}`);
 
 let cleaned = 0;
