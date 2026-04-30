@@ -1,6 +1,11 @@
 import { createConversation } from '@grammyjs/conversations';
 import { Keyboard, InlineKeyboard } from 'grammy';
 import { callFnRow, query } from '@mahallashop/shared';
+
+// Если AUTO_APPROVE_SHOPS=true — магазин сразу активируется без ожидания
+// модератора. Удобно на этапе разработки/тестирования; в production
+// поставьте false (или удалите переменную) и используйте админ-панель.
+const AUTO_APPROVE = process.env.AUTO_APPROVE_SHOPS === 'true';
 import { mainMenuKeyboard } from '../keyboards/mainMenu.js';
 
 /**
@@ -96,12 +101,12 @@ async function onboardingConv(conversation, ctx) {
     else selected.add(slug);
 
     await catCb.answerCallbackQuery();
+    // Используем catCb.editMessageReplyMarkup (метод callback-ctx),
+    // а НЕ ctx.api. Это держит API-вызов внутри grammY-conversation
+    // detрministic-замыкания: при replay вызов будет корректно
+    // подхвачен через session.conversation, а не выполнится заново.
     try {
-      await ctx.api.editMessageReplyMarkup(
-        catCb.chat.id,
-        catCb.callbackQuery.message.message_id,
-        { reply_markup: buildCatKeyboard() },
-      );
+      await catCb.editMessageReplyMarkup({ reply_markup: buildCatKeyboard() });
     } catch { /* старое сообщение */ }
   }
 
@@ -110,18 +115,14 @@ async function onboardingConv(conversation, ctx) {
     .filter((c) => selected.has(c.slug))
     .map((c) => (lang === 'uz' ? c.name_uz : c.name_ru))
     .join(', ');
-  // Закрепим итог в исходном сообщении
+  // Закрепим итог в исходном сообщении (через catCb, не ctx.api).
   try {
-    await ctx.api.editMessageReplyMarkup(
-      catCb.chat.id,
-      catCb.callbackQuery.message.message_id,
-      {
-        reply_markup: new InlineKeyboard().text(
-          t('seller.onboarding.category_chosen', { names: chosenNames }),
-          'noop',
-        ),
-      },
-    );
+    await catCb.editMessageReplyMarkup({
+      reply_markup: new InlineKeyboard().text(
+        t('seller.onboarding.category_chosen', { names: chosenNames }),
+        'noop',
+      ),
+    });
   } catch { /* ignore */ }
 
   // ── 3/6 Геолокация ─────────────────────────────────────────
@@ -264,11 +265,28 @@ async function onboardingConv(conversation, ctx) {
     'Asia/Tashkent',
   ]));
 
+  // Авто-активация (без модерации) — управляется AUTO_APPROVE_SHOPS.
+  // Идём через прямой UPDATE, чтобы не плодить запись в moderation_log
+  // от имени самого продавца.
+  if (AUTO_APPROVE) {
+    await conversation.external(() => query(
+      `UPDATE shops.shops
+          SET status = 'active',
+              approved_at = NOW(),
+              updated_at = NOW()
+        WHERE id = $1`,
+      [shop.id],
+    ));
+  }
+
   // Мутируем сессию через hoursCb — последний wait-ctx, его session
   // персистится. ctx.session не сохранится в conversations 1.x.
   hoursCb.session.shop_id = shop.id;
 
-  await hoursCb.reply(t('seller.onboarding.submitted'), {
+  const submittedKey = AUTO_APPROVE
+    ? 'seller.onboarding.activated'
+    : 'seller.onboarding.submitted';
+  await hoursCb.reply(t(submittedKey), {
     parse_mode: 'Markdown',
     reply_markup: { remove_keyboard: true },
   });

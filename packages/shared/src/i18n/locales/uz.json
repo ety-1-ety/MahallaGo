@@ -125,7 +125,8 @@
       "ask_phone": "📞 *Aloqa telefon raqamini kiriting:*",
       "ask_photo": "📷 *Doʻkon fotosuratini yuboring (yoki «Oʻtkazib yuborish»):*",
       "ask_hours": "🕐 *Ish vaqtini sozlang yoki «24/7»ni tanlang:*",
-      "submitted": "✅ Doʻkoningiz roʻyxatdan oʻtdi va moderatsiyada. Tasdiqlanganidan soʻng xabar beramiz."
+      "submitted": "✅ Doʻkoningiz roʻyxatdan oʻtdi va moderatsiyada. Tasdiqlanganidan soʻng xabar beramiz.",
+      "activated": "🎉 Doʻkoningiz roʻyxatdan oʻtdi va darhol faollashtirildi. Endi mahsulot qoʻshib, buyurtmalar qabul qila olasiz."
     },
     "moderation": {
       "approved": "🎉 Doʻkoningiz tasdiqlandi! Endi mahsulot qoʻshib, buyurtmalar qabul qila olasiz.",
