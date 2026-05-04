@@ -11,6 +11,7 @@ import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
+import sharp from 'sharp';
 
 // Якорим путь к расположению ЭТОГО файла, а не к process.cwd().
 // CWD у seller-bot и buyer-bot разный (каждый — своя package-папка),
@@ -53,13 +54,31 @@ export async function downloadTelegramPhoto({ token, fileId, baseDir }) {
   const fileRes = await fetch(`https://api.telegram.org/file/bot${token}/${filePath}`);
   if (!fileRes.ok) throw new Error(`download failed: ${fileRes.status}`);
 
-  const buf = Buffer.from(await fileRes.arrayBuffer());
-  const ext = (path.extname(filePath) || '.jpg').toLowerCase();
-  const hash = crypto.createHash('sha1').update(buf).digest('hex').slice(0, 16);
-  const fileName = `${hash}${ext}`;
+  const rawBuf = Buffer.from(await fileRes.arrayBuffer());
+
+  // Прогоняем через sharp: ужимаем до 1024px по большей стороне, JPEG q=82
+  // (mozjpeg, progressive), снимаем EXIF/ICC. Telegram отдаёт оригинал
+  // ~720×1280 ~90 КБ — на выходе обычно 25–35 КБ без видимой потери.
+  // Если sharp по какой-то причине упал (битый файл, формат не картинка) —
+  // падаем обратно на исходные байты, лучше показать большое фото, чем потерять.
+  let outBuf;
+  try {
+    outBuf = await sharp(rawBuf, { failOn: 'none' })
+      .rotate()                       // применяем EXIF-ориентацию ДО strip
+      .resize({ width: 1024, height: 1024, fit: 'inside', withoutEnlargement: true })
+      .jpeg({ quality: 82, mozjpeg: true, progressive: true })
+      .toBuffer();
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.warn('sharp optimization failed, storing original:', err && err.message ? err.message : err);
+    outBuf = rawBuf;
+  }
+
+  const hash = crypto.createHash('sha1').update(outBuf).digest('hex').slice(0, 16);
+  const fileName = `${hash}.jpg`;
 
   await fs.mkdir(dir, { recursive: true });
-  await fs.writeFile(path.join(dir, fileName), buf);
+  await fs.writeFile(path.join(dir, fileName), outBuf);
 
   return fileName;
 }
