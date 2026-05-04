@@ -156,7 +156,14 @@
       "radius_label":        "📍 Radius: {value} m",
       "hours_label":         "🕐 Ish vaqti",
       "language_label":      "🌐 Til: {value}",
+      "sticker_label":       "📥 Doʻkon uchun QR-stiker",
       "saved": "✅ Sozlamalar saqlandi"
+    },
+    "sticker": {
+      "choose_size": "📥 *Doʻkon uchun QR-stiker*\n\nChop etish uchun oʻlchamni tanlang — bot PDF yuboradi, uni bosmaxonaga olib borish yoki rangli printerda chop etib, doʻkoningiz kirish eshigiga yopishtirish mumkin.\n\nMijozlar QR-ni skanerlab, toʻgʻridan-toʻgʻri @MahallaShopUzBot dagi sizning doʻkoningizga oʻtadi.",
+      "size_label":  "📄 {size} × {size} mm",
+      "caption":     "📥 *QR-stiker {size}×{size} mm*\n\nRangli printerda chop eting yoki bosmaxonaga olib boring. Doʻkoningiz kirish eshigi yoki kassa yoniga yopishtiring — mijozlar skanerlab Telegram orqali sizdan buyurtma berishi mumkin.",
+      "not_available": "⚠️ Stiker fayli vaqtinchalik mavjud emas. Keyinroq urinib koʻring yoki qoʻllab-quvvatlashga yozing."
     },
     "new_order_notif": {
       "title": "🔔 *YANGI BUYURTMA #{number}*",

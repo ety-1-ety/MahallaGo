@@ -24,6 +24,7 @@ import { handleOrderCallback, handleRejectReason } from './handlers/orders.js';
 import { applySettingUpdate } from './handlers/settings.js';
 import { settingsKeyboard } from './keyboards/settings.js';
 import { mainMenuKeyboard } from './keyboards/mainMenu.js';
+import { showStickerMenu, sendSticker } from './handlers/stickers.js';
 import { handleProductMgrCallback } from './handlers/myProducts.js';
 
 import { startNotifier } from './notifier.js';
@@ -90,6 +91,9 @@ bot.callbackQuery(/^order:/, statusGuard(), handleOrderCallback);
 // Кнопки управления товарами в /myProducts (price/stock/toggle/delete)
 bot.callbackQuery(/^prod_mgr:/, statusGuard(), handleProductMgrCallback);
 
+// Скачивание готового PDF-стикера с QR покупательского бота
+bot.callbackQuery(/^sticker:/, sendSticker);
+
 // Inline-меню настроек: запуск editSetting через session.field
 bot.callbackQuery(/^set:/, async (ctx) => {
   const data = ctx.callbackQuery.data;
@@ -106,6 +110,10 @@ bot.callbackQuery(/^set:/, async (ctx) => {
       parse_mode: 'Markdown',
       reply_markup: kb,
     }).catch(() => {});
+    return;
+  }
+  if (data === 'set:sticker') {
+    await showStickerMenu(ctx);
     return;
   }
   const field = data.split(':')[1];

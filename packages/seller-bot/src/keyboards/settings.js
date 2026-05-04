@@ -32,5 +32,6 @@ export function settingsKeyboard(ctx) {
     .text(t('seller.settings.radius_label',        { value: shop.delivery_radius_m }),             'set:radius').row()
     .text(t('seller.settings.hours_label'),                                                        'set:hours').row()
     .text(t('seller.settings.language_label',      { value: langLabel }),                          'set:language').row()
+    .text(t('seller.settings.sticker_label'),                                                      'set:sticker').row()
     .text(t('common.back') + ' ' + t('common.main_menu'),                                          'set:back');
 }
