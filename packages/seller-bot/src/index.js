@@ -17,6 +17,7 @@ import { onboarding }     from './conversations/onboarding.js';
 import { addProduct }     from './conversations/addProduct.js';
 import { editSetting }    from './conversations/editSetting.js';
 import { editProduct }    from './conversations/editProduct.js';
+import { productSearch }  from './conversations/productSearch.js';
 
 import { registerStart }  from './handlers/start.js';
 import { handleMainMenuMessage } from './handlers/menu.js';
@@ -25,7 +26,7 @@ import { applySettingUpdate } from './handlers/settings.js';
 import { settingsKeyboard } from './keyboards/settings.js';
 import { mainMenuKeyboard } from './keyboards/mainMenu.js';
 import { showStickerMenu, sendSticker } from './handlers/stickers.js';
-import { handleProductMgrCallback } from './handlers/myProducts.js';
+import { handleProductMgrCallback, handleMyProductsCallback } from './handlers/myProducts.js';
 
 import { startNotifier } from './notifier.js';
 
@@ -57,6 +58,7 @@ bot.use(onboarding);
 bot.use(addProduct);
 bot.use(editSetting);
 bot.use(editProduct);
+bot.use(productSearch);
 
 // /start всегда сбрасывает активную conversation, иначе пользователь
 // может застрять в незавершённом онбординге и каждое следующее
@@ -88,8 +90,11 @@ registerStart(bot);
 // onboarding/настройки)
 bot.callbackQuery(/^order:/, statusGuard(), handleOrderCallback);
 
-// Кнопки управления товарами в /myProducts (price/stock/toggle/delete)
+// Кнопки управления товарами в карточке (price/stock/toggle/delete)
 bot.callbackQuery(/^prod_mgr:/, statusGuard(), handleProductMgrCallback);
+
+// Навигация «Мои товары» — категории/пагинация/карточка/поиск
+bot.callbackQuery(/^mp:/, statusGuard(), handleMyProductsCallback);
 
 // Скачивание готового PDF-стикера с QR покупательского бота
 bot.callbackQuery(/^sticker:/, sendSticker);
