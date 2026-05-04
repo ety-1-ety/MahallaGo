@@ -1,19 +1,24 @@
-import { Component, ChangeDetectionStrategy, inject, signal, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { AuthService } from '../../core/auth/auth.service';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { ThemeService } from '../../core/theme/theme.service';
 import { TPipe } from '../../core/i18n/t.pipe';
-import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [MatCardModule, MatButtonModule, MatProgressSpinnerModule, TPipe],
+  imports: [
+    FormsModule, MatCardModule, MatButtonModule, MatFormFieldModule,
+    MatInputModule, MatProgressSpinnerModule, TPipe,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="page">
@@ -25,23 +30,25 @@ import { environment } from '../../../environments/environment';
           <h1 class="title">{{ 'login.title' | t }}</h1>
           <p class="subtitle">{{ 'login.subtitle' | t }}</p>
 
-          <div class="widget-wrap" #widget></div>
+          <form (ngSubmit)="submit()" class="form">
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'login.username' | t }}</mat-label>
+              <input matInput type="text" name="login" [(ngModel)]="login" autocomplete="username" required>
+            </mat-form-field>
 
-          @if (!isProduction) {
-            <div class="dev-login">
-              <button mat-stroked-button color="primary" (click)="devLogin()">
-                🔓 Dev login (без Telegram)
-              </button>
-              <small>Доступно только при NODE_ENV=development</small>
-            </div>
-          }
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'login.password' | t }}</mat-label>
+              <input matInput type="password" name="password" [(ngModel)]="password" autocomplete="current-password" required>
+            </mat-form-field>
 
-          @if (loading()) {
-            <div class="loading">
-              <mat-spinner diameter="32"></mat-spinner>
-              <span>{{ 'common.loading' | t }}</span>
-            </div>
-          }
+            <button mat-flat-button color="primary" type="submit" [disabled]="loading()">
+              @if (loading()) {
+                <mat-spinner diameter="20"></mat-spinner>
+              } @else {
+                {{ 'login.submit' | t }}
+              }
+            </button>
+          </form>
 
           @if (errorKey(); as ek) {
             <div class="err">{{ ek | t }}</div>
@@ -67,65 +74,33 @@ import { environment } from '../../../environments/environment';
     .logo-dot { width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(135deg, #1eb53a, #0099b5); }
     .title { font-size: 22px; text-align: center; margin: 0 0 6px; }
     .subtitle { color: var(--mat-sys-on-surface-variant); text-align: center; margin: 0 0 24px; }
-    .widget-wrap { display: flex; justify-content: center; min-height: 56px; }
-    .loading { display: flex; align-items: center; gap: 12px; justify-content: center; margin-top: 16px; }
+    .form { display: flex; flex-direction: column; gap: 6px; }
+    .form button { height: 44px; }
     .err { color: var(--mat-sys-error); margin-top: 12px; text-align: center; }
     .actions { display: flex; justify-content: center; gap: 8px; margin-top: 16px; }
-    .dev-login { display: flex; flex-direction: column; align-items: center; gap: 6px;
-                 margin-top: 16px; padding-top: 16px;
-                 border-top: 1px dashed var(--mat-sys-outline-variant); }
-    .dev-login small { color: var(--mat-sys-on-surface-variant); font-size: 11px; }
   `],
 })
-export class Login implements AfterViewInit {
-  @ViewChild('widget', { static: true }) widget!: ElementRef<HTMLDivElement>;
-
+export class Login {
   protected readonly auth   = inject(AuthService);
   protected readonly i18n   = inject(I18nService);
   protected readonly theme  = inject(ThemeService);
   private readonly router = inject(Router);
 
+  protected login = '';
+  protected password = '';
   protected readonly loading = signal(false);
   protected readonly errorKey = signal<string | null>(null);
-  protected readonly isProduction = environment.production;
 
-  async devLogin() {
+  async submit() {
+    if (!this.login || !this.password) return;
     this.loading.set(true);
     this.errorKey.set(null);
-    // Hardcoded admin tg_id из ADMIN_TG_IDS env. Локально это разработчик.
-    const res = await this.auth.devLogin(35767754);
+    const res = await this.auth.loginWithPassword(this.login, this.password);
     this.loading.set(false);
     if (res.ok) {
       this.router.navigate(['/dashboard']);
-    } else {
-      this.errorKey.set('login.failed');
-    }
-  }
-
-  ngAfterViewInit() {
-    // Регистрируем глобальный callback для Telegram Login Widget
-    (window as unknown as { onTelegramAuth?: (data: Record<string, unknown>) => void }).onTelegramAuth =
-      (data) => this.handleAuth(data);
-
-    const script = document.createElement('script');
-    script.async = true;
-    script.src = 'https://telegram.org/js/telegram-widget.js?22';
-    script.setAttribute('data-telegram-login', environment.botUsername);
-    script.setAttribute('data-size', 'large');
-    script.setAttribute('data-onauth', 'onTelegramAuth(user)');
-    script.setAttribute('data-request-access', 'write');
-    this.widget.nativeElement.appendChild(script);
-  }
-
-  private async handleAuth(data: Record<string, unknown>) {
-    this.loading.set(true);
-    this.errorKey.set(null);
-    const res = await this.auth.loginWithTelegram(data);
-    this.loading.set(false);
-    if (res.ok) {
-      this.router.navigate(['/dashboard']);
-    } else if (res.error === 'NOT_ADMIN') {
-      this.errorKey.set('login.no_access');
+    } else if (res.error === 'INVALID_CREDENTIALS') {
+      this.errorKey.set('login.invalid_credentials');
     } else {
       this.errorKey.set('login.failed');
     }

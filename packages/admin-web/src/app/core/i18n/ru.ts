@@ -12,8 +12,11 @@ export const ru: Record<string, string> = {
   'nav.settings': 'Настройки',
 
   'login.title': 'Войти в админ-панель',
-  'login.subtitle': 'Авторизуйтесь через Telegram',
-  'login.no_access': 'У вас нет прав администратора',
+  'login.subtitle': 'Введите логин и пароль',
+  'login.username': 'Логин',
+  'login.password': 'Пароль',
+  'login.submit': 'Войти',
+  'login.invalid_credentials': 'Неверный логин или пароль',
   'login.failed': 'Ошибка авторизации. Попробуйте снова.',
 
   'common.loading': 'Загрузка...',

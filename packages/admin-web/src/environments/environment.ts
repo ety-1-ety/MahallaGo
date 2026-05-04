@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api.mahallashop.uz',
-  botUsername: 'MahallaShopUzBot',
+  // На проде admin-web и admin-api живут на одном домене,
+  // разделяются по префиксу /api/ через локальный Nginx (см. 03-publish-admin.sh).
+  apiUrl: '/api',
 };

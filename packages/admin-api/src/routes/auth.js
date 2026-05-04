@@ -1,58 +1,40 @@
-import { callFnRow, query } from '@mahallashop/shared';
+import bcrypt from 'bcrypt';
 
 /**
- * POST /api/auth/telegram
- * Body: auth_data от Telegram Login Widget (id, first_name, ..., hash)
+ * POST /api/auth/login   — username + password
+ * POST /api/auth/logout  — стирает cookie
+ * GET  /api/auth/me      — возвращает текущего админа
  *
- * Логика:
- *   1. verifyTelegramAuth — проверяем hash через bot token
- *   2. Создаём/обновляем auth.users
- *   3. Проверяем доступ: ADMIN_TG_IDS env ИЛИ auth.users.is_admin
- *   4. При первом логине из ADMIN_TG_IDS — поднимаем is_admin=true
- *   5. Выпускаем JWT 24h в httpOnly cookie
- *
- * POST /api/auth/logout — стирает cookie.
- * GET  /api/auth/me     — текущий пользователь по cookie.
+ * Хранение для одного админа: ADMIN_USERNAME + ADMIN_PASSWORD_HASH в .env
+ * (bcrypt hash). Когда понадобится несколько админов — переезд на таблицу.
  */
 export default async function authRoutes(app) {
-  app.post('/auth/telegram', async (request, reply) => {
-    const authData = request.body;
-
-    if (!app.verifyTelegramAuth(authData)) {
-      return reply.code(401).send({ error: 'INVALID_TELEGRAM_AUTH' });
+  app.post('/auth/login', async (request, reply) => {
+    const { login, password } = request.body || {};
+    if (typeof login !== 'string' || typeof password !== 'string') {
+      return reply.code(400).send({ error: 'INVALID_BODY' });
     }
 
-    const tgId = Number(authData.id);
-    if (!Number.isFinite(tgId)) {
-      return reply.code(400).send({ error: 'INVALID_TELEGRAM_ID' });
+    const expectedLogin = process.env.ADMIN_USERNAME;
+    const expectedHash  = process.env.ADMIN_PASSWORD_HASH;
+    if (!expectedLogin || !expectedHash) {
+      app.log.error('ADMIN_USERNAME or ADMIN_PASSWORD_HASH not configured');
+      return reply.code(500).send({ error: 'AUTH_NOT_CONFIGURED' });
     }
 
-    // Upsert
-    const user = await callFnRow('auth.upsert_user', [
-      tgId,
-      authData.username || null,
-      authData.first_name || null,
-      authData.last_name || null,
-      null,
-    ]);
-
-    const isWhitelisted = app.adminTgIds.includes(tgId);
-    const isDbAdmin     = user.is_admin === true;
-
-    if (!isWhitelisted && !isDbAdmin) {
-      return reply.code(403).send({ error: 'NOT_ADMIN' });
+    if (login !== expectedLogin) {
+      // Чтобы тайминг-атаки не различали "нет такого юзера" от "пароль неверный",
+      // всё равно вызываем bcrypt.compare с фиктивным значением.
+      await bcrypt.compare(password, '$2b$12$' + 'a'.repeat(53));
+      return reply.code(401).send({ error: 'INVALID_CREDENTIALS' });
     }
 
-    // При первом логине whitelisted-пользователя — отметим is_admin=true
-    if (isWhitelisted && !isDbAdmin) {
-      await callFnRow('auth.mark_as_admin', [tgId, true]);
+    const ok = await bcrypt.compare(password, expectedHash);
+    if (!ok) {
+      return reply.code(401).send({ error: 'INVALID_CREDENTIALS' });
     }
 
-    const token = app.jwt.sign({
-      sub: user.id,
-      tg: tgId,
-      name: user.first_name,
-    });
+    const token = app.jwt.sign({ sub: login, name: login });
 
     const cookieName = process.env.COOKIE_NAME || 'mhs_admin';
     reply.setCookie(cookieName, token, {
@@ -61,53 +43,10 @@ export default async function authRoutes(app) {
       sameSite: 'lax',
       path: '/',
       domain: process.env.COOKIE_DOMAIN || undefined,
-      maxAge: 24 * 60 * 60,  // 24h в секундах
-    });
-
-    return { user: { id: user.id, telegram_id: tgId, first_name: user.first_name, language_code: user.language_code } };
-  });
-
-  // Dev-only login: обходит Telegram Login Widget (полезно когда домен бота
-  // не настроен или работаешь на localhost). Доступен только если
-  // NODE_ENV=development. Принимает tg_id в теле, проверяет что он в
-  // ADMIN_TG_IDS, выпускает JWT.
-  app.post('/auth/dev-login', async (request, reply) => {
-    if (process.env.NODE_ENV !== 'development') {
-      return reply.code(404).send({ error: 'NOT_FOUND' });
-    }
-
-    const tgId = Number(request.body?.tg_id);
-    if (!Number.isFinite(tgId)) {
-      return reply.code(400).send({ error: 'INVALID_TELEGRAM_ID' });
-    }
-
-    if (!app.adminTgIds.includes(tgId)) {
-      return reply.code(403).send({ error: 'NOT_IN_WHITELIST' });
-    }
-
-    const user = await callFnRow('auth.upsert_user', [
-      tgId,
-      request.body?.username || null,
-      request.body?.first_name || 'Dev',
-      request.body?.last_name || 'Admin',
-      null,
-    ]);
-    if (!user.is_admin) {
-      await callFnRow('auth.mark_as_admin', [tgId, true]);
-    }
-
-    const token = app.jwt.sign({ sub: user.id, tg: tgId, name: user.first_name });
-
-    const cookieName = process.env.COOKIE_NAME || 'mhs_admin';
-    reply.setCookie(cookieName, token, {
-      httpOnly: true,
-      secure: process.env.COOKIE_SECURE === 'true',
-      sameSite: 'lax',
-      path: '/',
       maxAge: 24 * 60 * 60,
     });
 
-    return { user: { id: user.id, telegram_id: tgId, first_name: user.first_name, language_code: user.language_code }, dev: true };
+    return { user: { login, name: login } };
   });
 
   app.post('/auth/logout', async (request, reply) => {
@@ -118,10 +57,6 @@ export default async function authRoutes(app) {
 
   app.get('/auth/me', { preHandler: app.requireAuth }, async (request) => {
     const payload = request.user;
-    const { rows } = await query(
-      'SELECT id, telegram_id, first_name, last_name, username, language_code, is_admin FROM auth.users WHERE id = $1',
-      [payload.sub],
-    );
-    return rows[0] || null;
+    return { login: payload.sub, name: payload.name };
   });
 }

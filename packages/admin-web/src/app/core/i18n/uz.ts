@@ -12,8 +12,11 @@ export const uz: Record<string, string> = {
   'nav.settings': 'Sozlamalar',
 
   'login.title': 'Boshqaruv paneliga kirish',
-  'login.subtitle': 'Telegram orqali kiring',
-  'login.no_access': 'Sizda administrator huquqlari yoʻq',
+  'login.subtitle': 'Login va parolni kiriting',
+  'login.username': 'Login',
+  'login.password': 'Parol',
+  'login.submit': 'Kirish',
+  'login.invalid_credentials': 'Login yoki parol notoʻgʻri',
   'login.failed': 'Kirishda xatolik. Qaytadan urinib koʻring.',
 
   'common.loading': 'Yuklanmoqda...',

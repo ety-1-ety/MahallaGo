@@ -17,11 +17,11 @@ export class ApiService {
         }
       }
     }
-    return this.http.get<T>(`${this.base}/api${path}`, { params: httpParams });
+    return this.http.get<T>(`${this.base}${path}`, { params: httpParams, withCredentials: true });
   }
 
   post<T>(path: string, body?: unknown): Observable<T> {
-    return this.http.post<T>(`${this.base}/api${path}`, body ?? {});
+    return this.http.post<T>(`${this.base}${path}`, body ?? {}, { withCredentials: true });
   }
 
   // KPIs / dashboard
