@@ -65,14 +65,18 @@ async function addProductConv(conversation, ctx) {
     if (i % 2 === 1) catKb.row();
   });
   if (cats.length % 2 === 1) catKb.row();
-  catKb.text(lang === 'uz' ? '⏭ Toifasiz' : '⏭ Без категории', 'addp:cat:none');
+  catKb.text(lang === 'uz' ? '⏭ Toifasiz' : '⏭ Без категории', 'addp:cat:none').row();
+  // Inline-копия «Отмены»: на Android persistent reply-клавиатура иногда
+  // сворачивается за soft-кнопками, и кнопка снизу не видна — поэтому
+  // дублируем её здесь, чтобы выход был под рукой в любом клиенте.
+  catKb.text(t('common.cancel'), 'addp:cat:cancel');
   await ctx.reply(`${stepHeader(ctx, 2)}\n${t('seller.products.add_step_category')}`, {
     parse_mode: 'Markdown',
     reply_markup: catKb,
   });
 
-  // Слушаем оба варианта: тап по категории (callback) или текст «Отмена»
-  // снизу. Без этого пользователь, нажавший reply-кнопку, остался бы висеть.
+  // Слушаем оба варианта: тап по inline-кнопке или текст «Отмена» с
+  // нижней reply-клавиатуры — оба должны вести в главное меню.
   let catVal = null;
   while (catVal === null) {
     const upd = await conversation.wait();
@@ -86,6 +90,10 @@ async function addProductConv(conversation, ctx) {
       await upd.answerCallbackQuery();
     }
     // Иначе игнорируем апдейт (любые другие сообщения).
+  }
+  if (catVal === 'cancel') {
+    await ctx.reply(t('common.cancelled'), { reply_markup: mainMenuKeyboard(ctx) });
+    return;
   }
   const categoryId = catVal === 'none' ? null : catVal;
 
