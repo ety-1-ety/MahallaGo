@@ -56,9 +56,11 @@ async function addProductConv(conversation, ctx) {
   // при replay (категории могут смениться между прогонами).
   const cats = await conversation.external(() => fetchCategories());
   const catKb = new InlineKeyboard();
-  for (const c of cats) {
-    catKb.text(`${c.emoji || '📦'} ${lang === 'uz' ? c.name_uz : c.name_ru}`, `addp:cat:${c.id}`).row();
-  }
+  cats.forEach((c, i) => {
+    catKb.text(`${c.emoji || '📦'} ${lang === 'uz' ? c.name_uz : c.name_ru}`, `addp:cat:${c.id}`);
+    if (i % 2 === 1) catKb.row();
+  });
+  if (cats.length % 2 === 1) catKb.row();
   catKb.text(lang === 'uz' ? '⏭ Toifasiz' : '⏭ Без категории', 'addp:cat:none');
   await ctx.reply(`${stepHeader(ctx, 2)}\n${t('seller.products.add_step_category')}`, {
     parse_mode: 'Markdown',
