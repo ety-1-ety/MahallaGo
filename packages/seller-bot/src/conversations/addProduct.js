@@ -61,15 +61,21 @@ async function addProductConv(conversation, ctx) {
     if (i % 2 === 1) catKb.row();
   });
   if (cats.length % 2 === 1) catKb.row();
-  catKb.text(lang === 'uz' ? '⏭ Toifasiz' : '⏭ Без категории', 'addp:cat:none');
+  catKb.text(lang === 'uz' ? '⏭ Toifasiz' : '⏭ Без категории', 'addp:cat:none').row();
+  catKb.text(t('common.cancel'), 'addp:cat:cancel');
   await ctx.reply(`${stepHeader(ctx, 2)}\n${t('seller.products.add_step_category')}`, {
     parse_mode: 'Markdown',
     reply_markup: catKb,
   });
   const catCb = await conversation.waitForCallbackQuery(/^addp:cat:/);
   const catVal = catCb.callbackQuery.data.split(':')[2];
-  const categoryId = catVal === 'none' ? null : catVal;
   await catCb.answerCallbackQuery();
+  if (catVal === 'cancel') {
+    await catCb.editMessageReplyMarkup({ reply_markup: undefined }).catch(() => {});
+    await catCb.reply(t('common.cancelled'), { reply_markup: mainMenuKeyboard(ctx) });
+    return;
+  }
+  const categoryId = catVal === 'none' ? null : catVal;
 
   // ── 3/5 Цена ───────────────────────────────────────────────
   await ctx.reply(`${stepHeader(ctx, 3)}\n${t('seller.products.add_step_price')}`, {
