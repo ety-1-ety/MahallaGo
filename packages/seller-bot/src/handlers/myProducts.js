@@ -14,7 +14,8 @@ export async function handleMyProducts(ctx) {
        FROM catalog.products p
        LEFT JOIN catalog.categories c ON c.id = p.category_id
       WHERE p.shop_id = $1
-      ORDER BY p.is_active DESC, p.created_at DESC
+        AND p.is_active = TRUE
+      ORDER BY p.created_at DESC
       LIMIT 50`,
     [ctx.shop.id],
   );
@@ -30,25 +31,22 @@ export async function handleMyProducts(ctx) {
     const lang = ctx.locale;
     const catName = lang === 'uz' ? p.cat_uz : p.cat_ru;
     const stockTxt = lang === 'uz' ? `📊 Sklada: ${p.stock}` : `📊 На складе: ${p.stock}`;
-    const hiddenTxt = p.is_active
-      ? ''
-      : (lang === 'uz' ? '\n⚪ _Yashirin_' : '\n⚪ _Скрыт_');
     const lines = [
       `*${p.name}*`,
       catName ? `${p.emoji || '📦'} ${catName}` : null,
       `💰 ${formatUZS(p.price, lang)}`,
       stockTxt,
-    ].filter(Boolean).join('\n') + hiddenTxt;
+    ].filter(Boolean).join('\n');
 
+    // is_active = TRUE по WHERE-фильтру выше, поэтому toggle всегда «скрыть».
+    // Кнопка «🗑 Удалить» тоже делает soft-delete — оба варианта убирают
+    // товар из списка, разница в SQL-функции (toggle/delete_product),
+    // которая может в будущем повлиять на статистику.
     const kb = new InlineKeyboard()
       .text(lang === 'uz' ? '💰 Narx'    : '💰 Цена',    `prod_mgr:price:${p.id}`)
       .text(lang === 'uz' ? '📊 Qoldiq'  : '📊 Остаток', `prod_mgr:stock:${p.id}`).row()
-      .text(p.is_active
-        ? (lang === 'uz' ? '👁 Yashirish'  : '👁 Скрыть')
-        : (lang === 'uz' ? '👁 Koʻrsatish' : '👁 Показать'),
-        `prod_mgr:toggle:${p.id}`)
-      .text(lang === 'uz' ? '🗑 Oʻchirish' : '🗑 Удалить',
-        `prod_mgr:delete:${p.id}`);
+      .text(lang === 'uz' ? '👁 Yashirish' : '👁 Скрыть',  `prod_mgr:toggle:${p.id}`)
+      .text(lang === 'uz' ? '🗑 Oʻchirish' : '🗑 Удалить', `prod_mgr:delete:${p.id}`);
 
     if (p.photo_file_id) {
       try {
