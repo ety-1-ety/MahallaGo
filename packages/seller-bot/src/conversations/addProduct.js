@@ -43,7 +43,7 @@ async function addProductConv(conversation, ctx) {
   while (true) {
     nameMsg = await conversation.waitFor('message:text');
     if (nameMsg.message.text === t('common.cancel')) {
-      await ctx.reply(t('common.cancel'), { reply_markup: { remove_keyboard: true } });
+      await ctx.reply(t('common.cancelled'), { reply_markup: mainMenuKeyboard(ctx) });
       return;
     }
     if (nameMsg.message.text.trim().length >= 2) break;
@@ -78,7 +78,7 @@ async function addProductConv(conversation, ctx) {
   while (price === null) {
     const m = await conversation.waitFor('message:text');
     if (m.message.text === t('common.cancel')) {
-      await ctx.reply(t('common.cancel'), { reply_markup: { remove_keyboard: true } });
+      await ctx.reply(t('common.cancelled'), { reply_markup: mainMenuKeyboard(ctx) });
       return;
     }
     const cleaned = m.message.text.replace(/\s+/g, '').replace(',', '.');
@@ -96,7 +96,7 @@ async function addProductConv(conversation, ctx) {
   while (stock === null) {
     const m = await conversation.waitFor('message:text');
     if (m.message.text === t('common.cancel')) {
-      await ctx.reply(t('common.cancel'), { reply_markup: { remove_keyboard: true } });
+      await ctx.reply(t('common.cancelled'), { reply_markup: mainMenuKeyboard(ctx) });
       return;
     }
     const n = Number(m.message.text.trim());
@@ -118,7 +118,7 @@ async function addProductConv(conversation, ctx) {
     const photoMsg = await conversation.wait();
     lastCtx = photoMsg;
     if (photoMsg.message?.text === t('common.cancel')) {
-      await photoMsg.reply(t('common.cancel'), {
+      await photoMsg.reply(t('common.cancelled'), {
         reply_markup: mainMenuKeyboard(ctx),
       });
       return;

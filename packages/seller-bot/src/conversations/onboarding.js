@@ -51,7 +51,7 @@ async function onboardingConv(conversation, ctx) {
   while (true) {
     nameMsg = await conversation.waitFor('message:text');
     if (nameMsg.message.text === t('common.cancel')) {
-      await ctx.reply(t('common.cancel'), { reply_markup: { remove_keyboard: true } });
+      await ctx.reply(t('common.cancelled_no_shop'), { reply_markup: { remove_keyboard: true } });
       return;
     }
     if (nameMsg.message.text.trim().length >= 2) break;
@@ -140,7 +140,7 @@ async function onboardingConv(conversation, ctx) {
   while (true) {
     locationMsg = await conversation.wait();
     if (locationMsg.message?.text === t('common.cancel')) {
-      await ctx.reply(t('common.cancel'), { reply_markup: { remove_keyboard: true } });
+      await ctx.reply(t('common.cancelled_no_shop'), { reply_markup: { remove_keyboard: true } });
       return;
     }
     if (locationMsg.message?.location) break;
@@ -165,7 +165,7 @@ async function onboardingConv(conversation, ctx) {
   while (true) {
     const addrMsg = await conversation.waitFor('message:text');
     if (addrMsg.message.text === t('common.cancel')) {
-      await ctx.reply(t('common.cancel'), { reply_markup: { remove_keyboard: true } });
+      await ctx.reply(t('common.cancelled_no_shop'), { reply_markup: { remove_keyboard: true } });
       return;
     }
     const trimmed = addrMsg.message.text.trim();
@@ -191,7 +191,7 @@ async function onboardingConv(conversation, ctx) {
   while (true) {
     phoneMsg = await conversation.wait();
     if (phoneMsg.message?.text === t('common.cancel')) {
-      await ctx.reply(t('common.cancel'), { reply_markup: { remove_keyboard: true } });
+      await ctx.reply(t('common.cancelled_no_shop'), { reply_markup: { remove_keyboard: true } });
       return;
     }
     if (phoneMsg.message?.contact?.phone_number) {
@@ -216,7 +216,7 @@ async function onboardingConv(conversation, ctx) {
   while (true) {
     const photoMsg = await conversation.wait();
     if (photoMsg.message?.text === t('common.cancel')) {
-      await ctx.reply(t('common.cancel'), { reply_markup: { remove_keyboard: true } });
+      await ctx.reply(t('common.cancelled_no_shop'), { reply_markup: { remove_keyboard: true } });
       return;
     }
     if (photoMsg.message?.text === t('common.skip')) {

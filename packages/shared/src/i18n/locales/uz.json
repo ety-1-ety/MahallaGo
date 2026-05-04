@@ -4,6 +4,8 @@
     "no": "Yoʻq",
     "back": "← Orqaga",
     "cancel": "❌ Bekor qilish",
+    "cancelled": "❌ Bekor qilindi. Bosh menyudasiz.",
+    "cancelled_no_shop": "❌ Bekor qilindi. Doʻkonni roʻyxatdan oʻtkazish uchun /start ni bosing.",
     "save": "💾 Saqlash",
     "skip": "Oʻtkazib yuborish",
     "loading": "⏳ Yuklanmoqda...",

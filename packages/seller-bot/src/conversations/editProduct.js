@@ -40,7 +40,7 @@ async function editProductConv(conversation, ctx) {
     if (txt === t('common.cancel')) {
       delete m.session.editing_product_id;
       delete m.session.editing_product_field;
-      await m.reply(t('common.cancel'), { reply_markup: mainMenuKeyboard(ctx) });
+      await m.reply(t('common.cancelled'), { reply_markup: mainMenuKeyboard(ctx) });
       return;
     }
 

@@ -2,6 +2,7 @@ import { createConversation } from '@grammyjs/conversations';
 import { Keyboard, InlineKeyboard } from 'grammy';
 import { applySettingUpdate } from '../handlers/settings.js';
 import { settingsKeyboard } from '../keyboards/settings.js';
+import { mainMenuKeyboard } from '../keyboards/mainMenu.js';
 
 /**
  * Универсальный wizard редактирования одной настройки магазина.
@@ -94,7 +95,7 @@ async function editSettingConv(conversation, ctx) {
 
     if (txt === t('common.cancel')) {
       delete m.session.editing_setting_field;
-      await m.reply(t('common.cancel'), { reply_markup: { remove_keyboard: true } });
+      await m.reply(t('common.cancelled'), { reply_markup: mainMenuKeyboard(ctx) });
       return;
     }
 
