@@ -155,6 +155,7 @@
       "free_delivery_unset": "belgilanmagan",
       "radius_label":        "📍 Radius: {value} m",
       "hours_label":         "🕐 Ish vaqti",
+      "language_label":      "🌐 Til: {value}",
       "saved": "✅ Sozlamalar saqlandi"
     },
     "new_order_notif": {

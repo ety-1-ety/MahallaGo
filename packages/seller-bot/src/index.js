@@ -1,9 +1,10 @@
 import 'dotenv/config';
-import { Bot } from 'grammy';
+import { Bot, InlineKeyboard } from 'grammy';
 import { conversations } from '@grammyjs/conversations';
 import {
   createLogger, loadConfig, closePool, closeRedis,
   sweepStaleConversations, clearConversationFromSession,
+  callFnRow, t as tFn,
 } from '@mahallashop/shared';
 
 import { buildSession }   from './middleware/session.js';
@@ -21,6 +22,7 @@ import { registerStart }  from './handlers/start.js';
 import { handleMainMenuMessage } from './handlers/menu.js';
 import { handleOrderCallback, handleRejectReason } from './handlers/orders.js';
 import { applySettingUpdate } from './handlers/settings.js';
+import { settingsKeyboard } from './keyboards/settings.js';
 import { handleProductMgrCallback } from './handlers/myProducts.js';
 
 import { startNotifier } from './notifier.js';
@@ -95,9 +97,42 @@ bot.callbackQuery(/^set:/, async (ctx) => {
     await ctx.deleteMessage().catch(() => {});
     return;
   }
+  if (data === 'set:language') {
+    const kb = new InlineKeyboard()
+      .text(ctx.t('language.choose_uz'), 'lang:uz').row()
+      .text(ctx.t('language.choose_ru'), 'lang:ru');
+    await ctx.editMessageText(ctx.t('language.choose_title'), {
+      parse_mode: 'Markdown',
+      reply_markup: kb,
+    }).catch(() => {});
+    return;
+  }
   const field = data.split(':')[1];
   ctx.session.editing_setting_field = field;
   await ctx.conversation.enter('editSetting');
+});
+
+// Переключение языка из меню настроек
+bot.callbackQuery(/^lang:/, async (ctx) => {
+  const lang = ctx.callbackQuery.data.split(':')[1];
+  if (lang !== 'uz' && lang !== 'ru') {
+    await ctx.answerCallbackQuery();
+    return;
+  }
+  await callFnRow('auth.set_language', [ctx.user.id, lang]);
+  ctx.session.language = lang;
+  ctx.locale = lang;
+  ctx.t = (key, vars) => tFn(lang, key, vars);
+
+  await ctx.answerCallbackQuery({ text: tFn(lang, 'language.saved') });
+  if (ctx.shop) {
+    await ctx.editMessageText(tFn(lang, 'seller.settings.title'), {
+      parse_mode: 'Markdown',
+      reply_markup: settingsKeyboard(ctx),
+    }).catch(() => {});
+  } else {
+    await ctx.editMessageText(tFn(lang, 'language.saved')).catch(() => {});
+  }
 });
 
 // «Сборщик» причины reject — должен идти ДО main-menu router

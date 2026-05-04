@@ -155,6 +155,7 @@
       "free_delivery_unset": "не задано",
       "radius_label":        "📍 Радиус: {value} м",
       "hours_label":         "🕐 Часы работы",
+      "language_label":      "🌐 Язык: {value}",
       "saved": "✅ Настройки сохранены"
     },
     "new_order_notif": {
