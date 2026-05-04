@@ -1,14 +1,14 @@
 @use '@angular/material' as mat;
 
-// ─── Кастомная палитра в цветах флага Узбекистана ──────────────
-// Зелёный #1eb53a (primary), синий #0099b5 (tertiary/accent)
+// ─── Кастомная палитра в цветах флага Узбекистана ──────────────────
+// Зелёный #1eb53a (primary), синий #0099b5 (tertiary/accent).
 $uz-green: (
   50:  #e7f7ec,
   100: #c4ebd0,
   200: #9cdfb3,
   300: #71d495,
   400: #4cc97c,
-  500: #1eb53a,  // основной
+  500: #1eb53a,
   600: #19a634,
   700: #11942c,
   800: #098225,
@@ -26,7 +26,7 @@ $uz-blue: (
   200: #80ccd8,
   300: #4db8c8,
   400: #26a8bc,
-  500: #0099b5,  // акцент
+  500: #0099b5,
   600: #008aa3,
   700: #00788d,
   800: #006677,
@@ -39,7 +39,7 @@ $uz-blue: (
 );
 
 html {
-  // Light theme (default)
+  // ─ Light theme (default) ─
   @include mat.theme((
     color: (
       primary:  $uz-green,
@@ -49,6 +49,7 @@ html {
     density: 0,
   ));
 
+  // ─ Dark theme ─
   &.dark-theme {
     color-scheme: dark;
     @include mat.theme((
@@ -60,7 +61,41 @@ html {
       typography: 'Inter, sans-serif',
       density: 0,
     ));
+
+    // Перебиваем sys-токены под тёмный «футуристический» вид
+    --mhs-bg-1: #07090f;
+    --mhs-bg-2: #0d1220;
+    --mhs-surface: rgba(22, 28, 46, 0.78);
+    --mhs-surface-strong: rgba(28, 36, 60, 0.95);
+    --mhs-border: rgba(99, 230, 190, 0.12);
+    --mhs-border-strong: rgba(99, 230, 190, 0.28);
+    --mhs-text: #e6f2ee;
+    --mhs-text-muted: #93a4b3;
+    --mhs-glow-primary: 0 0 28px rgba(30, 181, 58, 0.45);
+    --mhs-glow-accent:  0 0 28px rgba(0, 220, 240, 0.35);
+    --mhs-grid: rgba(255, 255, 255, 0.04);
+
+    --mat-sys-surface: var(--mhs-surface);
+    --mat-sys-surface-container: var(--mhs-surface);
+    --mat-sys-surface-container-high: var(--mhs-surface-strong);
+    --mat-sys-on-surface: var(--mhs-text);
+    --mat-sys-on-surface-variant: var(--mhs-text-muted);
+    --mat-sys-outline-variant: var(--mhs-border);
+    --mat-sys-outline: var(--mhs-border-strong);
   }
+
+  // Светлая тоже получает локальные mhs-токены — для одинаковых селекторов
+  --mhs-bg-1: #f4f7fb;
+  --mhs-bg-2: #eef3fa;
+  --mhs-surface: #ffffff;
+  --mhs-surface-strong: #ffffff;
+  --mhs-border: rgba(15, 25, 50, 0.08);
+  --mhs-border-strong: rgba(15, 25, 50, 0.16);
+  --mhs-text: #0e1623;
+  --mhs-text-muted: #5b6b80;
+  --mhs-glow-primary: 0 8px 24px rgba(30, 181, 58, 0.18);
+  --mhs-glow-accent:  0 8px 24px rgba(0, 153, 181, 0.15);
+  --mhs-grid: rgba(0, 0, 0, 0.03);
 }
 
 * { box-sizing: border-box; }
@@ -69,8 +104,34 @@ html, body {
   height: 100%;
   margin: 0;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
+  font-feature-settings: 'cv11', 'ss01';
+  letter-spacing: -0.005em;
+  color: var(--mhs-text);
+  background: var(--mhs-bg-1);
+}
+
+// Футуристический фон с радиальными «свечениями» и тонкой сеткой.
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(80% 60% at 0% 0%,   rgba(30, 181, 58, 0.10), transparent 60%),
+    radial-gradient(70% 60% at 100% 0%, rgba(0, 220, 240, 0.10), transparent 60%),
+    radial-gradient(60% 60% at 100% 100%, rgba(120, 80, 255, 0.08), transparent 60%),
+    linear-gradient(180deg, var(--mhs-bg-1), var(--mhs-bg-2));
+}
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, var(--mhs-grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--mhs-grid) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse at center, black 50%, transparent 100%);
 }
 
 a { color: var(--mat-sys-primary); text-decoration: none; }
@@ -80,28 +141,173 @@ a:hover { text-decoration: underline; }
 .flex-col { display: flex; flex-direction: column; }
 .gap-1 { gap: 8px; } .gap-2 { gap: 16px; } .gap-3 { gap: 24px; }
 .grow { flex: 1 1 auto; }
-.text-muted { color: var(--mat-sys-on-surface-variant); }
+.text-muted { color: var(--mhs-text-muted); }
 
+// ─── Layout ────────────────────────────────────────────────────────
 .page-container {
-  padding: 24px;
-  max-width: 1400px;
+  padding: 28px;
+  max-width: 1480px;
   margin: 0 auto;
 }
-
 .page-title {
   font-size: 28px;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   margin: 0 0 24px 0;
+  background: linear-gradient(120deg, var(--mat-sys-primary) 0%, #00dcf0 50%, #b388ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
-
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 16px;
+  gap: 18px;
   margin-bottom: 32px;
 }
-
 @media (max-width: 768px) {
   .page-container { padding: 16px; }
   .kpi-grid { grid-template-columns: 1fr 1fr; }
+}
+
+// ─── Glass surfaces (Material cards / sidenav / toolbar) ───────────
+.mat-mdc-card,
+mat-card.mat-mdc-card {
+  background: var(--mhs-surface) !important;
+  border: 1px solid var(--mhs-border);
+  border-radius: 18px !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255,255,255,0.04) !important;
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+.mat-mdc-card:hover {
+  border-color: var(--mhs-border-strong);
+  transform: translateY(-1px);
+}
+
+// Sidenav / toolbar
+mat-sidenav.sidenav {
+  background: var(--mhs-surface) !important;
+  border-right: 1px solid var(--mhs-border) !important;
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
+mat-toolbar.mat-toolbar {
+  background: linear-gradient(180deg, var(--mhs-surface-strong), var(--mhs-surface)) !important;
+  border-bottom: 1px solid var(--mhs-border) !important;
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  color: var(--mhs-text) !important;
+}
+
+// ─── Sidenav nav-list ──────────────────────────────────────────────
+mat-nav-list a.mat-mdc-list-item {
+  border-radius: 12px;
+  margin: 4px 10px;
+  --mdc-list-list-item-container-color: transparent;
+  transition: background .15s ease, color .15s ease;
+}
+mat-nav-list a.mat-mdc-list-item:hover {
+  background: color-mix(in srgb, var(--mat-sys-primary) 8%, transparent);
+}
+mat-nav-list a.mat-mdc-list-item.active {
+  background: linear-gradient(90deg,
+    color-mix(in srgb, var(--mat-sys-primary) 22%, transparent),
+    color-mix(in srgb, var(--mat-sys-tertiary) 14%, transparent));
+  color: var(--mhs-text);
+  position: relative;
+}
+mat-nav-list a.mat-mdc-list-item.active::before {
+  content: '';
+  position: absolute; left: -10px; top: 8px; bottom: 8px;
+  width: 3px;
+  background: linear-gradient(180deg, var(--mat-sys-primary), #00dcf0);
+  border-radius: 2px;
+  box-shadow: 0 0 12px var(--mat-sys-primary);
+}
+mat-nav-list a.mat-mdc-list-item .mdc-list-item__primary-text {
+  color: inherit !important;
+}
+
+// ─── Buttons (glow + gradient для filled-primary) ──────────────────
+.mat-mdc-unelevated-button.mat-primary,
+.mat-mdc-raised-button.mat-primary,
+.mdc-button--unelevated.mat-primary {
+  --mdc-filled-button-container-color: transparent;
+  background: linear-gradient(135deg, var(--mat-sys-primary), #00dcf0) !important;
+  color: white !important;
+  box-shadow: var(--mhs-glow-primary) !important;
+  letter-spacing: 0.01em;
+  transition: transform .15s ease, box-shadow .2s ease;
+}
+.mat-mdc-unelevated-button.mat-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 36px rgba(30, 181, 58, 0.55) !important;
+}
+.mat-mdc-icon-button {
+  transition: background .15s ease, color .15s ease;
+}
+
+// ─── Inputs (form fields) ──────────────────────────────────────────
+.mat-mdc-form-field .mdc-text-field--outlined .mdc-notched-outline__leading,
+.mat-mdc-form-field .mdc-text-field--outlined .mdc-notched-outline__trailing,
+.mat-mdc-form-field .mdc-text-field--outlined .mdc-notched-outline__notch {
+  border-color: var(--mhs-border-strong) !important;
+}
+.mat-mdc-form-field .mdc-text-field--outlined.mdc-text-field--focused .mdc-notched-outline__leading,
+.mat-mdc-form-field .mdc-text-field--outlined.mdc-text-field--focused .mdc-notched-outline__trailing,
+.mat-mdc-form-field .mdc-text-field--outlined.mdc-text-field--focused .mdc-notched-outline__notch {
+  border-color: var(--mat-sys-primary) !important;
+  border-width: 2px !important;
+}
+
+// ─── Tables ────────────────────────────────────────────────────────
+.mat-mdc-table {
+  background: transparent !important;
+}
+.mat-mdc-row, .mat-mdc-header-row {
+  border-bottom: 1px solid var(--mhs-border) !important;
+}
+.mat-mdc-row:hover {
+  background: color-mix(in srgb, var(--mat-sys-primary) 6%, transparent);
+}
+
+// ─── Mat-icon: используем Material Icons (legacy) для надёжных глифов
+.mat-icon, mat-icon {
+  font-family: 'Material Icons', 'Material Symbols Outlined' !important;
+  font-feature-settings: 'liga';
+}
+
+// ─── Скроллбары ───────────────────────────────────────────────────
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb {
+  background: var(--mhs-border-strong);
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--mat-sys-primary) 60%, var(--mhs-border-strong));
+  background-clip: padding-box;
+}
+
+// ─── Status badges (если используются в shared/components/status-badge) ─
+.status-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px; font-weight: 600;
+  border: 1px solid var(--mhs-border-strong);
+  background: var(--mhs-surface-strong);
+}
+
+// ─── Анимация появления ────────────────────────────────────────────
+@keyframes mhs-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+.page-container > * {
+  animation: mhs-fade-in 0.32s ease both;
 }
