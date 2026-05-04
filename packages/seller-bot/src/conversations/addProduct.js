@@ -35,9 +35,13 @@ async function addProductConv(conversation, ctx) {
   }
 
   // ── 1/5 Название ───────────────────────────────────────────
+  // Reply-клавиатура «Отмена» висит persistent через все шаги wizard'а:
+  // тогда даже на шаге категорий (там inline-меню) кнопка снизу остаётся
+  // видимой. Убирается явно при выходе (cancel/успех).
+  const cancelKb = new Keyboard().text(t('common.cancel')).resized().persistent();
   await ctx.reply(`${stepHeader(ctx, 1)}\n${t('seller.products.add_step_name')}`, {
     parse_mode: 'Markdown',
-    reply_markup: new Keyboard().text(t('common.cancel')).resized().oneTime(),
+    reply_markup: cancelKb,
   });
   let nameMsg;
   while (true) {
@@ -61,26 +65,33 @@ async function addProductConv(conversation, ctx) {
     if (i % 2 === 1) catKb.row();
   });
   if (cats.length % 2 === 1) catKb.row();
-  catKb.text(lang === 'uz' ? '⏭ Toifasiz' : '⏭ Без категории', 'addp:cat:none').row();
-  catKb.text(t('common.cancel'), 'addp:cat:cancel');
+  catKb.text(lang === 'uz' ? '⏭ Toifasiz' : '⏭ Без категории', 'addp:cat:none');
   await ctx.reply(`${stepHeader(ctx, 2)}\n${t('seller.products.add_step_category')}`, {
     parse_mode: 'Markdown',
     reply_markup: catKb,
   });
-  const catCb = await conversation.waitForCallbackQuery(/^addp:cat:/);
-  const catVal = catCb.callbackQuery.data.split(':')[2];
-  await catCb.answerCallbackQuery();
-  if (catVal === 'cancel') {
-    await catCb.editMessageReplyMarkup({ reply_markup: undefined }).catch(() => {});
-    await catCb.reply(t('common.cancelled'), { reply_markup: mainMenuKeyboard(ctx) });
-    return;
+
+  // Слушаем оба варианта: тап по категории (callback) или текст «Отмена»
+  // снизу. Без этого пользователь, нажавший reply-кнопку, остался бы висеть.
+  let catVal = null;
+  while (catVal === null) {
+    const upd = await conversation.wait();
+    if (upd.message?.text === t('common.cancel')) {
+      await upd.reply(t('common.cancelled'), { reply_markup: mainMenuKeyboard(ctx) });
+      return;
+    }
+    const data = upd.callbackQuery?.data;
+    if (data && data.startsWith('addp:cat:')) {
+      catVal = data.split(':')[2];
+      await upd.answerCallbackQuery();
+    }
+    // Иначе игнорируем апдейт (любые другие сообщения).
   }
   const categoryId = catVal === 'none' ? null : catVal;
 
   // ── 3/5 Цена ───────────────────────────────────────────────
   await ctx.reply(`${stepHeader(ctx, 3)}\n${t('seller.products.add_step_price')}`, {
     parse_mode: 'Markdown',
-    reply_markup: new Keyboard().text(t('common.cancel')).resized().oneTime(),
   });
   let price = null;
   while (price === null) {
@@ -116,9 +127,11 @@ async function addProductConv(conversation, ctx) {
   }
 
   // ── 5/5 Фото (skip разрешён) ───────────────────────────────
+  // На этом шаге к persistent-«Отмене» добавляем «Пропустить» —
+  // отправляем новый reply_markup, persistent сохраняется.
   await ctx.reply(`${stepHeader(ctx, 5)}\n${t('seller.products.add_step_photo')}`, {
     parse_mode: 'Markdown',
-    reply_markup: new Keyboard().text(t('common.skip')).text(t('common.cancel')).resized().oneTime(),
+    reply_markup: new Keyboard().text(t('common.skip')).text(t('common.cancel')).resized().persistent(),
   });
   let photoFileId = null;
   let lastCtx = ctx;
