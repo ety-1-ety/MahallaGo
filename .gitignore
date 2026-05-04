@@ -48,5 +48,11 @@ backups/
 # Локальные настройки редактора
 .vscode/settings.local.json
 
-# Загруженные фото товаров/магазинов (downloadTelegramPhoto → data/photos)
-data/photos/
+# Локальная папка данных:
+#   data/photos/      — фото товаров/магазинов (downloadTelegramPhoto)
+#   data/server.txt   — заметки/credentials локальной разработки
+# Целиком игнорируем, чтобы случайно не утекло.
+data/
+
+# Параметры деплоя — содержат секреты
+deploy/run/.env.deploy
