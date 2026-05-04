@@ -196,14 +196,18 @@ async function renderCategoriesView(ctx, opts) {
 // ─── Stage 2: Paginated list view ────────────────────────────────
 async function renderListView(ctx, state, opts) {
   const lang = ctx.locale;
-  const total = await countProducts(ctx.shop.id, state);
+
+  // Сначала параллельно: count + headerName.
+  // По count'у узнаем totalPages, нормализуем state.page, и только тогда грузим items.
+  const [total, headerName] = await Promise.all([
+    countProducts(ctx.shop.id, state),
+    categoryHeader(ctx, state),
+  ]);
+
   const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
   const page = Math.max(1, Math.min(state.page || 1, totalPages));
   state.page = page;
   const items = await listProducts(ctx.shop.id, state);
-
-  // Заголовок
-  const headerName = await categoryHeader(ctx, state);
   const headerLines = [
     ctx.t('seller.products.list_title', {
       header: headerName,
@@ -293,23 +297,26 @@ async function renderCardView(ctx, productId, listState, opts) {
     .text(lang === 'uz' ? '🗑 Oʻchirish' : '🗑 Удалить', `prod_mgr:delete:${p.id}`).row()
     .text(ctx.t('seller.products.btn_back_to_list'), 'mp:back');
 
-  // Удаляем предыдущее сообщение (текстовый список) — заменяем фото-карточкой.
-  if (opts.deleteChatId && opts.deleteMessageId) {
-    await ctx.api.deleteMessage(opts.deleteChatId, opts.deleteMessageId).catch(() => {});
-    await clearState(opts.deleteChatId, opts.deleteMessageId);
-  }
+  // Параллельно: удаляем старый список + отправляем фото-карточку.
+  // На UX это даёт ~½ задержки vs последовательного flow (раньше шло
+  // ~deleteMessage 300ms → sendPhoto 500ms; теперь обе одновременно).
+  // Кратковременно может быть видно «оба» сообщения, но пользователь и
+  // так смотрит вниз — новое появляется поверх старого, и старое исчезает.
+  const deletePromise = (opts.deleteChatId && opts.deleteMessageId)
+    ? ctx.api.deleteMessage(opts.deleteChatId, opts.deleteMessageId).catch(() => {})
+    : Promise.resolve();
 
-  let sent;
-  if (p.photo_file_id) {
-    try {
-      sent = await ctx.replyWithPhoto(p.photo_file_id, {
+  const sendPromise = p.photo_file_id
+    ? ctx.replyWithPhoto(p.photo_file_id, {
         caption, parse_mode: 'Markdown', reply_markup: kb,
-      });
-    } catch {
-      sent = await ctx.reply(caption, { parse_mode: 'Markdown', reply_markup: kb });
-    }
-  } else {
-    sent = await ctx.reply(caption, { parse_mode: 'Markdown', reply_markup: kb });
+      }).catch(() => ctx.reply(caption, { parse_mode: 'Markdown', reply_markup: kb }))
+    : ctx.reply(caption, { parse_mode: 'Markdown', reply_markup: kb });
+
+  const [, sent] = await Promise.all([deletePromise, sendPromise]);
+
+  // Чистим Redis state старого сообщения (delete уже произошёл).
+  if (opts.deleteChatId && opts.deleteMessageId) {
+    clearState(opts.deleteChatId, opts.deleteMessageId).catch(() => {});
   }
 
   await saveState(sent.chat.id, sent.message_id, {
@@ -354,9 +361,12 @@ async function sendOrEdit(ctx, text, kb, opts, stateToSave) {
       messageId = sent.message_id;
     }
   } else if (opts.deleteChatId && opts.deleteMessageId) {
-    await ctx.api.deleteMessage(opts.deleteChatId, opts.deleteMessageId).catch(() => {});
-    await clearState(opts.deleteChatId, opts.deleteMessageId);
-    const sent = await ctx.reply(text, { parse_mode: 'Markdown', reply_markup: replyMarkup });
+    // Параллельно delete старого + send нового — экономит ~один Telegram-roundtrip.
+    const [, sent] = await Promise.all([
+      ctx.api.deleteMessage(opts.deleteChatId, opts.deleteMessageId).catch(() => {}),
+      ctx.reply(text, { parse_mode: 'Markdown', reply_markup: replyMarkup }),
+    ]);
+    clearState(opts.deleteChatId, opts.deleteMessageId).catch(() => {});
     chatId    = sent.chat.id;
     messageId = sent.message_id;
   } else {
