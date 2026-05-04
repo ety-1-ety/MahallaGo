@@ -67,10 +67,12 @@ async function onboardingConv(conversation, ctx) {
 
   function buildCatKeyboard() {
     const kb = new InlineKeyboard();
-    for (const c of cats) {
+    cats.forEach((c, i) => {
       const mark = selected.has(c.slug) ? '✅ ' : '⬜ ';
-      kb.text(`${mark}${categoryLabel(c, lang)}`, `onb:cat:${c.slug}`).row();
-    }
+      kb.text(`${mark}${categoryLabel(c, lang)}`, `onb:cat:${c.slug}`);
+      if (i % 2 === 1) kb.row();
+    });
+    if (cats.length % 2 === 1) kb.row();
     kb.text(t('seller.onboarding.category_done'), 'onb:cat:__done__');
     return kb;
   }
