@@ -75,7 +75,7 @@ interface NavItem { path: string; icon: string; titleKey: string; }
           <mat-menu #userMenu>
             <div mat-menu-item disabled>
               <mat-icon>person</mat-icon>
-              <span>{{ auth.user()?.first_name || '—' }}</span>
+              <span>{{ auth.user()?.name || auth.user()?.login || '—' }}</span>
             </div>
             <button mat-menu-item (click)="logout()">
               <mat-icon>logout</mat-icon>
