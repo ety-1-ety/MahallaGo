@@ -23,6 +23,7 @@ import { handleMainMenuMessage } from './handlers/menu.js';
 import { handleOrderCallback, handleRejectReason } from './handlers/orders.js';
 import { applySettingUpdate } from './handlers/settings.js';
 import { settingsKeyboard } from './keyboards/settings.js';
+import { mainMenuKeyboard } from './keyboards/mainMenu.js';
 import { handleProductMgrCallback } from './handlers/myProducts.js';
 
 import { startNotifier } from './notifier.js';
@@ -125,13 +126,22 @@ bot.callbackQuery(/^lang:/, async (ctx) => {
   ctx.t = (key, vars) => tFn(lang, key, vars);
 
   await ctx.answerCallbackQuery({ text: tFn(lang, 'language.saved') });
+
+  // Закрываем сообщение настроек — старая inline-клавиатура была в прежнем языке.
+  await ctx.deleteMessage().catch(() => {});
+
+  // Перерисовываем нижнюю reply-клавиатуру (главное меню) на новом языке.
+  // Без этого Telegram продолжает показывать старые кнопки до следующего /start.
+  await ctx.reply(tFn(lang, 'language.saved'), {
+    reply_markup: ctx.shop ? mainMenuKeyboard(ctx) : { remove_keyboard: true },
+  });
+
+  // И сразу заново открываем меню настроек — уже на новом языке.
   if (ctx.shop) {
-    await ctx.editMessageText(tFn(lang, 'seller.settings.title'), {
+    await ctx.reply(tFn(lang, 'seller.settings.title'), {
       parse_mode: 'Markdown',
       reply_markup: settingsKeyboard(ctx),
-    }).catch(() => {});
-  } else {
-    await ctx.editMessageText(tFn(lang, 'language.saved')).catch(() => {});
+    });
   }
 });
 
