@@ -90,6 +90,16 @@ bot.callbackQuery(/^prod:/, handleProductCallback);
 bot.callbackQuery(/^cart:/, handleCartCallback);
 bot.callbackQuery('loc:reuse', handleReuseLocation);
 
+// Fallback для notes:skip / notes:cancel — основная обработка идёт внутри
+// checkout conversation; этот хэндлер ловит лишь повторные клики по
+// «протухшим» кнопкам после завершения flow, чтобы не висел спиннер.
+bot.callbackQuery(/^notes:/, async (ctx) => {
+  await ctx.answerCallbackQuery();
+  try {
+    await ctx.editMessageReplyMarkup({ reply_markup: undefined });
+  } catch { /* ignore */ }
+});
+
 // Геолокация для поиска магазинов
 bot.on('message:location', handleLocation);
 

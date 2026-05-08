@@ -112,6 +112,7 @@ async function checkoutConv(conversation, ctx) {
   }
 
   await ctx.reply(t('buyer.checkout.ask_address'), {
+    parse_mode: 'Markdown',
     reply_markup: new Keyboard()
       .requestLocation(t('buyer.find_shops.location_button'))
       .row()
@@ -147,9 +148,7 @@ async function checkoutConv(conversation, ctx) {
       lat = m.message.location.latitude;
       lng = m.message.location.longitude;
       // Дополнительно попросим адрес текстом для seller-а
-      await ctx.reply(lang === 'uz'
-        ? '🏠 Manzilni matn bilan ham kiriting:'
-        : '🏠 Введите адрес текстом:');
+      await ctx.reply(t('buyer.checkout.ask_address_text'), { parse_mode: 'Markdown' });
       const addrMsg = await conversation.waitFor('message:text');
       if (addrMsg.message.text === t('common.cancel')) {
         await ctx.reply(t('common.cancel'), { reply_markup: mainMenuKeyboard(ctx) });
@@ -179,17 +178,50 @@ async function checkoutConv(conversation, ctx) {
   }
 
   // ── 2. Заметка (опционально) ────────────────────────────────
-  await ctx.reply(t('buyer.checkout.ask_notes'), {
-    reply_markup: new Keyboard().text(t('common.skip')).text(t('common.cancel')).resized().oneTime(),
+  // Inline-кнопки на сообщении вместо reply-клавиатуры — на Android
+  // нижняя клавиатура иногда прячется за soft-кнопками, и юзер думает,
+  // что «Пропустить» нет. Inline всегда видна. Текст комментария тоже
+  // принимаем — пользователь может написать вручную.
+  const notesKb = new InlineKeyboard()
+    .text(t('common.skip'),   'notes:skip')
+    .text(t('common.cancel'), 'notes:cancel');
+  const askMsg = await ctx.reply(t('buyer.checkout.ask_notes'), {
+    parse_mode: 'Markdown',
+    reply_markup: notesKb,
   });
+
   let notes = null;
-  const noteMsg = await conversation.waitFor('message:text');
-  if (noteMsg.message.text === t('common.cancel')) {
-    await ctx.reply(t('common.cancel'), { reply_markup: mainMenuKeyboard(ctx) });
-    return;
-  }
-  if (noteMsg.message.text !== t('common.skip')) {
-    notes = noteMsg.message.text.trim();
+  while (true) {
+    const upd = await conversation.wait();
+
+    const cb = upd.callbackQuery?.data;
+    if (cb === 'notes:skip') {
+      await upd.answerCallbackQuery();
+      await upd.editMessageReplyMarkup({ reply_markup: undefined }).catch(() => {});
+      break;
+    }
+    if (cb === 'notes:cancel') {
+      await upd.answerCallbackQuery();
+      await upd.editMessageReplyMarkup({ reply_markup: undefined }).catch(() => {});
+      await ctx.reply(t('common.cancelled'), { reply_markup: mainMenuKeyboard(ctx) });
+      return;
+    }
+
+    if (upd.message?.text) {
+      const txt = upd.message.text.trim();
+      if (txt === t('common.cancel')) {
+        await ctx.reply(t('common.cancelled'), { reply_markup: mainMenuKeyboard(ctx) });
+        return;
+      }
+      notes = txt === t('common.skip') ? null : txt;
+      // Снимаем кнопки на оригинальном prompt'е, чтобы они не торчали
+      // после того как пользователь ответил текстом.
+      await ctx.api.editMessageReplyMarkup(
+        askMsg.chat.id, askMsg.message_id, { reply_markup: undefined },
+      ).catch(() => {});
+      break;
+    }
+    // Иные апдейты (фото, стикеры) — игнорируем, ждём дальше.
   }
 
   // ── 3. Подтверждение ───────────────────────────────────────
