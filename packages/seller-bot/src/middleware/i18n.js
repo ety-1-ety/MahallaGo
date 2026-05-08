@@ -1,4 +1,4 @@
-import { callFnRow, query, t, tError, DEFAULT_LOCALE } from '@mahallashop/shared';
+import { callFnRow, query, t, tError, DEFAULT_LOCALE, expireStaleConversation } from '@mahallashop/shared';
 
 /**
  * Auth + i18n middleware:
@@ -15,6 +15,14 @@ export function buildAuthI18n(log) {
       // session middleware ещё не отработал — это означает что мы в conversations re-entry
       // или запрос без session-key. Пропускаем без auth.
       return next();
+    }
+
+    // Если у пользователя залежался conversation-blob (>30 мин с момента
+    // последнего шага) — стираем ПЕРЕД conversations(), чтобы он не пытался
+    // replay'ить протухший state. Следующий update пойдёт по нормальному
+    // /start-flow без зависания на старом шаге.
+    if (expireStaleConversation(ctx.session)) {
+      log.info({ tg_id: from.id }, 'expired stale conversation blob');
     }
 
     // Upsert пользователя в auth.users

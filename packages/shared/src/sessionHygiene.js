@@ -88,6 +88,27 @@ export async function sweepStaleConversations({ prefix, ttlMs = CONVERSATION_TTL
 }
 
 /**
+ * Inline-проверка свежести conversation для конкретной сессии.
+ * Вызывается из auth+i18n middleware ПЕРЕД conversations()-middleware.
+ * Если у сессии есть conversation-blob, и его `last` старше ttlMs —
+ * удаляем blob прямо в объекте session. grammY conversations потом
+ * увидит «нет активного диалога» и обработает update как обычный.
+ *
+ * Возвращает true если что-то очистили (полезно для логирования).
+ *
+ * Не делает ни одной Redis-операции — sync-функция, чистит локальный
+ * объект; persist делает session-middleware при выходе из update.
+ */
+export function expireStaleConversation(session, ttlMs = CONVERSATION_TTL_MS) {
+  if (!session || !session.conversation) return false;
+  const last = extractLastTimestamp(session.conversation);
+  if (last === null) return false;
+  if ((Date.now() - last) < ttlMs) return false;
+  delete session.conversation;
+  return true;
+}
+
+/**
  * Очистить conversation у конкретного пользователя — например при
  * /reset или при ошибке внутри conversation handler.
  */

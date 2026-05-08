@@ -205,6 +205,18 @@ await sweepStaleConversations({
   log,
 }).catch((err) => log.warn({ err: err.message }, 'sweep failed'));
 
+// + периодический sweep каждые 10 минут — страховка для idle-сессий,
+// чтобы не ждать рестарта бота. Per-message expire в i18n-middleware
+// фиксит UX мгновенно при следующем сообщении, а это убирает blob'ы у
+// тех, кто вообще не возвращается.
+const sweepInterval = setInterval(() => {
+  sweepStaleConversations({
+    prefix: cfg.REDIS_PREFIX || 'seller:',
+    log,
+  }).catch((err) => log.warn({ err: err.message }, 'periodic sweep failed'));
+}, 10 * 60 * 1000);
+sweepInterval.unref();
+
 bot.start({
   drop_pending_updates: true,
   onStart: (info) => log.info({ username: info.username }, '✔ seller-bot started (long polling)'),

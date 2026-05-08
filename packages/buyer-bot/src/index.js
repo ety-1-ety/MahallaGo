@@ -130,6 +130,15 @@ await sweepStaleConversations({
   log,
 }).catch((err) => log.warn({ err: err.message }, 'sweep failed'));
 
+// Периодическая страховка для idle-сессий — каждые 10 минут.
+const sweepInterval = setInterval(() => {
+  sweepStaleConversations({
+    prefix: cfg.REDIS_PREFIX || 'buyer:',
+    log,
+  }).catch((err) => log.warn({ err: err.message }, 'periodic sweep failed'));
+}, 10 * 60 * 1000);
+sweepInterval.unref();
+
 bot.start({
   drop_pending_updates: true,
   onStart: (info) => log.info({ username: info.username }, '✔ buyer-bot started (long polling)'),

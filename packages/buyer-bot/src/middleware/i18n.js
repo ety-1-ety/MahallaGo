@@ -1,4 +1,4 @@
-import { callFnRow, t, tError, DEFAULT_LOCALE } from '@mahallashop/shared';
+import { callFnRow, t, tError, DEFAULT_LOCALE, expireStaleConversation } from '@mahallashop/shared';
 
 /**
  * Auth + i18n. Проще чем у seller — не нужно тащить shop в ctx.
@@ -8,6 +8,12 @@ export function buildAuthI18n(log) {
     const from = ctx.from;
     if (!from) return next();
     if (!ctx.session) return next();
+
+    // Стираем протухший conversation-blob (>30 мин с последнего шага)
+    // ДО того как conversations()-middleware попытается replay'ить.
+    if (expireStaleConversation(ctx.session)) {
+      log.info({ tg_id: from.id }, 'expired stale conversation blob');
+    }
 
     const user = await callFnRow('auth.upsert_user', [
       from.id,
