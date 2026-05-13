@@ -64,8 +64,7 @@ export default async function miniappBuyerRoutes(app) {
     try {
       verified = verifyInitData(initData, token);
     } catch (err) {
-      const code = err.code || 'BAD_INIT_DATA';
-      return reply.code(401).send({ error: code });
+      return reply.code(401).send({ error: err.code || 'INVALID_INIT_DATA' });
     }
 
     const user = await callFnRow('auth.upsert_user', [

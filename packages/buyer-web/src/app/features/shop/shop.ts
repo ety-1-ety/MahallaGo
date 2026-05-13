@@ -50,6 +50,14 @@ interface Product {
           <div class="card"><div class="skeleton" style="height:16px;width:50%"></div></div>
         }
       </div>
+    } @else if (loadError(); as code) {
+      <div class="empty">
+        <div class="icon">⚠️</div>
+        <div class="h2">{{ errorLabel(code) }}</div>
+        <button class="btn btn-primary btn-block mt-2" (click)="back()">
+          {{ 'miniapp.common.back' | t }}
+        </button>
+      </div>
     } @else if (shop(); as s) {
       <section class="card mb-3">
         @if (s.is_open_now) {
@@ -137,6 +145,7 @@ export class ShopPage implements OnInit, OnDestroy {
   readonly products = signal<Product[]>([]);
   readonly selectedCat = signal<string | null>(null);
   readonly loading = signal(true);
+  readonly loadError = signal<string | null>(null);
 
   readonly cartItemsCount = computed(() => this.cart.itemsCount());
   readonly cartSubtotal = computed(() => this.cart.subtotal());
@@ -178,6 +187,14 @@ export class ShopPage implements OnInit, OnDestroy {
 
   formatPrice(n: number) { return formatUZS(n); }
 
+  errorLabel(code: string): string {
+    const buyerKey = `miniapp.buyer.errors.${code}`;
+    if (this.locale.hasKey(buyerKey)) return this.locale.t(buyerKey);
+    const commonKey = `miniapp.common.errors.${code}`;
+    if (this.locale.hasKey(commonKey)) return this.locale.t(commonKey);
+    return this.locale.t('miniapp.common.error_generic');
+  }
+
   async filter(catId: string | null) {
     this.tg.haptic('selection');
     this.selectedCat.set(catId);
@@ -199,10 +216,15 @@ export class ShopPage implements OnInit, OnDestroy {
 
   private async loadShop() {
     this.loading.set(true);
+    this.loadError.set(null);
     try {
       const res = await firstValueFrom(this.api.get<{ shop: ShopDetail; categories: CategoryRow[] }>(`/shops/${this.id}`));
       this.shop.set(res.shop);
       this.categories.set(res.categories);
+    } catch (e) {
+      const code = (e as { code?: string }).code || 'INTERNAL_ERROR';
+      this.loadError.set(code);
+      this.tg.haptic('error');
     } finally {
       this.loading.set(false);
     }

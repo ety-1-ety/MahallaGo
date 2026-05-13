@@ -232,9 +232,11 @@
         "AUTH_FAILED": "Не удалось войти. Откройте Mini App заново из Telegram.",
         "USER_BLOCKED": "Ваш аккаунт заблокирован. Обратитесь в поддержку.",
         "NO_INIT_DATA": "Mini App нужно открыть из Telegram-бота.",
+        "INVALID_INIT_DATA": "Данные Telegram повреждены. Откройте Mini App заново.",
         "BAD_HASH": "Подпись Telegram неверна. Откройте Mini App заново.",
         "EXPIRED": "Сессия истекла. Откройте Mini App заново.",
         "INVALID_USER": "Не удалось определить пользователя Telegram.",
+        "INVALID_BODY": "Запрос составлен неправильно. Попробуйте ещё раз.",
         "INTERNAL_ERROR": "Внутренняя ошибка сервера. Попробуйте позже."
       }
     },

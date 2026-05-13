@@ -93,9 +93,12 @@ declare global {
 }
 
 function buildMock(): TelegramWebApp {
-  // Для локалки: фиксированный «Тимур» с user.id = 35767754 (есть в БД)
+  // Для локалки: mock-юзер берётся из environment.mockTelegramUser, если задан.
+  // Это позволяет seller-web подставлять telegram_id владельца магазина из БД
+  // без ручного редактирования сервиса.
   // initData собираем валидной формы, но HMAC будет провален на проде — OK для local dev.
-  const mockUser: TelegramUser = {
+  const fromEnv = environment.mockTelegramUser;
+  const mockUser: TelegramUser = fromEnv ?? {
     id: 35767754,
     first_name: 'Тимур',
     username: 'ety_1_ety',

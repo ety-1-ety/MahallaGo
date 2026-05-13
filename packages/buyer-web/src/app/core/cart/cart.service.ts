@@ -48,11 +48,18 @@ export class CartService {
       if (id) this.loadShop(id);
     } catch { /* storage may be blocked */ }
 
-    // Авто-персист при изменениях.
+    // Авто-персист при изменениях. localStorage может бросить QuotaExceededError
+    // (особенно на iOS Safari Private Mode), молча проглатываем — корзина
+    // продолжит жить in-memory в текущей сессии.
     effect(() => {
       const c = this._cart();
       if (!c) return;
-      try { localStorage.setItem(KEY_PREFIX + c.shop_id, JSON.stringify(c)); } catch { /* noop */ }
+      try {
+        localStorage.setItem(KEY_PREFIX + c.shop_id, JSON.stringify(c));
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.warn('[cart] localStorage write failed:', (e as Error)?.message);
+      }
     });
   }
 

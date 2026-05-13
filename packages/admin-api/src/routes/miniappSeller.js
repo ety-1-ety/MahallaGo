@@ -63,7 +63,7 @@ export default async function miniappSellerRoutes(app) {
     try {
       verified = verifyInitData(initData, token);
     } catch (err) {
-      return reply.code(401).send({ error: err.code || 'BAD_INIT_DATA' });
+      return reply.code(401).send({ error: err.code || 'INVALID_INIT_DATA' });
     }
 
     const user = await callFnRow('auth.upsert_user', [
@@ -428,9 +428,14 @@ export default async function miniappSellerRoutes(app) {
       }
     } else {
       const body = request.body || {};
-      if (body.name !== undefined)        name = String(body.name).trim();
+      // null трактуем как «не меняем», иначе String(null)='null' попадёт в SQL и
+      // перезапишет имя на строку "null". Пустая строка после trim тоже = пропуск.
+      if (body.name !== undefined && body.name !== null) {
+        const trimmed = String(body.name).trim();
+        name = trimmed.length > 0 ? trimmed : null;
+      }
       if (body.category_id !== undefined) categoryId = body.category_id || null;
-      if (body.description !== undefined) description = body.description;
+      if (body.description !== undefined && body.description !== null) description = String(body.description);
       if (body.price !== undefined)       price = Number(body.price);
       if (body.stock !== undefined)       stock = Number(body.stock);
       if (body.is_active !== undefined)   isActive = Boolean(body.is_active);

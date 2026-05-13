@@ -232,9 +232,11 @@
         "AUTH_FAILED": "Kirib boʻlmadi. Mini App ni Telegram orqali qayta oching.",
         "USER_BLOCKED": "Hisobingiz bloklangan. Qoʻllab-quvvatlash bilan bogʻlaning.",
         "NO_INIT_DATA": "Mini App ni Telegram bot orqali oching.",
+        "INVALID_INIT_DATA": "Telegram maʼlumotlari buzilgan. Mini App ni qayta oching.",
         "BAD_HASH": "Telegram imzosi notoʻgʻri. Mini App ni qayta oching.",
         "EXPIRED": "Sessiya muddati tugadi. Mini App ni qayta oching.",
         "INVALID_USER": "Telegram foydalanuvchisi aniqlanmadi.",
+        "INVALID_BODY": "Soʻrov notoʻgʻri tuzilgan. Qaytadan urinib koʻring.",
         "INTERNAL_ERROR": "Server ichki xatosi. Keyinroq urinib koʻring."
       }
     },
