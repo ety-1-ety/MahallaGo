@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, signal, OnInit, OnDestroy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, OnInit, OnDestroy, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -125,8 +125,15 @@ export class ProductsList implements OnInit, OnDestroy {
 
   private searchTimer?: ReturnType<typeof setTimeout>;
 
+  constructor() {
+    // MainButton реактивно реагирует на смену языка (locale.version() в зависимости).
+    effect(() => {
+      void this.locale.version();
+      this.tg.showMainButton(this.locale.t('miniapp.seller.products.add_button'), () => this.addNew());
+    });
+  }
+
   ngOnInit() {
-    this.tg.showMainButton(this.locale.t('miniapp.seller.products.add_button'), () => this.addNew());
     this.loadCategories();
     this.loadProducts();
   }

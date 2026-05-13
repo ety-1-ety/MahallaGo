@@ -226,7 +226,17 @@
       "language_uz": "🇺🇿 Oʻzbekcha",
       "language_ru": "🇷🇺 Русский",
       "auth_error": "Не удалось войти. Откройте Mini App заново из Telegram.",
-      "tap_to_continue": "Нажмите, чтобы продолжить"
+      "tap_to_continue": "Нажмите, чтобы продолжить",
+      "errors": {
+        "AUTH_NOT_CONFIGURED": "Сервис временно недоступен. Попробуйте позже.",
+        "AUTH_FAILED": "Не удалось войти. Откройте Mini App заново из Telegram.",
+        "USER_BLOCKED": "Ваш аккаунт заблокирован. Обратитесь в поддержку.",
+        "NO_INIT_DATA": "Mini App нужно открыть из Telegram-бота.",
+        "BAD_HASH": "Подпись Telegram неверна. Откройте Mini App заново.",
+        "EXPIRED": "Сессия истекла. Откройте Mini App заново.",
+        "INVALID_USER": "Не удалось определить пользователя Telegram.",
+        "INTERNAL_ERROR": "Внутренняя ошибка сервера. Попробуйте позже."
+      }
     },
     "buyer": {
       "home": {
@@ -303,7 +313,9 @@
         "ITEMS_ADJUSTED":        "Уменьшил количество: {summary}",
         "EMPTY_CART":            "Корзина пуста",
         "ADDRESS_REQUIRED":      "Укажите адрес доставки",
-        "PHONE_REQUIRED":        "Укажите контактный телефон"
+        "PHONE_REQUIRED":        "Укажите контактный телефон",
+        "INVALID_COORDINATES":   "Неверные координаты доставки",
+        "SHOP_NOT_FOUND":        "Магазин больше не доступен"
       },
       "orders": {
         "title": "Мои заказы",

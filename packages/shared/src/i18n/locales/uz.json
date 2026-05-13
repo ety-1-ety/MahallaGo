@@ -226,7 +226,17 @@
       "language_uz": "🇺🇿 Oʻzbekcha",
       "language_ru": "🇷🇺 Русский",
       "auth_error": "Kirib boʻlmadi. Mini App ni Telegram orqali qayta oching.",
-      "tap_to_continue": "Davom etish uchun bosing"
+      "tap_to_continue": "Davom etish uchun bosing",
+      "errors": {
+        "AUTH_NOT_CONFIGURED": "Xizmat vaqtinchalik mavjud emas. Keyinroq urinib koʻring.",
+        "AUTH_FAILED": "Kirib boʻlmadi. Mini App ni Telegram orqali qayta oching.",
+        "USER_BLOCKED": "Hisobingiz bloklangan. Qoʻllab-quvvatlash bilan bogʻlaning.",
+        "NO_INIT_DATA": "Mini App ni Telegram bot orqali oching.",
+        "BAD_HASH": "Telegram imzosi notoʻgʻri. Mini App ni qayta oching.",
+        "EXPIRED": "Sessiya muddati tugadi. Mini App ni qayta oching.",
+        "INVALID_USER": "Telegram foydalanuvchisi aniqlanmadi.",
+        "INTERNAL_ERROR": "Server ichki xatosi. Keyinroq urinib koʻring."
+      }
     },
     "buyer": {
       "home": {
@@ -303,7 +313,9 @@
         "ITEMS_ADJUSTED":        "Miqdor kamaytirildi: {summary}",
         "EMPTY_CART":            "Savat boʻsh",
         "ADDRESS_REQUIRED":      "Yetkazib berish manzilini koʻrsating",
-        "PHONE_REQUIRED":        "Aloqa telefonini koʻrsating"
+        "PHONE_REQUIRED":        "Aloqa telefonini koʻrsating",
+        "INVALID_COORDINATES":   "Yetkazib berish koordinatalari notoʻgʻri",
+        "SHOP_NOT_FOUND":        "Doʻkon endi mavjud emas"
       },
       "orders": {
         "title": "Mening buyurtmalarim",

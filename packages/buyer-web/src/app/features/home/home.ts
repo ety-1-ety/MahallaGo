@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
@@ -109,7 +109,7 @@ interface ShopNearby {
     }
   `,
 })
-export class Home {
+export class Home implements OnInit, OnDestroy {
   private readonly api = inject(ApiService);
   private readonly tg = inject(TelegramService);
   private readonly router = inject(Router);
@@ -117,6 +117,14 @@ export class Home {
 
   readonly state = signal<'idle' | 'locating' | 'denied' | 'loading' | 'ready' | 'error'>('idle');
   readonly shops = signal<ShopNearby[]>([]);
+
+  ngOnInit() {
+    // Home — корневой экран без MainButton/BackButton.
+    // Скрываем оставшиеся от предыдущих экранов (cart / checkout / shop).
+    this.tg.hideMainButton();
+    this.tg.hideBackButton();
+  }
+  ngOnDestroy() { /* leave buttons to next page to manage */ }
 
   goSettings() {
     this.tg.haptic('selection');

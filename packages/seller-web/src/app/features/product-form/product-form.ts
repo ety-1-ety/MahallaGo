@@ -136,8 +136,8 @@ export class ProductForm implements OnInit, OnDestroy {
           ? 'miniapp.seller.add_product.submitting'
           : (this.isEdit() ? 'miniapp.seller.add_product.submit_edit' : 'miniapp.seller.add_product.submit'),
       );
-      this.tg.showMainButton(text, () => this.submit(), { active: !this.submitting() });
-      this.tg.setMainButtonProgress(this.submitting());
+      this.tg.showMainButton(text, () => this.submit(), { active: !this.submitting() && !this.loading() });
+      this.tg.setMainButtonProgress(this.submitting() || this.loading());
     });
   }
 
