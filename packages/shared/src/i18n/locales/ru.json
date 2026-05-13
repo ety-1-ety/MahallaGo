@@ -323,6 +323,66 @@
         "detail_address": "Адрес доставки",
         "detail_notes": "Комментарий"
       }
+    },
+    "seller": {
+      "auth": {
+        "no_shop_title": "У вас пока нет магазина",
+        "no_shop_subtitle": "Чтобы добавлять товары, зарегистрируйте магазин в чат-боте @MahallaShop_seller_bot",
+        "open_bot": "Открыть бот",
+        "shop_inactive_title": "Магазин временно недоступен",
+        "shop_inactive_subtitle": "Обратитесь в поддержку, чтобы узнать причину."
+      },
+      "products": {
+        "title": "Мои товары",
+        "count": "{count} товаров",
+        "empty_title": "Товаров пока нет",
+        "empty_subtitle": "Добавьте первый товар, чтобы покупатели могли его заказать",
+        "add_button": "Добавить товар",
+        "search_placeholder": "Найти товар",
+        "filter_all": "Все",
+        "stock_label": "Остаток: {stock}",
+        "stock_out": "Нет в наличии",
+        "stock_low": "Мало",
+        "hidden": "Скрыт"
+      },
+      "add_product": {
+        "title": "Новый товар",
+        "edit_title": "Редактирование товара",
+        "field_photo": "Фото товара",
+        "field_photo_hint": "Нажмите, чтобы загрузить фото",
+        "field_photo_replace": "Заменить фото",
+        "field_name": "Название",
+        "field_name_placeholder": "Например: Хлеб лепёшка",
+        "field_category": "Категория",
+        "field_category_placeholder": "Выберите категорию",
+        "field_description": "Описание",
+        "field_description_placeholder": "Кратко расскажите о товаре",
+        "field_price": "Цена, сум",
+        "field_price_placeholder": "5000",
+        "field_stock": "Остаток на складе",
+        "field_stock_placeholder": "20",
+        "submit": "Сохранить товар",
+        "submit_edit": "Сохранить изменения",
+        "submitting": "Сохраняем…",
+        "saved": "Товар сохранён",
+        "delete_button": "Удалить товар",
+        "delete_confirm": "Удалить этот товар? Покупатели больше не смогут его заказать.",
+        "deleted": "Товар удалён",
+        "hide_button": "Скрыть",
+        "show_button": "Показать"
+      },
+      "errors": {
+        "INVALID_PRODUCT_NAME": "Укажите название товара (2–80 символов)",
+        "INVALID_PRODUCT_PRICE": "Укажите корректную цену",
+        "INVALID_PRODUCT_STOCK": "Укажите корректный остаток",
+        "DUPLICATE_PRODUCT_NAME": "Товар с таким названием уже есть в вашем магазине",
+        "PRODUCT_NOT_FOUND": "Товар не найден",
+        "NO_FILE": "Файл фото не получен",
+        "UNSUPPORTED_MIME": "Поддерживаются только JPG, PNG, WEBP, HEIC",
+        "FILE_TOO_LARGE": "Файл слишком большой (максимум 6 МБ)",
+        "NO_SHOP": "У вас пока нет магазина. Зарегистрируйте его в чат-боте.",
+        "SHOP_INACTIVE": "Магазин временно недоступен."
+      }
     }
   }
 }

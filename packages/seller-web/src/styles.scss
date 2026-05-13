@@ -1,0 +1,412 @@
+// ─────────────────────────────────────────────────────────────────────
+// MahallaShop · Buyer Mini App — глобальные стили
+//
+// Дизайн-система:
+//   • Mobile-first, viewport через Telegram.WebApp.viewportStableHeight
+//   • Glass-morphism (полупрозрачные карточки, blur, soft glow)
+//   • Telegram theme sync: --mhs-* переопределяются из themeParams
+//   • Палитра: primary #1eb53a, accent #00dcf0, secondary #b388ff
+//   • Тёмная база #07090f с radial-glow + dot-grid, светлая — белая
+//   • Touch targets ≥48×48, safe-area-inset-bottom
+// ─────────────────────────────────────────────────────────────────────
+
+:root {
+  // ─── Брендовая палитра ───────────────────────────────────────────
+  --mhs-primary:        #1eb53a;
+  --mhs-primary-strong: #19a634;
+  --mhs-accent:         #00dcf0;
+  --mhs-violet:         #b388ff;
+  --mhs-red:            #f43f5e;
+  --mhs-amber:          #f59e0b;
+
+  // ─── Theme-tokens (light по умолчанию, перезаписываются из Telegram themeParams) ─
+  --mhs-bg-1:           #f4f7fb;
+  --mhs-bg-2:           #eef3fa;
+  --mhs-surface:        rgba(255, 255, 255, 0.96);
+  --mhs-surface-strong: rgba(255, 255, 255, 1);
+  --mhs-surface-mute:   rgba(255, 255, 255, 0.62);
+  --mhs-border:         rgba(15, 25, 50, 0.08);
+  --mhs-border-strong:  rgba(15, 25, 50, 0.16);
+  --mhs-text:           #0e1623;
+  --mhs-text-muted:     #5b6b80;
+  --mhs-text-faint:     #94a3b8;
+  --mhs-glow-primary:   0 8px 28px rgba(30, 181, 58, 0.22);
+  --mhs-glow-accent:    0 8px 28px rgba(0, 220, 240, 0.20);
+  --mhs-shadow-card:    0 10px 30px rgba(15, 25, 50, 0.08);
+  --mhs-grid:           rgba(15, 25, 50, 0.035);
+
+  // ─── Тёмная тема — переопределение токенов ───────────────────────
+  color-scheme: light;
+}
+
+:root.dark-theme,
+:root[data-theme="dark"] {
+  --mhs-bg-1:           #07090f;
+  --mhs-bg-2:           #0d1220;
+  --mhs-surface:        rgba(22, 28, 46, 0.78);
+  --mhs-surface-strong: rgba(28, 36, 60, 0.95);
+  --mhs-surface-mute:   rgba(22, 28, 46, 0.48);
+  --mhs-border:         rgba(99, 230, 190, 0.12);
+  --mhs-border-strong:  rgba(99, 230, 190, 0.28);
+  --mhs-text:           #e6f2ee;
+  --mhs-text-muted:     #93a4b3;
+  --mhs-text-faint:     #6a7889;
+  --mhs-glow-primary:   0 0 28px rgba(30, 181, 58, 0.45);
+  --mhs-glow-accent:    0 0 28px rgba(0, 220, 240, 0.35);
+  --mhs-shadow-card:    0 12px 32px rgba(0, 0, 0, 0.40);
+  --mhs-grid:           rgba(255, 255, 255, 0.04);
+
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+  font-feature-settings: 'cv11', 'ss01';
+  letter-spacing: -0.005em;
+  color: var(--mhs-text);
+  background: var(--mhs-bg-1);
+  overscroll-behavior-y: contain;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+// Mobile baseline — запретить пользовательский zoom, но не zoom-via-prefers-contrast
+body { touch-action: manipulation; }
+
+// Радиальное свечение + dot-grid — фирменный фон.
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(90% 50% at 0% 0%,   rgba(30, 181, 58, 0.10), transparent 60%),
+    radial-gradient(90% 50% at 100% 0%, rgba(0, 220, 240, 0.10), transparent 60%),
+    radial-gradient(80% 50% at 50% 100%, rgba(179, 136, 255, 0.08), transparent 60%),
+    linear-gradient(180deg, var(--mhs-bg-1), var(--mhs-bg-2));
+}
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, var(--mhs-grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--mhs-grid) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(ellipse at center, black 50%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 50%, transparent 100%);
+}
+
+a { color: var(--mhs-primary); text-decoration: none; }
+
+// ─── App shell ────────────────────────────────────────────────────
+seller-root, .app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: var(--tg-viewport-stable-height, 100vh);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.page {
+  flex: 1 1 auto;
+  padding: 16px 16px 100px 16px;  // 100px = место под MainButton + safe-area
+  max-width: 720px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+// ─── Typography ───────────────────────────────────────────────────
+.h1 {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin: 0 0 6px 0;
+  background: linear-gradient(120deg, var(--mhs-primary) 0%, var(--mhs-accent) 55%, var(--mhs-violet) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.h2 {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  margin: 0 0 8px 0;
+}
+.h3 {
+  font-size: 17px;
+  font-weight: 600;
+  margin: 0 0 6px 0;
+}
+.subtitle {
+  color: var(--mhs-text-muted);
+  font-size: 14px;
+  line-height: 1.4;
+  margin: 0;
+}
+.muted { color: var(--mhs-text-muted); }
+.faint { color: var(--mhs-text-faint); }
+
+// ─── Cards / surfaces ─────────────────────────────────────────────
+.card {
+  background: var(--mhs-surface);
+  border: 1px solid var(--mhs-border);
+  border-radius: 18px;
+  padding: 14px 16px;
+  box-shadow: var(--mhs-shadow-card);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+.card.tappable {
+  cursor: pointer;
+}
+.card.tappable:active {
+  transform: scale(0.97);
+  border-color: var(--mhs-border-strong);
+}
+
+// ─── Buttons ──────────────────────────────────────────────────────
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 18px;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  background: var(--mhs-surface);
+  color: var(--mhs-text);
+  font: inherit;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  user-select: none;
+  transition: transform .12s ease, background .15s ease, box-shadow .2s ease;
+}
+.btn:active { transform: scale(0.96); }
+.btn.btn-primary {
+  background: linear-gradient(135deg, var(--mhs-primary), var(--mhs-accent));
+  color: #fff;
+  border-color: transparent;
+  box-shadow: var(--mhs-glow-primary);
+}
+.btn.btn-primary:disabled {
+  opacity: .5;
+  box-shadow: none;
+}
+.btn.btn-ghost {
+  background: transparent;
+  border-color: var(--mhs-border-strong);
+}
+.btn.btn-danger {
+  background: linear-gradient(135deg, var(--mhs-red), #fb7185);
+  color: #fff;
+}
+.btn-block { width: 100%; }
+
+// ─── Input ────────────────────────────────────────────────────────
+.input, .textarea {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--mhs-border-strong);
+  background: var(--mhs-surface-mute);
+  color: var(--mhs-text);
+  font: inherit;
+  font-size: 15px;
+  outline: none;
+  transition: border-color .15s ease, background .15s ease;
+}
+.textarea { min-height: 96px; resize: vertical; }
+.input:focus, .textarea:focus {
+  border-color: var(--mhs-primary);
+  background: var(--mhs-surface);
+}
+.input::placeholder, .textarea::placeholder { color: var(--mhs-text-faint); }
+
+.label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mhs-text-muted);
+  margin: 0 0 6px 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+// ─── Chips ────────────────────────────────────────────────────────
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  background: var(--mhs-surface-mute);
+  border: 1px solid var(--mhs-border);
+  color: var(--mhs-text);
+  white-space: nowrap;
+}
+.chip.chip-primary {
+  background: color-mix(in srgb, var(--mhs-primary) 14%, transparent);
+  border-color: color-mix(in srgb, var(--mhs-primary) 30%, transparent);
+  color: var(--mhs-primary-strong);
+}
+.chip.chip-accent {
+  background: color-mix(in srgb, var(--mhs-accent) 14%, transparent);
+  border-color: color-mix(in srgb, var(--mhs-accent) 30%, transparent);
+  color: #007a8c;
+}
+.chip.chip-danger {
+  background: color-mix(in srgb, var(--mhs-red) 14%, transparent);
+  border-color: color-mix(in srgb, var(--mhs-red) 30%, transparent);
+  color: var(--mhs-red);
+}
+
+// ─── Lists ────────────────────────────────────────────────────────
+.list { display: flex; flex-direction: column; gap: 12px; }
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--mhs-border);
+}
+.row:last-child { border-bottom: none; }
+
+// ─── Skeleton (shimmer) ───────────────────────────────────────────
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--mhs-surface-mute);
+  border-radius: 12px;
+  height: 14px;
+}
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--mhs-text) 6%, transparent) 50%,
+    transparent 100%
+  );
+  animation: shimmer 1.4s linear infinite;
+}
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+// ─── Empty state ──────────────────────────────────────────────────
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 48px 24px;
+  gap: 12px;
+}
+.empty .icon {
+  width: 72px; height: 72px;
+  border-radius: 18px;
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--mhs-primary) 16%, transparent),
+    color-mix(in srgb, var(--mhs-accent) 14%, transparent));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 30px;
+}
+
+// ─── Sticky bottom bar (для cart totals, MainButton fallback) ─────
+.sticky-bottom {
+  position: fixed;
+  left: 0; right: 0;
+  bottom: env(safe-area-inset-bottom, 0);
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0)) 16px;
+  background: linear-gradient(180deg, transparent, var(--mhs-bg-1) 30%);
+  z-index: 50;
+  display: flex;
+  gap: 12px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+// ─── Top bar (заголовок страницы) ─────────────────────────────────
+.appbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(180deg, var(--mhs-bg-1) 60%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.appbar .title {
+  flex: 1;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+// ─── Loading / route transitions ──────────────────────────────────
+.fade-enter {
+  animation: fadeIn 220ms ease-out;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ─── Utility ──────────────────────────────────────────────────────
+.flex { display: flex; }
+.flex-col { display: flex; flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.gap-1 { gap: 6px; }
+.gap-2 { gap: 12px; }
+.gap-3 { gap: 18px; }
+.gap-4 { gap: 24px; }
+.grow { flex: 1 1 auto; }
+.text-center { text-align: center; }
+.text-right  { text-align: right; }
+.mt-1 { margin-top: 6px; }
+.mt-2 { margin-top: 12px; }
+.mt-3 { margin-top: 18px; }
+.mt-4 { margin-top: 24px; }
+.mb-1 { margin-bottom: 6px; }
+.mb-2 { margin-bottom: 12px; }
+.mb-3 { margin-bottom: 18px; }
+.mb-4 { margin-bottom: 24px; }
+.w-full { width: 100%; }
+.relative { position: relative; }
+.bold { font-weight: 700; }
+.semibold { font-weight: 600; }
+.text-sm { font-size: 13px; }
+.text-lg { font-size: 18px; }
+.text-xl { font-size: 22px; font-weight: 700; letter-spacing: -0.01em; }
+
+// ─── Scrollbar (минималистичный, mobile в основном без нужды) ─────
+*::-webkit-scrollbar { width: 6px; height: 6px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb {
+  background: var(--mhs-border-strong);
+  border-radius: 4px;
+}

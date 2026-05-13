@@ -323,6 +323,66 @@
         "detail_address": "Yetkazib berish manzili",
         "detail_notes": "Izoh"
       }
+    },
+    "seller": {
+      "auth": {
+        "no_shop_title": "Hozircha doʻkoningiz yoʻq",
+        "no_shop_subtitle": "Mahsulot qoʻshish uchun @MahallaShop_seller_bot chat-botida doʻkonni roʻyxatdan oʻtkazing",
+        "open_bot": "Botni ochish",
+        "shop_inactive_title": "Doʻkon vaqtinchalik mavjud emas",
+        "shop_inactive_subtitle": "Sababini bilish uchun qoʻllab-quvvatlash bilan bogʻlaning."
+      },
+      "products": {
+        "title": "Mahsulotlarim",
+        "count": "{count} ta mahsulot",
+        "empty_title": "Hozircha mahsulotlar yoʻq",
+        "empty_subtitle": "Xaridorlar buyurtma berishi uchun birinchi mahsulotni qoʻshing",
+        "add_button": "Mahsulot qoʻshish",
+        "search_placeholder": "Mahsulotni qidirish",
+        "filter_all": "Barchasi",
+        "stock_label": "Qoldiq: {stock}",
+        "stock_out": "Mavjud emas",
+        "stock_low": "Kam",
+        "hidden": "Yashirilgan"
+      },
+      "add_product": {
+        "title": "Yangi mahsulot",
+        "edit_title": "Mahsulotni tahrirlash",
+        "field_photo": "Mahsulot fotosi",
+        "field_photo_hint": "Fotoni yuklash uchun bosing",
+        "field_photo_replace": "Fotoni almashtirish",
+        "field_name": "Nomi",
+        "field_name_placeholder": "Masalan: Tandir non",
+        "field_category": "Kategoriya",
+        "field_category_placeholder": "Kategoriyani tanlang",
+        "field_description": "Tavsif",
+        "field_description_placeholder": "Mahsulot haqida qisqacha aytib bering",
+        "field_price": "Narxi, soʻm",
+        "field_price_placeholder": "5000",
+        "field_stock": "Omborda qoldiq",
+        "field_stock_placeholder": "20",
+        "submit": "Mahsulotni saqlash",
+        "submit_edit": "Oʻzgarishlarni saqlash",
+        "submitting": "Saqlanmoqda…",
+        "saved": "Mahsulot saqlandi",
+        "delete_button": "Mahsulotni oʻchirish",
+        "delete_confirm": "Bu mahsulotni oʻchiramizmi? Xaridorlar uni boshqa buyurtma qila olmaydi.",
+        "deleted": "Mahsulot oʻchirildi",
+        "hide_button": "Yashirish",
+        "show_button": "Koʻrsatish"
+      },
+      "errors": {
+        "INVALID_PRODUCT_NAME": "Mahsulot nomini koʻrsating (2–80 belgilar)",
+        "INVALID_PRODUCT_PRICE": "Toʻgʻri narxni kiriting",
+        "INVALID_PRODUCT_STOCK": "Toʻgʻri qoldiqni kiriting",
+        "DUPLICATE_PRODUCT_NAME": "Bunday nomli mahsulot doʻkoningizda allaqachon bor",
+        "PRODUCT_NOT_FOUND": "Mahsulot topilmadi",
+        "NO_FILE": "Foto fayli olinmadi",
+        "UNSUPPORTED_MIME": "Faqat JPG, PNG, WEBP, HEIC qoʻllab-quvvatlanadi",
+        "FILE_TOO_LARGE": "Fayl juda katta (maksimum 6 MB)",
+        "NO_SHOP": "Hozircha doʻkoningiz yoʻq. Chat-botida roʻyxatdan oʻtkazing.",
+        "SHOP_INACTIVE": "Doʻkon vaqtinchalik mavjud emas."
+      }
     }
   }
 }
