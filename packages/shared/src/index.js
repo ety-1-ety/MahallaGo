@@ -21,9 +21,14 @@ export {
 } from './time.js';
 export {
   downloadTelegramPhoto,
+  optimizeAndSave,
   resolvePhotoPath,
   getPhotoDir,
 } from './storage/photos.js';
+export {
+  verifyInitData,
+  DEFAULT_INIT_DATA_TTL_SECONDS,
+} from './miniapp/verifyInitData.js';
 export {
   sweepStaleConversations,
   clearConversationFromSession,

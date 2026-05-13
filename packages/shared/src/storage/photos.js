@@ -32,39 +32,35 @@ export function getPhotoDir() {
 }
 
 /**
- * Скачивает фото из Telegram по file_id и сохраняет на диск.
+ * Прогоняет произвольные байты фото через sharp-pipeline и сохраняет на диск.
  *
- * @param {Object} opts
- * @param {string} opts.token   — bot token боту, которому принадлежит file_id
- * @param {string} opts.fileId  — Telegram file_id
- * @param {string} [opts.baseDir] — куда сохранять (по умолчанию getPhotoDir())
- * @returns {Promise<string>} имя файла (относительно baseDir), например 'a3f4b2c1.jpg'
+ * Pipeline: rotate (применить EXIF-ориентацию) → resize до 1024×1024 inside
+ * (без увеличения) → JPEG quality 82 mozjpeg progressive → strip metadata.
+ * Имя файла — sha1(outBuf).slice(0,16) + '.jpg', что даёт дедупликацию
+ * идентичных изображений и стабильное имя для CDN-кэша.
+ *
+ * Если sharp по какой-то причине упал (битый файл / не-картинка) — пишем
+ * исходный буфер как есть с расширением .jpg. Лучше показать «как есть»
+ * чем потерять файл.
+ *
+ * Используется и `downloadTelegramPhoto`, и Mini App'овским multipart
+ * upload'ом — один и тот же контракт.
+ *
+ * @param {Buffer} rawBuf            — исходные байты фото
+ * @param {Object} [opts]
+ * @param {string} [opts.baseDir]    — каталог сохранения (default getPhotoDir())
+ * @returns {Promise<string>}        — имя файла (например 'a3f4b2c1d4e5f6a7.jpg')
  */
-export async function downloadTelegramPhoto({ token, fileId, baseDir }) {
-  if (!token || !fileId) throw new Error('downloadTelegramPhoto: token и fileId обязательны');
+export async function optimizeAndSave(rawBuf, { baseDir } = {}) {
+  if (!Buffer.isBuffer(rawBuf) || rawBuf.length === 0) {
+    throw new Error('optimizeAndSave: rawBuf must be non-empty Buffer');
+  }
   const dir = baseDir || getPhotoDir();
 
-  const metaRes = await fetch(`https://api.telegram.org/bot${token}/getFile?file_id=${encodeURIComponent(fileId)}`);
-  const meta = await metaRes.json();
-  if (!meta.ok) throw new Error(`getFile failed: ${meta.description || metaRes.status}`);
-
-  const filePath = meta.result.file_path;
-  if (!filePath) throw new Error('getFile: file_path missing');
-
-  const fileRes = await fetch(`https://api.telegram.org/file/bot${token}/${filePath}`);
-  if (!fileRes.ok) throw new Error(`download failed: ${fileRes.status}`);
-
-  const rawBuf = Buffer.from(await fileRes.arrayBuffer());
-
-  // Прогоняем через sharp: ужимаем до 1024px по большей стороне, JPEG q=82
-  // (mozjpeg, progressive), снимаем EXIF/ICC. Telegram отдаёт оригинал
-  // ~720×1280 ~90 КБ — на выходе обычно 25–35 КБ без видимой потери.
-  // Если sharp по какой-то причине упал (битый файл, формат не картинка) —
-  // падаем обратно на исходные байты, лучше показать большое фото, чем потерять.
   let outBuf;
   try {
     outBuf = await sharp(rawBuf, { failOn: 'none' })
-      .rotate()                       // применяем EXIF-ориентацию ДО strip
+      .rotate()
       .resize({ width: 1024, height: 1024, fit: 'inside', withoutEnlargement: true })
       .jpeg({ quality: 82, mozjpeg: true, progressive: true })
       .toBuffer();
@@ -81,6 +77,33 @@ export async function downloadTelegramPhoto({ token, fileId, baseDir }) {
   await fs.writeFile(path.join(dir, fileName), outBuf);
 
   return fileName;
+}
+
+/**
+ * Скачивает фото из Telegram по file_id и сохраняет на диск
+ * через `optimizeAndSave` (sharp resize/compress).
+ *
+ * @param {Object} opts
+ * @param {string} opts.token   — bot token боту, которому принадлежит file_id
+ * @param {string} opts.fileId  — Telegram file_id
+ * @param {string} [opts.baseDir] — куда сохранять (по умолчанию getPhotoDir())
+ * @returns {Promise<string>} имя файла (относительно baseDir), например 'a3f4b2c1.jpg'
+ */
+export async function downloadTelegramPhoto({ token, fileId, baseDir }) {
+  if (!token || !fileId) throw new Error('downloadTelegramPhoto: token и fileId обязательны');
+
+  const metaRes = await fetch(`https://api.telegram.org/bot${token}/getFile?file_id=${encodeURIComponent(fileId)}`);
+  const meta = await metaRes.json();
+  if (!meta.ok) throw new Error(`getFile failed: ${meta.description || metaRes.status}`);
+
+  const filePath = meta.result.file_path;
+  if (!filePath) throw new Error('getFile: file_path missing');
+
+  const fileRes = await fetch(`https://api.telegram.org/file/bot${token}/${filePath}`);
+  if (!fileRes.ok) throw new Error(`download failed: ${fileRes.status}`);
+
+  const rawBuf = Buffer.from(await fileRes.arrayBuffer());
+  return optimizeAndSave(rawBuf, { baseDir });
 }
 
 /**

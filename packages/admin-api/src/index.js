@@ -2,9 +2,10 @@ import 'dotenv/config';
 import Fastify from 'fastify';
 import { createLogger, loadConfig, closePool, closeRedis } from '@mahallashop/shared';
 
-import corsPlugin    from './plugins/cors.js';
-import authPlugin    from './plugins/auth.js';
-import errorPlugin   from './plugins/errorHandler.js';
+import corsPlugin       from './plugins/cors.js';
+import authPlugin       from './plugins/auth.js';
+import miniappAuthPlugin from './plugins/miniappAuth.js';
+import errorPlugin      from './plugins/errorHandler.js';
 
 import healthRoutes     from './routes/health.js';
 import authRoutes       from './routes/auth.js';
@@ -14,6 +15,8 @@ import orderRoutes      from './routes/orders.js';
 import userRoutes       from './routes/users.js';
 import analyticsRoutes  from './routes/analytics.js';
 import settingsRoutes   from './routes/settings.js';
+import miniappBuyerRoutes  from './routes/miniappBuyer.js';
+import miniappSellerRoutes from './routes/miniappSeller.js';
 
 const log = createLogger('admin-api');
 
@@ -44,9 +47,10 @@ const app = Fastify({
   bodyLimit: 1 * 1024 * 1024,  // 1MB — фото грузятся через бот, тут только JSON
 });
 
-// Plugins (порядок важен)
+// Plugins (порядок важен: cookie/jwt из authPlugin переиспользуется miniappAuth'ом)
 await app.register(corsPlugin);
 await app.register(authPlugin);
+await app.register(miniappAuthPlugin);
 await app.register(errorPlugin);
 
 // Health не требует /api префикса — бывает удобно для liveness probe
@@ -61,6 +65,14 @@ await app.register(async (api) => {
   await api.register(userRoutes);
   await api.register(analyticsRoutes);
   await api.register(settingsRoutes);
+
+  // Mini App routes — отдельные namespace'ы под `/api/miniapp/buyer/*`
+  // и `/api/miniapp/seller/*`. multipart регистрируем ТОЛЬКО на seller'е
+  // (Стадия 4), сейчас оба — JSON.
+  await api.register(async (mini) => {
+    await mini.register(miniappBuyerRoutes,  { prefix: '/buyer'  });
+    await mini.register(miniappSellerRoutes, { prefix: '/seller' });
+  }, { prefix: '/miniapp' });
 }, { prefix: '/api' });
 
 // Graceful shutdown
