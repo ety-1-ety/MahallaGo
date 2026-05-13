@@ -202,5 +202,127 @@
       "shop_not_approved": "⛔ Doʻkoningiz hali tasdiqlanmagan. Moderatsiyani kuting.",
       "shop_suspended":    "⛔ Doʻkoningiz bloklangan. Sabab: {reason}"
     }
+  },
+  "miniapp": {
+    "common": {
+      "loading": "Yuklanmoqda…",
+      "retry": "Qayta urinish",
+      "error_generic": "Nimadir xato ketdi. Qayta urinib koʻring.",
+      "error_network": "Server bilan aloqa yoʻq.",
+      "ok": "Yaxshi",
+      "close": "Yopish",
+      "save": "Saqlash",
+      "cancel": "Bekor qilish",
+      "delete": "Oʻchirish",
+      "edit": "Tahrirlash",
+      "search": "Qidirish",
+      "search_placeholder": "Qidirish…",
+      "no_results": "Hech narsa topilmadi",
+      "skip": "Oʻtkazib yuborish",
+      "back": "Orqaga",
+      "next": "Davom etish",
+      "done": "Tayyor",
+      "language": "Interfeys tili",
+      "language_uz": "🇺🇿 Oʻzbekcha",
+      "language_ru": "🇷🇺 Русский",
+      "auth_error": "Kirib boʻlmadi. Mini App ni Telegram orqali qayta oching.",
+      "tap_to_continue": "Davom etish uchun bosing"
+    },
+    "buyer": {
+      "home": {
+        "title": "Yaqindagi doʻkonlar",
+        "subtitle": "Yaqin doʻkonni toping va hozir buyurtma bering",
+        "request_location": "Yaqin doʻkonlarni koʻrish uchun joylashuvga ruxsat bering",
+        "find_button": "📍 Yaqin doʻkonlarni topish",
+        "locating": "Joylashuv aniqlanmoqda…",
+        "denied": "Joylashuv mavjud emas. Telefon sozlamalarida yoqing va qayta urining.",
+        "no_shops_nearby": "Yaqin atrofda hozircha ochiq doʻkonlar yoʻq. Keyinroq urinib koʻring.",
+        "found_count": "Topilgan doʻkonlar: {count}"
+      },
+      "shop_card": {
+        "open_now": "Ochiq",
+        "closed_now": "Yopiq",
+        "distance_m": "{distance} m",
+        "distance_km": "{distance} km",
+        "min_order": "Min. buyurtma {amount}",
+        "delivery_free": "Yetkazib berish bepul",
+        "delivery_fee": "Yetkazib berish {fee}",
+        "delivery_free_from": "{amount} dan boshlab bepul"
+      },
+      "shop": {
+        "open_until": "{time} gacha ochiq",
+        "categories": "Kategoriyalar",
+        "all_products": "Barcha mahsulotlar",
+        "no_products": "Bu kategoriyada hozircha mahsulotlar yoʻq",
+        "in_cart": "Savatda",
+        "add_to_cart": "Savatga",
+        "out_of_stock": "Mavjud emas",
+        "go_to_cart": "Savatga oʻtish · {amount}"
+      },
+      "cart": {
+        "title": "Savat",
+        "shop": "{name}",
+        "empty_title": "Savat boʻsh",
+        "empty_subtitle": "Doʻkonni oching va mahsulotlarni qoʻshing",
+        "find_shop": "Doʻkonni topish",
+        "subtotal": "Mahsulotlar summasi",
+        "delivery": "Yetkazib berish",
+        "delivery_free": "Bepul",
+        "total": "Jami",
+        "clear": "Savatni tozalash",
+        "clear_confirm": "Butun savatni tozalaymizmi?",
+        "checkout": "Buyurtma berish · {amount}",
+        "removed": "Mahsulot oʻchirildi",
+        "cleared": "Savat tozalandi"
+      },
+      "checkout": {
+        "title": "Buyurtmani rasmiylashtirish",
+        "address_label": "Yetkazib berish manzili",
+        "address_placeholder": "Koʻcha, uy, podʼyezd, qavat, xonadon",
+        "use_my_location": "📍 Joylashuvdan foydalanish",
+        "location_captured": "✅ Joylashuv aniqlandi",
+        "notes_label": "Sotuvchiga izoh",
+        "notes_placeholder": "Masalan: domofon ishlamayapti, qoʻngʻiroq qiling",
+        "phone_label": "Aloqa telefoni",
+        "phone_placeholder": "+998 90 123-45-67",
+        "submit": "Buyurtmani tasdiqlash · {amount}",
+        "submitting": "Yuborilmoqda…",
+        "success_title": "Buyurtma qabul qilindi!",
+        "success_subtitle": "#{number} buyurtma doʻkonga yuborildi. Sotuvchi qabul qilganda bildirishnoma yuboramiz.",
+        "success_view_orders": "Mening buyurtmalarim"
+      },
+      "errors": {
+        "SHOP_NOT_AVAILABLE":    "Doʻkon hozir buyurtma qabul qilmayapti",
+        "OUT_OF_DELIVERY_RANGE": "Manzilingiz doʻkonning yetkazib berish hududidan tashqarida",
+        "BELOW_MIN_ORDER":       "Minimal buyurtma summasi: {min}",
+        "ABOVE_MAX_ORDER":       "Maksimal buyurtma summasi: {max}",
+        "SHOP_CLOSED_NOW":       "Doʻkon hozir yopiq",
+        "ITEM_OUT_OF_STOCK":     "Omborda mahsulot yetarli emas. Savatda miqdorni kamaytiring.",
+        "ITEM_NOT_AVAILABLE":    "Mahsulotlardan biri endi sotilmayapti. Savatni tozalab, buyurtmani qaytadan yigʻing.",
+        "ITEMS_REMOVED":         "Savatdan olib tashlandi: {names}",
+        "ITEMS_ADJUSTED":        "Miqdor kamaytirildi: {summary}",
+        "EMPTY_CART":            "Savat boʻsh",
+        "ADDRESS_REQUIRED":      "Yetkazib berish manzilini koʻrsating",
+        "PHONE_REQUIRED":        "Aloqa telefonini koʻrsating"
+      },
+      "orders": {
+        "title": "Mening buyurtmalarim",
+        "empty_title": "Hozircha buyurtmalar yoʻq",
+        "empty_subtitle": "Yaqin doʻkonni toping va birinchi buyurtmani bering",
+        "card_number": "Buyurtma #{number}",
+        "card_date": "{date}",
+        "card_total": "{amount}",
+        "status_pending":    "🟡 Javob kutilmoqda",
+        "status_accepted":   "🟢 Qabul qilindi",
+        "status_ready":      "📦 Tayyor",
+        "status_delivering": "🚚 Yetkazilmoqda",
+        "status_completed":  "✅ Yetkazildi",
+        "status_rejected":   "❌ Rad etildi",
+        "status_cancelled":  "🚫 Bekor qilindi",
+        "detail_items": "Buyurtma tarkibi",
+        "detail_address": "Yetkazib berish manzili",
+        "detail_notes": "Izoh"
+      }
+    }
   }
 }

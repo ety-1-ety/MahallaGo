@@ -202,5 +202,127 @@
       "shop_not_approved": "⛔ Магазин ещё не одобрен. Дождитесь модерации.",
       "shop_suspended":    "⛔ Магазин заблокирован. Причина: {reason}"
     }
+  },
+  "miniapp": {
+    "common": {
+      "loading": "Загружаем…",
+      "retry": "Повторить",
+      "error_generic": "Что-то пошло не так. Попробуйте ещё раз.",
+      "error_network": "Нет соединения с сервером.",
+      "ok": "Хорошо",
+      "close": "Закрыть",
+      "save": "Сохранить",
+      "cancel": "Отмена",
+      "delete": "Удалить",
+      "edit": "Изменить",
+      "search": "Поиск",
+      "search_placeholder": "Найти…",
+      "no_results": "Ничего не найдено",
+      "skip": "Пропустить",
+      "back": "Назад",
+      "next": "Далее",
+      "done": "Готово",
+      "language": "Язык интерфейса",
+      "language_uz": "🇺🇿 Oʻzbekcha",
+      "language_ru": "🇷🇺 Русский",
+      "auth_error": "Не удалось войти. Откройте Mini App заново из Telegram.",
+      "tap_to_continue": "Нажмите, чтобы продолжить"
+    },
+    "buyer": {
+      "home": {
+        "title": "Магазины рядом",
+        "subtitle": "Найдите магазин и закажите доставку прямо сейчас",
+        "request_location": "Разрешите доступ к геолокации, чтобы увидеть магазины рядом",
+        "find_button": "📍 Найти магазины рядом",
+        "locating": "Определяем местоположение…",
+        "denied": "Геолокация недоступна. Включите её в настройках телефона и попробуйте снова.",
+        "no_shops_nearby": "Поблизости пока нет открытых магазинов. Попробуйте позже.",
+        "found_count": "Найдено магазинов: {count}"
+      },
+      "shop_card": {
+        "open_now": "Открыт",
+        "closed_now": "Закрыт",
+        "distance_m": "{distance} м",
+        "distance_km": "{distance} км",
+        "min_order": "Мин. заказ {amount}",
+        "delivery_free": "Доставка бесплатно",
+        "delivery_fee": "Доставка {fee}",
+        "delivery_free_from": "Бесплатно от {amount}"
+      },
+      "shop": {
+        "open_until": "Открыт до {time}",
+        "categories": "Категории",
+        "all_products": "Все товары",
+        "no_products": "В этой категории пока нет товаров",
+        "in_cart": "В корзине",
+        "add_to_cart": "В корзину",
+        "out_of_stock": "Нет в наличии",
+        "go_to_cart": "Перейти в корзину · {amount}"
+      },
+      "cart": {
+        "title": "Корзина",
+        "shop": "{name}",
+        "empty_title": "Корзина пуста",
+        "empty_subtitle": "Откройте магазин и добавьте товары",
+        "find_shop": "Найти магазин",
+        "subtotal": "Подытог",
+        "delivery": "Доставка",
+        "delivery_free": "Бесплатно",
+        "total": "Итого",
+        "clear": "Очистить корзину",
+        "clear_confirm": "Очистить всю корзину?",
+        "checkout": "Оформить заказ · {amount}",
+        "removed": "Товар удалён",
+        "cleared": "Корзина очищена"
+      },
+      "checkout": {
+        "title": "Оформление заказа",
+        "address_label": "Адрес доставки",
+        "address_placeholder": "Улица, дом, подъезд, этаж, квартира",
+        "use_my_location": "📍 Использовать геолокацию",
+        "location_captured": "✅ Геолокация определена",
+        "notes_label": "Комментарий продавцу",
+        "notes_placeholder": "Например: домофон не работает, позвонить",
+        "phone_label": "Контактный телефон",
+        "phone_placeholder": "+998 90 123-45-67",
+        "submit": "Подтвердить заказ · {amount}",
+        "submitting": "Отправляем…",
+        "success_title": "Заказ принят!",
+        "success_subtitle": "Заказ #{number} отправлен в магазин. Мы пришлём уведомление, когда продавец его примет.",
+        "success_view_orders": "Мои заказы"
+      },
+      "errors": {
+        "SHOP_NOT_AVAILABLE":    "Магазин сейчас не принимает заказы",
+        "OUT_OF_DELIVERY_RANGE": "Ваш адрес за пределами зоны доставки магазина",
+        "BELOW_MIN_ORDER":       "Минимальная сумма заказа: {min}",
+        "ABOVE_MAX_ORDER":       "Максимальная сумма заказа: {max}",
+        "SHOP_CLOSED_NOW":       "Магазин сейчас закрыт",
+        "ITEM_OUT_OF_STOCK":     "На складе не хватает товара. Уменьшите количество в корзине.",
+        "ITEM_NOT_AVAILABLE":    "Один из товаров больше не продаётся. Очистите корзину и соберите заказ заново.",
+        "ITEMS_REMOVED":         "Из корзины убраны товары: {names}",
+        "ITEMS_ADJUSTED":        "Уменьшил количество: {summary}",
+        "EMPTY_CART":            "Корзина пуста",
+        "ADDRESS_REQUIRED":      "Укажите адрес доставки",
+        "PHONE_REQUIRED":        "Укажите контактный телефон"
+      },
+      "orders": {
+        "title": "Мои заказы",
+        "empty_title": "Заказов пока нет",
+        "empty_subtitle": "Найдите магазин рядом и оформите первый заказ",
+        "card_number": "Заказ #{number}",
+        "card_date": "{date}",
+        "card_total": "{amount}",
+        "status_pending":    "🟡 Ожидает ответа",
+        "status_accepted":   "🟢 Принят",
+        "status_ready":      "📦 Готов",
+        "status_delivering": "🚚 Доставляется",
+        "status_completed":  "✅ Доставлен",
+        "status_rejected":   "❌ Отклонён",
+        "status_cancelled":  "🚫 Отменён",
+        "detail_items": "Состав заказа",
+        "detail_address": "Адрес доставки",
+        "detail_notes": "Комментарий"
+      }
+    }
   }
 }

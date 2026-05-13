@@ -17,10 +17,12 @@
     "dev:seller-bot": "pnpm --filter @mahallashop/seller-bot dev",
     "dev:admin-api": "pnpm --filter @mahallashop/admin-api dev",
     "dev:admin-web": "pnpm --filter @mahallashop/admin-web start",
+    "dev:buyer-web": "pnpm --filter @mahallashop/buyer-web start",
     "start:buyer-bot": "pnpm --filter @mahallashop/buyer-bot start",
     "start:seller-bot": "pnpm --filter @mahallashop/seller-bot start",
     "start:admin-api": "pnpm --filter @mahallashop/admin-api start",
-    "build:admin-web": "pnpm --filter @mahallashop/admin-web build"
+    "build:admin-web": "pnpm --filter @mahallashop/admin-web build",
+    "build:buyer-web": "pnpm --filter @mahallashop/buyer-web build"
   },
   "dependencies": {
     "dotenv": "16",
