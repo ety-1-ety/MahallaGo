@@ -34,6 +34,7 @@
           },
           "configurations": {
             "production": {
+              "baseHref": "/buyer/",
               "budgets": [
                 { "type": "initial", "maximumWarning": "600kb", "maximumError": "1200kb" },
                 { "type": "anyComponentStyle", "maximumWarning": "8kb", "maximumError": "16kb" }
