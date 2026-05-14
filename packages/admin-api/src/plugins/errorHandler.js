@@ -1,5 +1,5 @@
 import fp from 'fastify-plugin';
-import { DomainError } from '@mahallashop/shared';
+import { DomainError } from '@mahallago/shared';
 
 /**
  * Универсальный error handler для Fastify.

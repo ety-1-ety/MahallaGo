@@ -92,8 +92,8 @@ interface SellerCategory {
       </section>
 
       @if (errorMsg(); as msg) {
-        <div class="card mt-3" style="border-color: var(--mhs-red)">
-          <div class="text-sm" style="color: var(--mhs-red)">{{ msg }}</div>
+        <div class="card mt-3" style="border-color: var(--mgo-red)">
+          <div class="text-sm" style="color: var(--mgo-red)">{{ msg }}</div>
         </div>
       }
 

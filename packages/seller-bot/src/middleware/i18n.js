@@ -1,4 +1,4 @@
-import { callFnRow, query, t, tError, DEFAULT_LOCALE, expireStaleConversation } from '@mahallashop/shared';
+import { callFnRow, query, t, tError, DEFAULT_LOCALE, expireStaleConversation } from '@mahallago/shared';
 
 /**
  * Auth + i18n middleware:

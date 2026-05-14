@@ -5,7 +5,7 @@ import {
   createLogger, loadConfig, closePool, closeRedis,
   sweepStaleConversations, clearConversationFromSession,
   callFnRow, t as tFn,
-} from '@mahallashop/shared';
+} from '@mahallago/shared';
 
 import { buildSession }   from './middleware/session.js';
 import { buildAuthI18n }  from './middleware/i18n.js';

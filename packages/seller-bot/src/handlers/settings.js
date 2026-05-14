@@ -1,4 +1,4 @@
-import { callFnRow, query } from '@mahallashop/shared';
+import { callFnRow, query } from '@mahallago/shared';
 import { settingsKeyboard } from '../keyboards/settings.js';
 
 /**

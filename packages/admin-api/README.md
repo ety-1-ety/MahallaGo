@@ -1,6 +1,6 @@
-# @mahallashop/admin-api
+# @mahallago/admin-api
 
-Fastify backend для админ-панели MahallaShop. Слушает `localhost:3000`, за Nginx-прокси `api.mahallashop.uz`.
+Fastify backend для админ-панели MahallaGo. Слушает `localhost:3000`, за Nginx-прокси `api.mahallago.uz`.
 
 ## Аутентификация
 
@@ -10,7 +10,7 @@ Fastify backend для админ-панели MahallaShop. Слушает `loca
 1. `verifyTelegramAuth` — проверяет hash через bot token (HMAC-SHA256 отсортированных полей по spec Telegram).
 2. `auth.upsert_user` — создаёт или обновляет пользователя.
 3. Доступ разрешён если `telegram_id ∈ ADMIN_TG_IDS` ИЛИ `auth.users.is_admin = true`. Первый whitelisted-вход поднимает `is_admin=true` в БД через `auth.mark_as_admin`.
-4. JWT 24h в httpOnly cookie `mhs_admin`.
+4. JWT 24h в httpOnly cookie `mgo_admin`.
 
 `POST /api/auth/logout` — стирает cookie.
 `GET  /api/auth/me`     — текущий пользователь (требует cookie).
@@ -53,7 +53,7 @@ cp .env.example .env
 #   BOT_TOKEN (тот же что у buyer-bot — Login Widget настраивается на него)
 #   ADMIN_TG_IDS=12345,67890 (свой Telegram ID для первого входа)
 
-pnpm --filter @mahallashop/admin-api dev
+pnpm --filter @mahallago/admin-api dev
 ```
 
 ## Verified

@@ -1,31 +1,31 @@
-# @mahallashop/shared
+# @mahallago/shared
 
-Общие утилиты для всех Node.js пакетов MahallaShop:
+Общие утилиты для всех Node.js пакетов MahallaGo:
 buyer-bot, seller-bot, admin-api.
 
 ## Экспорты
 
 ```js
 // Подключение к PostgreSQL
-import { getPool, closePool, withTx, callFn, callFnRow, query } from '@mahallashop/shared/db';
+import { getPool, closePool, withTx, callFn, callFnRow, query } from '@mahallago/shared/db';
 
 // Redis
-import { getRedis, getRedisSubscriber, closeRedis } from '@mahallashop/shared/redis';
+import { getRedis, getRedisSubscriber, closeRedis } from '@mahallago/shared/redis';
 
 // Локализация
-import { t, tError, tOrderStatus, SUPPORTED_LOCALES, DEFAULT_LOCALE } from '@mahallashop/shared/i18n';
+import { t, tError, tOrderStatus, SUPPORTED_LOCALES, DEFAULT_LOCALE } from '@mahallago/shared/i18n';
 
 // Логгер pino
-import { createLogger } from '@mahallashop/shared/logger';
+import { createLogger } from '@mahallago/shared/logger';
 
 // Конфиг с валидацией
-import { loadConfig, ConfigError } from '@mahallashop/shared/config';
+import { loadConfig, ConfigError } from '@mahallago/shared/config';
 
 // Ошибки
-import { DomainError, fromPgError, ORDER_ERRORS, COMMON_ERRORS } from '@mahallashop/shared/errors';
+import { DomainError, fromPgError, ORDER_ERRORS, COMMON_ERRORS } from '@mahallago/shared/errors';
 
 // Время и часовой пояс Asia/Tashkent
-import { formatUZS, formatDateTime, isShopOpenNow, closeTimeToday } from '@mahallashop/shared/time';
+import { formatUZS, formatDateTime, isShopOpenNow, closeTimeToday } from '@mahallago/shared/time';
 ```
 
 ## Зависимости от env-переменных

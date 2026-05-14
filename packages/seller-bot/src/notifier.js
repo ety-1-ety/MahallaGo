@@ -1,4 +1,4 @@
-import { getRedisSubscriber, query, t, tError, formatUZS, tOrderStatus, formatPhone } from '@mahallashop/shared';
+import { getRedisSubscriber, query, t, tError, formatUZS, tOrderStatus, formatPhone } from '@mahallago/shared';
 import { orderCardKeyboard } from './keyboards/orderCard.js';
 
 /**

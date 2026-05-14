@@ -1,4 +1,4 @@
-import { callFnRow } from '@mahallashop/shared';
+import { callFnRow } from '@mahallago/shared';
 import { mainMenuKeyboard } from '../keyboards/mainMenu.js';
 
 /**

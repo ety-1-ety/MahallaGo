@@ -1,8 +1,8 @@
 {
-  "name": "@mahallashop/admin-web",
+  "name": "@mahallago/admin-web",
   "version": "0.1.0",
   "private": true,
-  "description": "Angular 21 SPA для админ-панели MahallaShop",
+  "description": "Angular 21 SPA для админ-панели MahallaGo",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --port 4200",

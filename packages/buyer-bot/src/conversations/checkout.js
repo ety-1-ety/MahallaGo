@@ -8,7 +8,7 @@ import {
   ORDER_ERRORS,
   getRedis,
   normalizePhone,
-} from '@mahallashop/shared';
+} from '@mahallago/shared';
 import { mainMenuKeyboard } from '../keyboards/mainMenu.js';
 
 /**
@@ -280,7 +280,7 @@ async function checkoutConv(conversation, ctx) {
     await conversation.external(async () => {
       // sessionMiddleware уже сохранил session при входе; нам нужно ОБНОВИТЬ
       // запись. Пишем напрямую в Redis под тем же ключом.
-      const { getRedis } = await import('@mahallashop/shared');
+      const { getRedis } = await import('@mahallago/shared');
       const redis = getRedis();
       const prefix = process.env.REDIS_PREFIX || 'buyer:';
       const key = `${prefix}sess:${ctx.from.id}`;

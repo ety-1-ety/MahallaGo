@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import Fastify from 'fastify';
-import { createLogger, loadConfig, closePool, closeRedis } from '@mahallashop/shared';
+import { createLogger, loadConfig, closePool, closeRedis } from '@mahallago/shared';
 
 import corsPlugin       from './plugins/cors.js';
 import authPlugin       from './plugins/auth.js';
@@ -31,7 +31,7 @@ const cfg = loadConfig({
     BOT_USERNAME: '',
     ADMIN_TG_IDS: '',
     JWT_EXPIRES_IN: '24h',
-    COOKIE_NAME: 'mhs_admin',
+    COOKIE_NAME: 'mgo_admin',
     COOKIE_DOMAIN: '',
     COOKIE_SECURE: 'false',
     CORS_ORIGIN: 'http://localhost:4200',

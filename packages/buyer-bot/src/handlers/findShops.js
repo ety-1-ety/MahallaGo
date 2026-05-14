@@ -1,5 +1,5 @@
 import { Keyboard, InlineKeyboard } from 'grammy';
-import { callFn, query } from '@mahallashop/shared';
+import { callFn, query } from '@mahallago/shared';
 import { shopCard } from '../keyboards/shopCard.js';
 
 const DEFAULT_RADIUS_M = 2000;

@@ -15,7 +15,7 @@
 // состояние (категория, страница, поиск) подтягивается из Redis.
 // ─────────────────────────────────────────────────────────────────
 
-import { query, callFnRow, formatUZS } from '@mahallashop/shared';
+import { query, callFnRow, formatUZS } from '@mahallago/shared';
 import { InlineKeyboard } from 'grammy';
 import { loadState, saveState, clearState } from './myProductsState.js';
 

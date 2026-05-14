@@ -84,9 +84,9 @@ import { TPipe } from '../../core/i18n/t.pipe';
         radial-gradient(closest-side at 80% 70%, rgba(0,220,240,0.35),  transparent 70%),
         radial-gradient(closest-side at 60% 20%, rgba(120,80,255,0.28), transparent 70%);
       filter: blur(60px);
-      animation: mhs-pulse 12s ease-in-out infinite alternate;
+      animation: mgo-pulse 12s ease-in-out infinite alternate;
     }
-    @keyframes mhs-pulse {
+    @keyframes mgo-pulse {
       0%   { transform: scale(1)   rotate(0deg); }
       100% { transform: scale(1.08) rotate(8deg); }
     }
@@ -95,7 +95,7 @@ import { TPipe } from '../../core/i18n/t.pipe';
       z-index: 1;
       max-width: 440px; width: 100%;
       padding: 28px 28px 18px !important;
-      border: 1px solid var(--mhs-border-strong) !important;
+      border: 1px solid var(--mgo-border-strong) !important;
       box-shadow: 0 30px 80px rgba(0,0,0,0.35), 0 0 60px rgba(30,181,58,0.18) !important;
     }
     .logo-wrap { display: flex; justify-content: center; margin-bottom: 18px; }
@@ -104,9 +104,9 @@ import { TPipe } from '../../core/i18n/t.pipe';
       border-radius: 22px;
       background: conic-gradient(from 200deg, #1eb53a, #00dcf0, #b388ff, #1eb53a);
       box-shadow: 0 0 40px rgba(30,181,58,0.55), inset 0 0 20px rgba(255,255,255,0.18);
-      animation: mhs-spin 14s linear infinite;
+      animation: mgo-spin 14s linear infinite;
     }
-    @keyframes mhs-spin {
+    @keyframes mgo-spin {
       to { transform: rotate(360deg); }
     }
     .title {
@@ -117,7 +117,7 @@ import { TPipe } from '../../core/i18n/t.pipe';
       -webkit-background-clip: text; background-clip: text;
       color: transparent;
     }
-    .subtitle { color: var(--mhs-text-muted); text-align: center; margin: 0 0 24px; font-size: 14px; }
+    .subtitle { color: var(--mgo-text-muted); text-align: center; margin: 0 0 24px; font-size: 14px; }
     .form { display: flex; flex-direction: column; gap: 6px; }
     .form button { height: 48px; font-size: 15px; }
     .err {
@@ -128,7 +128,7 @@ import { TPipe } from '../../core/i18n/t.pipe';
       padding: 10px 12px;
       margin-top: 12px; text-align: center; font-size: 13px;
     }
-    .actions { display: flex; justify-content: center; gap: 4px; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--mhs-border); }
+    .actions { display: flex; justify-content: center; gap: 4px; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--mgo-border); }
   `],
 })
 export class Login {

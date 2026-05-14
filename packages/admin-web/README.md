@@ -1,8 +1,8 @@
-# @mahallashop/admin-web
+# @mahallago/admin-web
 
-Angular 21 SPA для админ-панели MahallaShop. Собирается в статику и
-отдаётся через Nginx (`shop.mahallashop.uz`), общается с admin-api
-через `https://api.mahallashop.uz`.
+Angular 21 SPA для админ-панели MahallaGo. Собирается в статику и
+отдаётся через Nginx (`shop.mahallago.uz`), общается с admin-api
+через `https://api.mahallago.uz`.
 
 ## Стек
 
@@ -59,7 +59,7 @@ src/
 
 ```bash
 pnpm install            # из корня монорепо
-pnpm --filter @mahallashop/admin-web start   # → http://localhost:4200
+pnpm --filter @mahallago/admin-web start   # → http://localhost:4200
 ```
 
 Dev-сервер ожидает admin-api на `http://localhost:3000` (см. environment.development.ts).
@@ -67,7 +67,7 @@ Dev-сервер ожидает admin-api на `http://localhost:3000` (см. en
 ## Сборка
 
 ```bash
-pnpm --filter @mahallashop/admin-web build
+pnpm --filter @mahallago/admin-web build
 # Output: packages/admin-web/dist/admin-web/browser/
 ```
 

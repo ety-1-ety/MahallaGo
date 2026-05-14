@@ -1,5 +1,5 @@
 export const ru: Record<string, string> = {
-  'app.title': 'MahallaShop',
+  'app.title': 'MahallaGo',
   'app.subtitle': 'Админ-панель',
 
   'nav.dashboard': 'Дашборд',

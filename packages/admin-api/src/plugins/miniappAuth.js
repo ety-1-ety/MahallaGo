@@ -5,11 +5,11 @@ import jwt from '@fastify/jwt';
 // ─────────────────────────────────────────────────────────────────
 // Telegram Mini App · auth plugin
 //
-// Параллельно с существующим admin-auth (login/password → cookie mhs_admin)
+// Параллельно с существующим admin-auth (login/password → cookie mgo_admin)
 // поднимаем ДВЕ независимые JWT-namespace'а для Mini App'ов:
-//   - buyer:  cookie `MINIAPP_COOKIE_NAME_BUYER` (default 'mhs_mini_b')
+//   - buyer:  cookie `MINIAPP_COOKIE_NAME_BUYER` (default 'mgo_mini_b')
 //             path: '/api/miniapp/buyer'
-//   - seller: cookie `MINIAPP_COOKIE_NAME_SELLER` (default 'mhs_mini_s')
+//   - seller: cookie `MINIAPP_COOKIE_NAME_SELLER` (default 'mgo_mini_s')
 //             path: '/api/miniapp/seller'
 //
 // JWT payload:
@@ -17,14 +17,14 @@ import jwt from '@fastify/jwt';
 //     shop_id?: <UUID> (только для seller) }
 //
 // Decorators:
-//   - app.requireBuyer  — preHandler, проверяет cookie mhs_mini_b → request.miniappUser
-//   - app.requireSeller — preHandler, проверяет cookie mhs_mini_s → request.miniappUser, request.miniappShop
+//   - app.requireBuyer  — preHandler, проверяет cookie mgo_mini_b → request.miniappUser
+//   - app.requireSeller — preHandler, проверяет cookie mgo_mini_s → request.miniappUser, request.miniappShop
 //   - app.signMiniappToken({ payload, role }) — выдаёт JWT для cookie
 //   - app.miniappCookieName(role) — резолвит имя cookie по роли
 //   - app.miniappCookieOptions(role) — общие опции (httpOnly, secure, sameSite, path, maxAge)
 //
 // ВАЖНО: основной admin-auth (auth.js) уже регистрирует @fastify/cookie и
-// @fastify/jwt с namespace 'jwt' и cookie 'mhs_admin'. Чтобы не конфликтовать,
+// @fastify/jwt с namespace 'jwt' и cookie 'mgo_admin'. Чтобы не конфликтовать,
 // здесь регистрируем JWT под именем 'miniappJwt' (через `namespace`).
 // ─────────────────────────────────────────────────────────────────
 
@@ -40,8 +40,8 @@ export default fp(async (app) => {
     sign: { expiresIn: process.env.MINIAPP_JWT_EXPIRES_IN || '24h' },
   });
 
-  const COOKIE_BUYER  = process.env.MINIAPP_COOKIE_NAME_BUYER  || 'mhs_mini_b';
-  const COOKIE_SELLER = process.env.MINIAPP_COOKIE_NAME_SELLER || 'mhs_mini_s';
+  const COOKIE_BUYER  = process.env.MINIAPP_COOKIE_NAME_BUYER  || 'mgo_mini_b';
+  const COOKIE_SELLER = process.env.MINIAPP_COOKIE_NAME_SELLER || 'mgo_mini_s';
   const COOKIE_SECURE = process.env.COOKIE_SECURE === 'true';
   const COOKIE_DOMAIN = process.env.COOKIE_DOMAIN || undefined;
   const MAX_AGE_SEC   = 24 * 60 * 60;

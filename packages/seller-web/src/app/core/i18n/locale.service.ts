@@ -5,7 +5,7 @@ import { firstValueFrom } from 'rxjs';
 export type Locale = 'uz' | 'ru';
 export const SUPPORTED_LOCALES: readonly Locale[] = ['uz', 'ru'] as const;
 export const DEFAULT_LOCALE: Locale = 'uz';
-const STORAGE_KEY = 'mhs.miniapp.lang';
+const STORAGE_KEY = 'mgo.miniapp.lang';
 
 type Dict = Record<string, unknown>;
 

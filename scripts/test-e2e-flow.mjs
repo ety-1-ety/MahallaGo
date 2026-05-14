@@ -1,4 +1,4 @@
-// End-to-end SQL-симуляция полного user-flow MahallaShop.
+// End-to-end SQL-симуляция полного user-flow MahallaGo.
 //
 // Воспроизводит ровно то, что делают buyer-bot / seller-bot / admin-api
 // при счастливом пути:
@@ -24,7 +24,7 @@ import 'dotenv/config';
 import pg from 'pg';
 
 const { Pool } = pg;
-const pool = new Pool({ connectionString: process.env.DATABASE_URL || 'postgresql://postgres:CHANGE_ME@localhost:5432/mahallashop_dev' });
+const pool = new Pool({ connectionString: process.env.DATABASE_URL || 'postgresql://postgres:CHANGE_ME@localhost:5432/mahallago_dev' });
 
 async function q(text, params) {
   const { rows } = await pool.query(text, params);

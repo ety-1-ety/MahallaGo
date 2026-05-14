@@ -1,4 +1,4 @@
-import { query, callFnRow } from '@mahallashop/shared';
+import { query, callFnRow } from '@mahallago/shared';
 import { notifyShopModeration } from '../services/notifyBots.js';
 import { getTelegramPhotoUrl } from '../services/telegramPhoto.js';
 

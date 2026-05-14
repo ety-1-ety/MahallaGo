@@ -1,4 +1,4 @@
-import { callFn, callFnRow, query, verifyInitData } from '@mahallashop/shared';
+import { callFn, callFnRow, query, verifyInitData } from '@mahallago/shared';
 import { savePhotoUpload } from '../services/uploadPhoto.js';
 
 // ─────────────────────────────────────────────────────────────────
@@ -91,7 +91,7 @@ export default async function miniappSellerRoutes(app) {
     if (!shop) {
       return reply.code(409).send({
         error: 'NO_SHOP',
-        detail: 'register a shop via @MahallaShop_seller_bot first',
+        detail: 'register a shop via @MahallaGo_seller_bot first',
       });
     }
     if (shop.status !== 'active') {

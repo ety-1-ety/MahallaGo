@@ -63,39 +63,39 @@ html {
     ));
 
     // Перебиваем sys-токены под тёмный «футуристический» вид
-    --mhs-bg-1: #07090f;
-    --mhs-bg-2: #0d1220;
-    --mhs-surface: rgba(22, 28, 46, 0.78);
-    --mhs-surface-strong: rgba(28, 36, 60, 0.95);
-    --mhs-border: rgba(99, 230, 190, 0.12);
-    --mhs-border-strong: rgba(99, 230, 190, 0.28);
-    --mhs-text: #e6f2ee;
-    --mhs-text-muted: #93a4b3;
-    --mhs-glow-primary: 0 0 28px rgba(30, 181, 58, 0.45);
-    --mhs-glow-accent:  0 0 28px rgba(0, 220, 240, 0.35);
-    --mhs-grid: rgba(255, 255, 255, 0.04);
+    --mgo-bg-1: #07090f;
+    --mgo-bg-2: #0d1220;
+    --mgo-surface: rgba(22, 28, 46, 0.78);
+    --mgo-surface-strong: rgba(28, 36, 60, 0.95);
+    --mgo-border: rgba(99, 230, 190, 0.12);
+    --mgo-border-strong: rgba(99, 230, 190, 0.28);
+    --mgo-text: #e6f2ee;
+    --mgo-text-muted: #93a4b3;
+    --mgo-glow-primary: 0 0 28px rgba(30, 181, 58, 0.45);
+    --mgo-glow-accent:  0 0 28px rgba(0, 220, 240, 0.35);
+    --mgo-grid: rgba(255, 255, 255, 0.04);
 
-    --mat-sys-surface: var(--mhs-surface);
-    --mat-sys-surface-container: var(--mhs-surface);
-    --mat-sys-surface-container-high: var(--mhs-surface-strong);
-    --mat-sys-on-surface: var(--mhs-text);
-    --mat-sys-on-surface-variant: var(--mhs-text-muted);
-    --mat-sys-outline-variant: var(--mhs-border);
-    --mat-sys-outline: var(--mhs-border-strong);
+    --mat-sys-surface: var(--mgo-surface);
+    --mat-sys-surface-container: var(--mgo-surface);
+    --mat-sys-surface-container-high: var(--mgo-surface-strong);
+    --mat-sys-on-surface: var(--mgo-text);
+    --mat-sys-on-surface-variant: var(--mgo-text-muted);
+    --mat-sys-outline-variant: var(--mgo-border);
+    --mat-sys-outline: var(--mgo-border-strong);
   }
 
-  // Светлая тоже получает локальные mhs-токены — для одинаковых селекторов
-  --mhs-bg-1: #f4f7fb;
-  --mhs-bg-2: #eef3fa;
-  --mhs-surface: #ffffff;
-  --mhs-surface-strong: #ffffff;
-  --mhs-border: rgba(15, 25, 50, 0.08);
-  --mhs-border-strong: rgba(15, 25, 50, 0.16);
-  --mhs-text: #0e1623;
-  --mhs-text-muted: #5b6b80;
-  --mhs-glow-primary: 0 8px 24px rgba(30, 181, 58, 0.18);
-  --mhs-glow-accent:  0 8px 24px rgba(0, 153, 181, 0.15);
-  --mhs-grid: rgba(0, 0, 0, 0.03);
+  // Светлая тоже получает локальные mgo-токены — для одинаковых селекторов
+  --mgo-bg-1: #f4f7fb;
+  --mgo-bg-2: #eef3fa;
+  --mgo-surface: #ffffff;
+  --mgo-surface-strong: #ffffff;
+  --mgo-border: rgba(15, 25, 50, 0.08);
+  --mgo-border-strong: rgba(15, 25, 50, 0.16);
+  --mgo-text: #0e1623;
+  --mgo-text-muted: #5b6b80;
+  --mgo-glow-primary: 0 8px 24px rgba(30, 181, 58, 0.18);
+  --mgo-glow-accent:  0 8px 24px rgba(0, 153, 181, 0.15);
+  --mgo-grid: rgba(0, 0, 0, 0.03);
 }
 
 * { box-sizing: border-box; }
@@ -106,8 +106,8 @@ html, body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   font-feature-settings: 'cv11', 'ss01';
   letter-spacing: -0.005em;
-  color: var(--mhs-text);
-  background: var(--mhs-bg-1);
+  color: var(--mgo-text);
+  background: var(--mgo-bg-1);
 }
 
 // Футуристический фон с радиальными «свечениями» и тонкой сеткой.
@@ -120,7 +120,7 @@ body::before {
     radial-gradient(80% 60% at 0% 0%,   rgba(30, 181, 58, 0.10), transparent 60%),
     radial-gradient(70% 60% at 100% 0%, rgba(0, 220, 240, 0.10), transparent 60%),
     radial-gradient(60% 60% at 100% 100%, rgba(120, 80, 255, 0.08), transparent 60%),
-    linear-gradient(180deg, var(--mhs-bg-1), var(--mhs-bg-2));
+    linear-gradient(180deg, var(--mgo-bg-1), var(--mgo-bg-2));
 }
 body::after {
   content: '';
@@ -128,8 +128,8 @@ body::after {
   z-index: -1;
   pointer-events: none;
   background-image:
-    linear-gradient(to right, var(--mhs-grid) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--mhs-grid) 1px, transparent 1px);
+    linear-gradient(to right, var(--mgo-grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--mgo-grid) 1px, transparent 1px);
   background-size: 32px 32px;
   mask-image: radial-gradient(ellipse at center, black 50%, transparent 100%);
 }
@@ -141,7 +141,7 @@ a:hover { text-decoration: underline; }
 .flex-col { display: flex; flex-direction: column; }
 .gap-1 { gap: 8px; } .gap-2 { gap: 16px; } .gap-3 { gap: 24px; }
 .grow { flex: 1 1 auto; }
-.text-muted { color: var(--mhs-text-muted); }
+.text-muted { color: var(--mgo-text-muted); }
 
 // ─── Layout ────────────────────────────────────────────────────────
 .page-container {
@@ -173,8 +173,8 @@ a:hover { text-decoration: underline; }
 // ─── Glass surfaces (Material cards / sidenav / toolbar) ───────────
 .mat-mdc-card,
 mat-card.mat-mdc-card {
-  background: var(--mhs-surface) !important;
-  border: 1px solid var(--mhs-border);
+  background: var(--mgo-surface) !important;
+  border: 1px solid var(--mgo-border);
   border-radius: 18px !important;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255,255,255,0.04) !important;
   backdrop-filter: blur(14px) saturate(140%);
@@ -182,23 +182,23 @@ mat-card.mat-mdc-card {
   transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
 }
 .mat-mdc-card:hover {
-  border-color: var(--mhs-border-strong);
+  border-color: var(--mgo-border-strong);
   transform: translateY(-1px);
 }
 
 // Sidenav / toolbar
 mat-sidenav.sidenav {
-  background: var(--mhs-surface) !important;
-  border-right: 1px solid var(--mhs-border) !important;
+  background: var(--mgo-surface) !important;
+  border-right: 1px solid var(--mgo-border) !important;
   backdrop-filter: blur(14px) saturate(140%);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
 }
 mat-toolbar.mat-toolbar {
-  background: linear-gradient(180deg, var(--mhs-surface-strong), var(--mhs-surface)) !important;
-  border-bottom: 1px solid var(--mhs-border) !important;
+  background: linear-gradient(180deg, var(--mgo-surface-strong), var(--mgo-surface)) !important;
+  border-bottom: 1px solid var(--mgo-border) !important;
   backdrop-filter: blur(14px) saturate(140%);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
-  color: var(--mhs-text) !important;
+  color: var(--mgo-text) !important;
 }
 
 // ─── Sidenav nav-list ──────────────────────────────────────────────
@@ -215,7 +215,7 @@ mat-nav-list a.mat-mdc-list-item.active {
   background: linear-gradient(90deg,
     color-mix(in srgb, var(--mat-sys-primary) 22%, transparent),
     color-mix(in srgb, var(--mat-sys-tertiary) 14%, transparent));
-  color: var(--mhs-text);
+  color: var(--mgo-text);
   position: relative;
 }
 mat-nav-list a.mat-mdc-list-item.active::before {
@@ -237,7 +237,7 @@ mat-nav-list a.mat-mdc-list-item .mdc-list-item__primary-text {
   --mdc-filled-button-container-color: transparent;
   background: linear-gradient(135deg, var(--mat-sys-primary), #00dcf0) !important;
   color: white !important;
-  box-shadow: var(--mhs-glow-primary) !important;
+  box-shadow: var(--mgo-glow-primary) !important;
   letter-spacing: 0.01em;
   transition: transform .15s ease, box-shadow .2s ease;
 }
@@ -253,7 +253,7 @@ mat-nav-list a.mat-mdc-list-item .mdc-list-item__primary-text {
 .mat-mdc-form-field .mdc-text-field--outlined .mdc-notched-outline__leading,
 .mat-mdc-form-field .mdc-text-field--outlined .mdc-notched-outline__trailing,
 .mat-mdc-form-field .mdc-text-field--outlined .mdc-notched-outline__notch {
-  border-color: var(--mhs-border-strong) !important;
+  border-color: var(--mgo-border-strong) !important;
 }
 .mat-mdc-form-field .mdc-text-field--outlined.mdc-text-field--focused .mdc-notched-outline__leading,
 .mat-mdc-form-field .mdc-text-field--outlined.mdc-text-field--focused .mdc-notched-outline__trailing,
@@ -267,7 +267,7 @@ mat-nav-list a.mat-mdc-list-item .mdc-list-item__primary-text {
   background: transparent !important;
 }
 .mat-mdc-row, .mat-mdc-header-row {
-  border-bottom: 1px solid var(--mhs-border) !important;
+  border-bottom: 1px solid var(--mgo-border) !important;
 }
 .mat-mdc-row:hover {
   background: color-mix(in srgb, var(--mat-sys-primary) 6%, transparent);
@@ -283,13 +283,13 @@ mat-nav-list a.mat-mdc-list-item .mdc-list-item__primary-text {
 *::-webkit-scrollbar { width: 10px; height: 10px; }
 *::-webkit-scrollbar-track { background: transparent; }
 *::-webkit-scrollbar-thumb {
-  background: var(--mhs-border-strong);
+  background: var(--mgo-border-strong);
   border-radius: 6px;
   border: 2px solid transparent;
   background-clip: padding-box;
 }
 *::-webkit-scrollbar-thumb:hover {
-  background: color-mix(in srgb, var(--mat-sys-primary) 60%, var(--mhs-border-strong));
+  background: color-mix(in srgb, var(--mat-sys-primary) 60%, var(--mgo-border-strong));
   background-clip: padding-box;
 }
 
@@ -299,15 +299,15 @@ mat-nav-list a.mat-mdc-list-item .mdc-list-item__primary-text {
   padding: 4px 10px;
   border-radius: 999px;
   font-size: 12px; font-weight: 600;
-  border: 1px solid var(--mhs-border-strong);
-  background: var(--mhs-surface-strong);
+  border: 1px solid var(--mgo-border-strong);
+  background: var(--mgo-surface-strong);
 }
 
 // ─── Анимация появления ────────────────────────────────────────────
-@keyframes mhs-fade-in {
+@keyframes mgo-fade-in {
   from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: none; }
 }
 .page-container > * {
-  animation: mhs-fade-in 0.32s ease both;
+  animation: mgo-fade-in 0.32s ease both;
 }

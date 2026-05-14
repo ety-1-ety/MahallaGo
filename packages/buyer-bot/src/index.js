@@ -4,7 +4,7 @@ import { conversations } from '@grammyjs/conversations';
 import {
   createLogger, loadConfig, closePool, closeRedis,
   sweepStaleConversations, clearConversationFromSession,
-} from '@mahallashop/shared';
+} from '@mahallago/shared';
 
 import { buildSession }   from './middleware/session.js';
 import { buildAuthI18n }  from './middleware/i18n.js';

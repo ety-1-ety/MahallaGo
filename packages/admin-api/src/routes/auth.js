@@ -36,7 +36,7 @@ export default async function authRoutes(app) {
 
     const token = app.jwt.sign({ sub: login, name: login });
 
-    const cookieName = process.env.COOKIE_NAME || 'mhs_admin';
+    const cookieName = process.env.COOKIE_NAME || 'mgo_admin';
     reply.setCookie(cookieName, token, {
       httpOnly: true,
       secure: process.env.COOKIE_SECURE === 'true',
@@ -50,7 +50,7 @@ export default async function authRoutes(app) {
   });
 
   app.post('/auth/logout', async (request, reply) => {
-    const cookieName = process.env.COOKIE_NAME || 'mhs_admin';
+    const cookieName = process.env.COOKIE_NAME || 'mgo_admin';
     reply.clearCookie(cookieName, { path: '/' });
     return { ok: true };
   });

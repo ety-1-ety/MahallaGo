@@ -1,6 +1,6 @@
 import { createConversation } from '@grammyjs/conversations';
 import { Keyboard, InlineKeyboard } from 'grammy';
-import { callFnRow, query } from '@mahallashop/shared';
+import { callFnRow, query } from '@mahallago/shared';
 
 // Если AUTO_APPROVE_SHOPS=true — магазин сразу активируется без ожидания
 // модератора. Удобно на этапе разработки/тестирования; в production

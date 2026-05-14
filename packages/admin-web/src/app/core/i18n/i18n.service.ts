@@ -2,7 +2,7 @@ import { Injectable, signal } from '@angular/core';
 import { ru } from './ru';
 import { uz } from './uz';
 
-const STORAGE_KEY = 'mhs_lang';
+const STORAGE_KEY = 'mgo_lang';
 type Locale = 'uz' | 'ru';
 
 @Injectable({ providedIn: 'root' })

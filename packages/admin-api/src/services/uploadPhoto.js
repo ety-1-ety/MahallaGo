@@ -1,4 +1,4 @@
-import { optimizeAndSave } from '@mahallashop/shared';
+import { optimizeAndSave } from '@mahallago/shared';
 
 // ─────────────────────────────────────────────────────────────────
 // HTTP multipart photo upload → sharp pipeline → SHA1-named .jpg

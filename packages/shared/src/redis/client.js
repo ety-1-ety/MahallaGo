@@ -2,7 +2,7 @@
 // ioredis singleton.
 //
 // Использование:
-//   import { getRedis, getRedisSubscriber, closeRedis } from '@mahallashop/shared/redis';
+//   import { getRedis, getRedisSubscriber, closeRedis } from '@mahallago/shared/redis';
 //   const r = getRedis();
 //   await r.set('key', 'value');
 //

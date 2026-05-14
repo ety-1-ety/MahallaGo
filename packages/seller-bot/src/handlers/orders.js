@@ -1,5 +1,5 @@
 import { InlineKeyboard } from 'grammy';
-import { callFn, callFnRow, query, formatUZS, tOrderStatus, getRedis, formatPhone } from '@mahallashop/shared';
+import { callFn, callFnRow, query, formatUZS, tOrderStatus, getRedis, formatPhone } from '@mahallago/shared';
 import { orderCardKeyboard } from '../keyboards/orderCard.js';
 import { mainMenuLabels } from '../keyboards/mainMenu.js';
 

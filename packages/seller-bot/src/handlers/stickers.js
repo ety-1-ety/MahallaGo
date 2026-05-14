@@ -43,7 +43,7 @@ export async function sendSticker(ctx) {
     return;
   }
 
-  await ctx.replyWithDocument(new InputFile(file, `MahallaShop_QR_${size}x${size}mm.pdf`), {
+  await ctx.replyWithDocument(new InputFile(file, `MahallaGo_QR_${size}x${size}mm.pdf`), {
     caption: ctx.t('seller.sticker.caption', { size }),
     parse_mode: 'Markdown',
   });

@@ -1,4 +1,4 @@
-import { callFnRow, t, tError, DEFAULT_LOCALE, expireStaleConversation } from '@mahallashop/shared';
+import { callFnRow, t, tError, DEFAULT_LOCALE, expireStaleConversation } from '@mahallago/shared';
 
 /**
  * Auth + i18n. Проще чем у seller — не нужно тащить shop в ctx.

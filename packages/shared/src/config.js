@@ -2,7 +2,7 @@
 // Универсальный загрузчик env с ручной валидацией.
 //
 // Использование:
-//   import { loadConfig } from '@mahallashop/shared/config';
+//   import { loadConfig } from '@mahallago/shared/config';
 //
 //   const cfg = loadConfig({
 //     required: ['BOT_TOKEN', 'DATABASE_URL', 'REDIS_URL'],

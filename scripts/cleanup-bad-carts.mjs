@@ -35,7 +35,7 @@ try {
   }
 } catch { /* .env может отсутствовать; используем то что есть в окружении */ }
 
-const databaseUrl = process.env.DATABASE_URL || 'postgresql://postgres:CHANGE_ME@localhost:5432/mahallashop_dev';
+const databaseUrl = process.env.DATABASE_URL || 'postgresql://postgres:CHANGE_ME@localhost:5432/mahallago_dev';
 const redisUrl    = process.env.REDIS_URL    || 'redis://localhost:6379/1';
 const prefix      = process.env.REDIS_PREFIX || 'buyer:';
 

@@ -1,5 +1,5 @@
 import { InlineKeyboard } from 'grammy';
-import { formatUZS } from '@mahallashop/shared';
+import { formatUZS } from '@mahallago/shared';
 
 /**
  * Карточка товара с кнопками [➖] qty [➕] [🛒].

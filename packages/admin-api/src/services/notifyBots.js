@@ -1,4 +1,4 @@
-import { getRedis, query } from '@mahallashop/shared';
+import { getRedis, query } from '@mahallago/shared';
 
 /**
  * Публикует событие модерации в канал shops:moderation.

@@ -1,4 +1,4 @@
-import { getRedisSubscriber, query, t } from '@mahallashop/shared';
+import { getRedisSubscriber, query, t } from '@mahallago/shared';
 
 /**
  * Подписка на Redis pub/sub:

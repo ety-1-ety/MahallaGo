@@ -19,7 +19,7 @@ export default fp(async (app) => {
   await app.register(jwt, {
     secret: process.env.JWT_SECRET || 'dev-secret-change-me-please-32-bytes-min',
     cookie: {
-      cookieName: process.env.COOKIE_NAME || 'mhs_admin',
+      cookieName: process.env.COOKIE_NAME || 'mgo_admin',
       signed: false,
     },
     sign: { expiresIn: process.env.JWT_EXPIRES_IN || '24h' },

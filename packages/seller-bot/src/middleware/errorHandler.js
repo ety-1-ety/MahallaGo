@@ -1,4 +1,4 @@
-import { DomainError, t, clearConversationFromSession } from '@mahallashop/shared';
+import { DomainError, t, clearConversationFromSession } from '@mahallago/shared';
 
 /**
  * Глобальный обработчик ошибок grammY.

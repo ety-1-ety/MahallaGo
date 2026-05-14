@@ -3,7 +3,7 @@ import { Injectable, signal, computed, effect } from '@angular/core';
 // ─────────────────────────────────────────────────────────────────────
 // CartService
 //
-// Корзина живёт в localStorage, ключ "mhs.cart.<shop_id>".
+// Корзина живёт в localStorage, ключ "mgo.cart.<shop_id>".
 // В Mini App покупатель видит карточку магазина и наполняет КОРЗИНУ ОДНОГО МАГАЗИНА.
 // Если переключился на другой магазин — старая корзина сохраняется по своему ключу
 // (мы не очищаем автоматически), но активная корзина — это всегда корзина текущего открытого магазина.
@@ -26,8 +26,8 @@ export interface Cart {
   updated_at: number;
 }
 
-const KEY_PREFIX = 'mhs.cart.';
-const ACTIVE_KEY = 'mhs.cart.active';
+const KEY_PREFIX = 'mgo.cart.';
+const ACTIVE_KEY = 'mgo.cart.active';
 
 @Injectable({ providedIn: 'root' })
 export class CartService {

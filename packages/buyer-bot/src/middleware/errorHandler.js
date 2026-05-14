@@ -1,4 +1,4 @@
-import { DomainError, t, ORDER_ERRORS, clearConversationFromSession } from '@mahallashop/shared';
+import { DomainError, t, ORDER_ERRORS, clearConversationFromSession } from '@mahallago/shared';
 
 /**
  * Глобальный обработчик ошибок для buyer-bot.

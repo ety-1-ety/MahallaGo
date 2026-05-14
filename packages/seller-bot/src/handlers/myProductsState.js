@@ -14,7 +14,7 @@
 // Если state протух — handler покажет уровень категорий заново.
 // ─────────────────────────────────────────────────────────────────
 
-import { getRedis } from '@mahallashop/shared';
+import { getRedis } from '@mahallago/shared';
 
 const TTL_SECONDS = 30 * 60;
 

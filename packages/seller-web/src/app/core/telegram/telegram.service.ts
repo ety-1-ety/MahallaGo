@@ -308,12 +308,12 @@ export class TelegramService {
       root.setAttribute('data-theme', 'light');
     }
 
-    // Подмешиваем Telegram theme params в наши --mhs-* переменные.
+    // Подмешиваем Telegram theme params в наши --mgo-* переменные.
     const tp = this.webApp.themeParams || {};
-    if (tp.bg_color)        root.style.setProperty('--mhs-bg-1', tp.bg_color);
-    if (tp.secondary_bg_color) root.style.setProperty('--mhs-bg-2', tp.secondary_bg_color);
-    if (tp.text_color)      root.style.setProperty('--mhs-text', tp.text_color);
-    if (tp.hint_color)      root.style.setProperty('--mhs-text-muted', tp.hint_color);
+    if (tp.bg_color)        root.style.setProperty('--mgo-bg-1', tp.bg_color);
+    if (tp.secondary_bg_color) root.style.setProperty('--mgo-bg-2', tp.secondary_bg_color);
+    if (tp.text_color)      root.style.setProperty('--mgo-text', tp.text_color);
+    if (tp.hint_color)      root.style.setProperty('--mgo-text-muted', tp.hint_color);
     this.updateCssVars();
   }
 

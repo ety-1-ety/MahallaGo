@@ -1,4 +1,4 @@
-import { getRedis } from '@mahallashop/shared';
+import { getRedis } from '@mahallago/shared';
 
 /**
  * Sliding-window rate limit через Redis.

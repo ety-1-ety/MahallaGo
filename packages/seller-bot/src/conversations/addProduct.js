@@ -1,6 +1,6 @@
 import { createConversation } from '@grammyjs/conversations';
 import { Keyboard, InlineKeyboard } from 'grammy';
-import { callFnRow, query, formatUZS, downloadTelegramPhoto } from '@mahallashop/shared';
+import { callFnRow, query, formatUZS, downloadTelegramPhoto } from '@mahallago/shared';
 import { mainMenuKeyboard } from '../keyboards/mainMenu.js';
 
 /**

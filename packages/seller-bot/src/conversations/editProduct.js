@@ -1,6 +1,6 @@
 import { createConversation } from '@grammyjs/conversations';
 import { Keyboard } from 'grammy';
-import { callFnRow } from '@mahallashop/shared';
+import { callFnRow } from '@mahallago/shared';
 import { mainMenuKeyboard } from '../keyboards/mainMenu.js';
 
 /**

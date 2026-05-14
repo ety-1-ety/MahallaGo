@@ -1,8 +1,8 @@
 {
-  "name": "@mahallashop/seller-web",
+  "name": "@mahallago/seller-web",
   "version": "0.1.0",
   "private": true,
-  "description": "Telegram Mini App для продавцов MahallaShop (Angular 21, mobile-first)",
+  "description": "Telegram Mini App для продавцов MahallaGo (Angular 21, mobile-first)",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --port 4202 --host 0.0.0.0",

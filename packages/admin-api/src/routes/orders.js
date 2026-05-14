@@ -1,4 +1,4 @@
-import { query } from '@mahallashop/shared';
+import { query } from '@mahallago/shared';
 
 export default async function orderRoutes(app) {
   // Список заказов с фильтрами. status может быть либо одним значением,

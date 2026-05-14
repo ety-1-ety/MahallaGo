@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 
-const STORAGE_KEY = 'mhs_theme';
+const STORAGE_KEY = 'mgo_theme';
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {

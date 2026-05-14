@@ -1,4 +1,4 @@
-import { query } from '@mahallashop/shared';
+import { query } from '@mahallago/shared';
 
 /**
  * Эндпоинты для страницы /analytics в админке.

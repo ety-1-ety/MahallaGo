@@ -1,8 +1,8 @@
 {
-  "name": "@mahallashop/seller-bot",
+  "name": "@mahallago/seller-bot",
   "version": "0.1.0",
   "private": true,
-  "description": "Telegram-бот продавца MahallaShop (@MahallaShop_seller_bot)",
+  "description": "Telegram-бот продавца MahallaGo (@MahallaGo_seller_bot)",
   "type": "module",
   "main": "src/index.js",
   "scripts": {
@@ -10,7 +10,7 @@
     "start": "node src/index.js"
   },
   "dependencies": {
-    "@mahallashop/shared": "workspace:*",
+    "@mahallago/shared": "workspace:*",
     "grammy": "^1.30.0",
     "@grammyjs/conversations": "^1.2.0",
     "@grammyjs/storage-redis": "^2.4.2",

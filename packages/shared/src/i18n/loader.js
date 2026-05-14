@@ -5,7 +5,7 @@
 // плейсхолдеры {variable} в строках.
 //
 // Использование:
-//   import { t, hasKey, defaultLocale } from '@mahallashop/shared/i18n';
+//   import { t, hasKey, defaultLocale } from '@mahallago/shared/i18n';
 //
 //   t('uz', 'buyer.menu.find_shops')              // "📍 Yaqin doʻkonlar"
 //   t('ru', 'buyer.errors.BELOW_MIN_ORDER',       // "❌ Минимальная сумма заказа: 30 000 сум"

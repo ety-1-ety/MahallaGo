@@ -1,6 +1,6 @@
-# @mahallashop/seller-bot
+# @mahallago/seller-bot
 
-Telegram-бот продавца — `@MahallaShop_seller_bot`.
+Telegram-бот продавца — `@MahallaGo_seller_bot`.
 
 ## Возможности
 
@@ -21,7 +21,7 @@ Telegram-бот продавца — `@MahallaShop_seller_bot`.
 cp .env.example .env
 # заполнить BOT_TOKEN от @BotFather, проверить DATABASE_URL и REDIS_URL
 
-pnpm --filter @mahallashop/seller-bot dev
+pnpm --filter @mahallago/seller-bot dev
 ```
 
 ## Окружение

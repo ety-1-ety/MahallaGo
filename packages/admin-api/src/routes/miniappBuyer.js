@@ -1,4 +1,4 @@
-import { callFn, callFnRow, query, verifyInitData, getRedis, ORDER_ERRORS } from '@mahallashop/shared';
+import { callFn, callFnRow, query, verifyInitData, getRedis, ORDER_ERRORS } from '@mahallago/shared';
 
 // ─────────────────────────────────────────────────────────────────
 // Mini App · BUYER routes (`/api/miniapp/buyer/*`)

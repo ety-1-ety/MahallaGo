@@ -1,7 +1,7 @@
 # QR-стикеры магазина
 
 Сюда кладутся PDF-стикеры с QR-кодом покупательского бота
-`@MahallaShopUzBot`. Бот отдаёт их продавцам через
+`@MahallaGoBot`. Бот отдаёт их продавцам через
 **Настройки → 📥 QR-стикер для магазина**.
 
 ## Имена файлов (обязательны)
@@ -23,5 +23,5 @@
 просто перезапустите seller-bot:
 
 ```bash
-ssh mhs-app 'sudo systemctl restart mahallashop-seller-bot'
+ssh mgo-app 'sudo systemctl restart mahallago-seller-bot'
 ```

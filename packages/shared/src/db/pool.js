@@ -2,7 +2,7 @@
 // pg.Pool factory — singleton-пул на процесс.
 //
 // Использование:
-//   import { getPool } from '@mahallashop/shared/db';
+//   import { getPool } from '@mahallago/shared/db';
 //   const pool = getPool();
 //   const { rows } = await pool.query('SELECT 1');
 //

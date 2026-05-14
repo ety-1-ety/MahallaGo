@@ -29,7 +29,7 @@ importers:
       '@fastify/multipart':
         specifier: ^9.0.1
         version: 9.4.0
-      '@mahallashop/shared':
+      '@mahallago/shared':
         specifier: workspace:*
         version: link:../shared
       bcrypt:
@@ -123,7 +123,7 @@ importers:
       '@grammyjs/storage-redis':
         specifier: ^2.4.2
         version: 2.5.1
-      '@mahallashop/shared':
+      '@mahallago/shared':
         specifier: workspace:*
         version: link:../shared
       dotenv:
@@ -199,7 +199,7 @@ importers:
       '@grammyjs/storage-redis':
         specifier: ^2.4.2
         version: 2.5.1
-      '@mahallashop/shared':
+      '@mahallago/shared':
         specifier: workspace:*
         version: link:../shared
       dotenv:

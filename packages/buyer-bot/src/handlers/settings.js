@@ -1,5 +1,5 @@
 import { InlineKeyboard } from 'grammy';
-import { callFnRow, t as tFn } from '@mahallashop/shared';
+import { callFnRow, t as tFn } from '@mahallago/shared';
 import { mainMenuKeyboard } from '../keyboards/mainMenu.js';
 
 /**

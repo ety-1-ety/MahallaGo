@@ -1,4 +1,4 @@
-import { callFn, formatUZS } from '@mahallashop/shared';
+import { callFn, formatUZS } from '@mahallago/shared';
 
 /**
  * Статистика магазина за сегодня / неделю / месяц.

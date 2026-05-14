@@ -1,7 +1,7 @@
-// Главные экспорты пакета @mahallashop/shared.
+// Главные экспорты пакета @mahallago/shared.
 // Подмодули также доступны через subpath imports — см. exports в package.json:
-//   import { getPool } from '@mahallashop/shared/db';
-//   import { t } from '@mahallashop/shared/i18n';
+//   import { getPool } from '@mahallago/shared/db';
+//   import { t } from '@mahallago/shared/i18n';
 
 export * from './db/index.js';
 export { getRedis, getRedisSubscriber, closeRedis } from './redis/client.js';

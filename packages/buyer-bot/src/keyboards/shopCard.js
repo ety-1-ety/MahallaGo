@@ -1,5 +1,5 @@
 import { InlineKeyboard } from 'grammy';
-import { formatUZS, isShopOpenNow, closeTimeToday } from '@mahallashop/shared';
+import { formatUZS, isShopOpenNow, closeTimeToday } from '@mahallago/shared';
 
 /**
  * Карточка магазина для buyer-bot.

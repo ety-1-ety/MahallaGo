@@ -1,4 +1,4 @@
-import { callFn, query, formatUZS, resolvePhotoPath } from '@mahallashop/shared';
+import { callFn, query, formatUZS, resolvePhotoPath } from '@mahallago/shared';
 import { InlineKeyboard, InputFile } from 'grammy';
 import { categoriesInline, productCard } from '../keyboards/productCard.js';
 

@@ -1,4 +1,4 @@
-import { query, callFnRow } from '@mahallashop/shared';
+import { query, callFnRow } from '@mahallago/shared';
 
 export default async function userRoutes(app) {
   app.get('/users', { preHandler: app.requireAuth }, async (request) => {

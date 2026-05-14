@@ -1,4 +1,4 @@
-import { callFn, formatUZS, tOrderStatus } from '@mahallashop/shared';
+import { callFn, formatUZS, tOrderStatus } from '@mahallago/shared';
 
 /**
  * Показать историю заказов покупателя.

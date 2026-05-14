@@ -1,5 +1,5 @@
 export const uz: Record<string, string> = {
-  'app.title': 'MahallaShop',
+  'app.title': 'MahallaGo',
   'app.subtitle': 'Boshqaruv paneli',
 
   'nav.dashboard': 'Boshqaruv',

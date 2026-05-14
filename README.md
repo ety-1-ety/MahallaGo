@@ -1,4 +1,4 @@
-# MahallaShop
+# MahallaGo
 
 Hyperlocal маркетплейс магазинов в Telegram для Узбекистана. Покупатели находят
 магазины в радиусе 500м-2км от своей геолокации, заказывают, магазины доставляют
@@ -28,13 +28,13 @@ Hyperlocal маркетплейс магазинов в Telegram для Узбе
         │  ╚════════════════════════════════════════════╝  │
         │                                                  │
         │   systemd:                                       │
-        │   ├─ mahallashop-buyer-bot   (grammY, polling)   │
-        │   ├─ mahallashop-seller-bot  (grammY, polling)   │
-        │   └─ mahallashop-admin-api   (Fastify :3000)     │
+        │   ├─ mahallago-buyer-bot   (grammY, polling)   │
+        │   ├─ mahallago-seller-bot  (grammY, polling)   │
+        │   └─ mahallago-admin-api   (Fastify :3000)     │
         │                                                  │
         │   Nginx + Let's Encrypt:                         │
-        │   ├─ shop.mahallashop.uz  → Angular static       │
-        │   └─ api.mahallashop.uz   → proxy → :3000        │
+        │   ├─ shop.mahallago.uz  → Angular static       │
+        │   └─ api.mahallago.uz   → proxy → :3000        │
         │                                                  │
         └──────────────────┬───────────────────────────────┘
                            │
@@ -93,11 +93,11 @@ Hyperlocal маркетплейс магазинов в Telegram для Узбе
 ## Структура монорепо
 
 ```
-mahallashop/
+mahallago/
 ├── packages/
 │   ├── shared/          — общие утилиты (pg pool, redis, logger, i18n, errors, time)
-│   ├── buyer-bot/       — Telegram-бот покупателя (@MahallaShop_bot)
-│   ├── seller-bot/      — Telegram-бот продавца (@MahallaShop_seller_bot)
+│   ├── buyer-bot/       — Telegram-бот покупателя (@MahallaGoBot)
+│   ├── seller-bot/      — Telegram-бот продавца (@MahallaGo_seller_bot)
 │   ├── admin-api/       — Fastify backend для админ-панели
 │   └── admin-web/       — Angular 21 SPA для админ-панели
 ├── db/
@@ -131,8 +131,8 @@ mahallashop/
 pnpm install
 
 # 2. Создать локальную БД (один раз)
-createdb mahallashop_dev   # Linux/Mac
-# или: psql -U postgres -c "CREATE DATABASE mahallashop_dev"
+createdb mahallago_dev   # Linux/Mac
+# или: psql -U postgres -c "CREATE DATABASE mahallago_dev"
 
 # 3. Скопировать .env.example → .env (или использовать готовые значения для localhost)
 cp .env.example .env
@@ -198,12 +198,12 @@ sudo DB_PASSWORD='...' REDIS_PASSWORD='...' PRIVATE_IP='10.0.0.11' \
 sudo bash deploy/vps2-app/setup-vps2.sh
 # затем заполнить .env, запустить pnpm migrate && pnpm seed,
 # выпустить SSL через certbot.sh, применить финальный nginx config,
-# systemctl start mahallashop-{buyer-bot,seller-bot,admin-api}
+# systemctl start mahallago-{buyer-bot,seller-bot,admin-api}
 ```
 
 ### Обновления
 ```bash
-VPS_HOST=mahallashop@<ip> bash deploy/deploy.sh
+VPS_HOST=mahallago@<ip> bash deploy/deploy.sh
 # rsync + pnpm install + build admin-web + systemctl restart
 ```
 
@@ -253,8 +253,8 @@ VPS_HOST=mahallashop@<ip> bash deploy/deploy.sh
 
 ## Что осталось до launch
 
-1. **Реальные Telegram bot tokens** — создать `@MahallaShop_bot` и `@MahallaShop_seller_bot` в @BotFather.
-2. **Login Widget домен** — настроить `setdomain` в @BotFather на `shop.mahallashop.uz`.
+1. **Реальные Telegram bot tokens** — создать `@MahallaGoBot` и `@MahallaGo_seller_bot` в @BotFather.
+2. **Login Widget домен** — настроить `setdomain` в @BotFather на `shop.mahallago.uz`.
 3. **VPS** — создать 2 VPS в одной Cloud Network.
 4. **DNS** — A-записи `shop.` и `api.` на VPS#2.
 5. **Firewall** — настроить вручную (закрыть всё кроме 22/80/443 на VPS#2; БД и Redis VPS#1 доступны только из 10.0.0.0/16).

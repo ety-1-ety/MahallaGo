@@ -1,6 +1,6 @@
 import { session } from 'grammy';
 import { RedisAdapter } from '@grammyjs/storage-redis';
-import { getRedis } from '@mahallashop/shared';
+import { getRedis } from '@mahallago/shared';
 
 /**
  * Sessions для buyer-bot.

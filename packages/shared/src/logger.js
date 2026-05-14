@@ -3,7 +3,7 @@
 // вывода. В production пишет JSON-строки для агрегации.
 //
 // Использование:
-//   import { createLogger } from '@mahallashop/shared/logger';
+//   import { createLogger } from '@mahallago/shared/logger';
 //   const log = createLogger('buyer-bot');
 //   log.info({ user_id }, 'user started');
 // ─────────────────────────────────────────────────────────────────

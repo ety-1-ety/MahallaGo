@@ -1,4 +1,4 @@
-import { getPool, getRedis } from '@mahallashop/shared';
+import { getPool, getRedis } from '@mahallago/shared';
 
 /**
  * GET /health
