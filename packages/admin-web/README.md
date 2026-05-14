@@ -1,8 +1,8 @@
 # @mahallago/admin-web
 
 Angular 21 SPA для админ-панели MahallaGo. Собирается в статику и
-отдаётся через Nginx (`shop.mahallago.uz`), общается с admin-api
-через `https://api.mahallago.uz`.
+отдаётся через Nginx (`shop.mahgo.uz`), общается с admin-api
+через `https://api.mahgo.uz`.
 
 ## Стек
 

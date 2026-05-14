@@ -1,6 +1,6 @@
 # @mahallago/admin-api
 
-Fastify backend для админ-панели MahallaGo. Слушает `localhost:3000`, за Nginx-прокси `api.mahallago.uz`.
+Fastify backend для админ-панели MahallaGo. Слушает `localhost:3000`, за Nginx-прокси `api.mahgo.uz`.
 
 ## Аутентификация
 

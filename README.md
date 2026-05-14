@@ -33,8 +33,8 @@ Hyperlocal маркетплейс магазинов в Telegram для Узбе
         │   └─ mahallago-admin-api   (Fastify :3000)     │
         │                                                  │
         │   Nginx + Let's Encrypt:                         │
-        │   ├─ shop.mahallago.uz  → Angular static       │
-        │   └─ api.mahallago.uz   → proxy → :3000        │
+        │   ├─ shop.mahgo.uz  → Angular static       │
+        │   └─ api.mahgo.uz   → proxy → :3000        │
         │                                                  │
         └──────────────────┬───────────────────────────────┘
                            │
@@ -254,7 +254,7 @@ VPS_HOST=mahallago@<ip> bash deploy/deploy.sh
 ## Что осталось до launch
 
 1. **Реальные Telegram bot tokens** — создать `@MahallaGo_UzBot` и `@MahallaGo_SellerBot` в @BotFather.
-2. **Login Widget домен** — настроить `setdomain` в @BotFather на `shop.mahallago.uz`.
+2. **Login Widget домен** — настроить `setdomain` в @BotFather на `shop.mahgo.uz`.
 3. **VPS** — создать 2 VPS в одной Cloud Network.
 4. **DNS** — A-записи `shop.` и `api.` на VPS#2.
 5. **Firewall** — настроить вручную (закрыть всё кроме 22/80/443 на VPS#2; БД и Redis VPS#1 доступны только из 10.0.0.0/16).
