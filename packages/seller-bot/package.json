@@ -2,7 +2,7 @@
   "name": "@mahallago/seller-bot",
   "version": "0.1.0",
   "private": true,
-  "description": "Telegram-бот продавца MahallaGo (@MahallaGo_seller_bot)",
+  "description": "Telegram-бот продавца MahallaGo (@MahallaGo_SellerBot)",
   "type": "module",
   "main": "src/index.js",
   "scripts": {

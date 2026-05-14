@@ -1,6 +1,6 @@
 # @mahallago/buyer-bot
 
-Telegram-бот покупателя — `@MahallaGoBot`.
+Telegram-бот покупателя — `@MahallaGo_UzBot`.
 
 ## Возможности
 

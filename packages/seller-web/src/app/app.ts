@@ -15,7 +15,7 @@ import { TPipe } from './core/i18n/t.pipe';
         <div class="icon">🏪</div>
         <div class="h1">{{ 'miniapp.seller.auth.no_shop_title' | t }}</div>
         <div class="muted">{{ 'miniapp.seller.auth.no_shop_subtitle' | t }}</div>
-        <a class="btn btn-primary btn-block mt-3" href="https://t.me/MahallaGo_seller_bot" target="_blank" rel="noopener">
+        <a class="btn btn-primary btn-block mt-3" href="https://t.me/MahallaGo_SellerBot" target="_blank" rel="noopener">
           {{ 'miniapp.seller.auth.open_bot' | t }}
         </a>
       </div>

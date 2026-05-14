@@ -91,7 +91,7 @@ export default async function miniappSellerRoutes(app) {
     if (!shop) {
       return reply.code(409).send({
         error: 'NO_SHOP',
-        detail: 'register a shop via @MahallaGo_seller_bot first',
+        detail: 'register a shop via @MahallaGo_SellerBot first',
       });
     }
     if (shop.status !== 'active') {

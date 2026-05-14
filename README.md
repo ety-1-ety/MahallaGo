@@ -96,8 +96,8 @@ Hyperlocal маркетплейс магазинов в Telegram для Узбе
 mahallago/
 ├── packages/
 │   ├── shared/          — общие утилиты (pg pool, redis, logger, i18n, errors, time)
-│   ├── buyer-bot/       — Telegram-бот покупателя (@MahallaGoBot)
-│   ├── seller-bot/      — Telegram-бот продавца (@MahallaGo_seller_bot)
+│   ├── buyer-bot/       — Telegram-бот покупателя (@MahallaGo_UzBot)
+│   ├── seller-bot/      — Telegram-бот продавца (@MahallaGo_SellerBot)
 │   ├── admin-api/       — Fastify backend для админ-панели
 │   └── admin-web/       — Angular 21 SPA для админ-панели
 ├── db/
@@ -253,7 +253,7 @@ VPS_HOST=mahallago@<ip> bash deploy/deploy.sh
 
 ## Что осталось до launch
 
-1. **Реальные Telegram bot tokens** — создать `@MahallaGoBot` и `@MahallaGo_seller_bot` в @BotFather.
+1. **Реальные Telegram bot tokens** — создать `@MahallaGo_UzBot` и `@MahallaGo_SellerBot` в @BotFather.
 2. **Login Widget домен** — настроить `setdomain` в @BotFather на `shop.mahallago.uz`.
 3. **VPS** — создать 2 VPS в одной Cloud Network.
 4. **DNS** — A-записи `shop.` и `api.` на VPS#2.

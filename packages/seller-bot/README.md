@@ -1,6 +1,6 @@
 # @mahallago/seller-bot
 
-Telegram-бот продавца — `@MahallaGo_seller_bot`.
+Telegram-бот продавца — `@MahallaGo_SellerBot`.
 
 ## Возможности
 

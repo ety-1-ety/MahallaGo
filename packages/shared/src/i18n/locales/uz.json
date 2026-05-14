@@ -181,7 +181,7 @@
       "saved": "✅ Sozlamalar saqlandi"
     },
     "sticker": {
-      "choose_size": "📥 *Doʻkon uchun QR-stiker*\n\nChop etish uchun oʻlchamni tanlang — bot PDF yuboradi, uni bosmaxonaga olib borish yoki rangli printerda chop etib, doʻkoningiz kirish eshigiga yopishtirish mumkin.\n\nMijozlar QR-ni skanerlab, toʻgʻridan-toʻgʻri @MahallaGoBot dagi sizning doʻkoningizga oʻtadi.",
+      "choose_size": "📥 *Doʻkon uchun QR-stiker*\n\nChop etish uchun oʻlchamni tanlang — bot PDF yuboradi, uni bosmaxonaga olib borish yoki rangli printerda chop etib, doʻkoningiz kirish eshigiga yopishtirish mumkin.\n\nMijozlar QR-ni skanerlab, toʻgʻridan-toʻgʻri @MahallaGo_UzBot dagi sizning doʻkoningizga oʻtadi.",
       "size_label":  "📄 {size} × {size} mm",
       "caption":     "📥 *QR-stiker {size}×{size} mm*\n\nRangli printerda chop eting yoki bosmaxonaga olib boring. Doʻkoningiz kirish eshigi yoki kassa yoniga yopishtiring — mijozlar skanerlab Telegram orqali sizdan buyurtma berishi mumkin.",
       "not_available": "⚠️ Stiker fayli vaqtinchalik mavjud emas. Keyinroq urinib koʻring yoki qoʻllab-quvvatlashga yozing."
@@ -341,7 +341,7 @@
     "seller": {
       "auth": {
         "no_shop_title": "Hozircha doʻkoningiz yoʻq",
-        "no_shop_subtitle": "Mahsulot qoʻshish uchun @MahallaGo_seller_bot chat-botida doʻkonni roʻyxatdan oʻtkazing",
+        "no_shop_subtitle": "Mahsulot qoʻshish uchun @MahallaGo_SellerBot chat-botida doʻkonni roʻyxatdan oʻtkazing",
         "open_bot": "Botni ochish",
         "shop_inactive_title": "Doʻkon vaqtinchalik mavjud emas",
         "shop_inactive_subtitle": "Sababini bilish uchun qoʻllab-quvvatlash bilan bogʻlaning."
