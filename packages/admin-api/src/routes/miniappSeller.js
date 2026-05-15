@@ -215,6 +215,20 @@ export default async function miniappSellerRoutes(app) {
     };
   });
 
+  // ─── GET /categories — ВСЕ активные глобальные категории ───────
+  // Для формы добавления/редактирования товара: продавец должен
+  // выбирать из полного справочника, а не только из категорий, где
+  // у него уже есть товары (это делает /products/categories для фильтра).
+  app.get('/categories', { preHandler: app.requireSeller }, async () => {
+    const { rows } = await query(
+      `SELECT id, name_uz, name_ru, emoji
+         FROM catalog.categories
+        WHERE is_active = TRUE
+        ORDER BY sort_order ASC, name_ru ASC`,
+    );
+    return { categories: rows };
+  });
+
   // ─── GET /products ─────────────────────────────────────────────
   app.get('/products', { preHandler: app.requireSeller }, async (request) => {
     const shopId = request.miniappShop.id;

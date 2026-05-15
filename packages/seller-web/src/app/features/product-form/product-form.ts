@@ -233,7 +233,7 @@ export class ProductForm implements OnInit, OnDestroy {
 
   private async loadCategories() {
     try {
-      const res = await firstValueFrom(this.api.get<{ categories: SellerCategory[] }>('/products/categories'));
+      const res = await firstValueFrom(this.api.get<{ categories: SellerCategory[] }>('/categories'));
       this.categories.set(res.categories);
     } catch { /* keep empty */ }
   }
