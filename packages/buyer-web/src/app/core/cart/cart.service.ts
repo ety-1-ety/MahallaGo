@@ -93,19 +93,21 @@ export class CartService {
       // переключаемся на другой магазин — старую корзину сохранили эффектом, теперь свежая.
       this.loadShop(shopId);
     }
-    const cur = this._cart() ?? { shop_id: shopId, shop_name: shopName, items: [], updated_at: Date.now() };
-    if (cur.shop_id !== shopId) {
-      // редкий случай: ключ не подгрузился — начинаем с нуля.
-      this._cart.set({ shop_id: shopId, shop_name: shopName, items: [], updated_at: Date.now() });
-    }
-    const c = this._cart()!;
-    const existing = c.items.find((i) => i.product_id === item.product_id);
-    if (existing) {
-      existing.qty += item.qty ?? 1;
-    } else {
-      c.items.push({ ...item, qty: item.qty ?? 1 });
-    }
-    this._cart.set({ ...c, shop_name: shopName, updated_at: Date.now() });
+    // Текущая корзина этого магазина или новая. Пустая корзина = _cart() === null,
+    // поэтому нельзя полагаться на мутацию существующего объекта.
+    const prev = this._cart();
+    const base = prev && prev.shop_id === shopId
+      ? prev
+      : { shop_id: shopId, shop_name: shopName, items: [] as CartItem[], updated_at: Date.now() };
+
+    const addQty = item.qty ?? 1;
+    const existing = base.items.find((i) => i.product_id === item.product_id);
+    const items = existing
+      ? base.items.map((i) =>
+          i.product_id === item.product_id ? { ...i, qty: i.qty + addQty } : i)
+      : [...base.items, { ...item, qty: addQty }];
+
+    this._cart.set({ shop_id: shopId, shop_name: shopName, items, updated_at: Date.now() });
     this._shopId.set(shopId);
     this.markActive(shopId);
   }
@@ -113,15 +115,15 @@ export class CartService {
   setQty(productId: string, qty: number) {
     const c = this._cart();
     if (!c) return;
-    const it = c.items.find((i) => i.product_id === productId);
-    if (!it) return;
-    if (qty <= 0) {
-      c.items = c.items.filter((i) => i.product_id !== productId);
-    } else {
-      it.qty = qty;
+    if (!c.items.some((i) => i.product_id === productId)) return;
+    const items = qty <= 0
+      ? c.items.filter((i) => i.product_id !== productId)
+      : c.items.map((i) => (i.product_id === productId ? { ...i, qty } : i));
+    if (items.length === 0) {
+      this.clear(c.shop_id);
+      return;
     }
-    this._cart.set({ ...c, items: [...c.items], updated_at: Date.now() });
-    if (c.items.length === 0) this.clear(c.shop_id);
+    this._cart.set({ ...c, items, updated_at: Date.now() });
   }
 
   removeItem(productId: string) {
