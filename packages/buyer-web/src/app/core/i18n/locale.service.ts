@@ -43,7 +43,7 @@ export class LocaleService {
   async load(): Promise<void> {
     await Promise.all(SUPPORTED_LOCALES.map(async (loc) => {
       if (this.dicts[loc]) return;
-      const dict = await firstValueFrom(this.http.get<Dict>(`/assets/i18n/${loc}.json`));
+      const dict = await firstValueFrom(this.http.get<Dict>(`assets/i18n/${loc}.json`));
       this.dicts[loc] = dict;
     }));
     this.ready.set(true);
