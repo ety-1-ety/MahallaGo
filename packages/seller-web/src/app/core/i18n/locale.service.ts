@@ -9,6 +9,20 @@ const STORAGE_KEY = 'mgo.miniapp.lang';
 
 type Dict = Record<string, unknown>;
 
+// Токен сборки из имени main-бандла (Angular фингерпринтит его на каждом
+// билде). Привязываем URL словарей к нему: новый деплой → новый URL →
+// браузер не отдаёт устаревший словарь из старого долгого кеша.
+function buildToken(): string {
+  try {
+    for (const el of Array.from(document.querySelectorAll('script[src]'))) {
+      const m = (el as HTMLScriptElement).src.match(/main-([A-Za-z0-9]+)\.js/);
+      if (m) return m[1];
+    }
+  } catch { /* noop */ }
+  return 'v1';
+}
+const BUILD = buildToken();
+
 // ─────────────────────────────────────────────────────────────────────
 // LocaleService
 //
@@ -43,7 +57,7 @@ export class LocaleService {
   async load(): Promise<void> {
     await Promise.all(SUPPORTED_LOCALES.map(async (loc) => {
       if (this.dicts[loc]) return;
-      const dict = await firstValueFrom(this.http.get<Dict>(`assets/i18n/${loc}.json`));
+      const dict = await firstValueFrom(this.http.get<Dict>(`assets/i18n/${loc}.json?v=${BUILD}`));
       this.dicts[loc] = dict;
     }));
     this.ready.set(true);
