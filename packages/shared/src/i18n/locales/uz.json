@@ -244,6 +244,11 @@
       }
     },
     "buyer": {
+      "tabs": {
+        "home": "Asosiy",
+        "cart": "Savat",
+        "orders": "Buyurtmalar"
+      },
       "home": {
         "title": "Yaqindagi doʻkonlar",
         "subtitle": "Yaqin doʻkonni toping va hozir buyurtma bering",

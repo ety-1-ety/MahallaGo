@@ -117,10 +117,65 @@ buyer-root, .app-shell {
 
 .page {
   flex: 1 1 auto;
-  padding: 16px 16px 100px 16px;  // 100px = место под MainButton + safe-area
+  // нижний паддинг = высота таб-бара + запас под Telegram MainButton + safe-area
+  padding: 16px 16px calc(92px + env(safe-area-inset-bottom, 0px)) 16px;
   max-width: 720px;
   margin: 0 auto;
   width: 100%;
+}
+
+// ─── Bottom tab bar (постоянная навигация) ────────────────────────
+.tabbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  display: flex;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: var(--mgo-bg-2);
+  border-top: 1px solid var(--mgo-border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+.tabbar__item {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-height: 56px;
+  padding: 8px 4px;
+  color: var(--mgo-text-muted);
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  -webkit-tap-highlight-color: transparent;
+  transition: color .15s ease, transform .1s ease;
+}
+.tabbar__item.is-active { color: var(--mgo-primary); }
+.tabbar__item:active { transform: scale(0.94); }
+.tabbar__icon {
+  position: relative;
+  font-size: 21px;
+  line-height: 1;
+}
+.tabbar__badge {
+  position: absolute;
+  top: -7px;
+  right: -11px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--mgo-primary);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
 }
 
 // ─── Typography ───────────────────────────────────────────────────

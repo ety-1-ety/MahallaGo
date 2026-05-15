@@ -40,7 +40,10 @@ import { formatUZS } from '../../core/format/format';
           <div class="row">
             <div class="grow">
               <div class="semibold">{{ item.name }}</div>
-              <div class="muted text-sm">{{ formatPrice(item.price) }} × {{ item.qty }}</div>
+              <div class="text-sm">
+                <span class="muted">{{ formatPrice(item.price) }}</span>
+                <span style="color:var(--mgo-primary);font-weight:700">&nbsp;×&nbsp;{{ item.qty }}</span>
+              </div>
             </div>
             <div class="text-right" style="min-width:90px">
               <div class="semibold">{{ formatPrice(item.price * item.qty) }}</div>

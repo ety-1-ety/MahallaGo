@@ -3,11 +3,12 @@ import { RouterOutlet } from '@angular/router';
 import { AuthService } from './core/auth/auth.service';
 import { LocaleService } from './core/i18n/locale.service';
 import { TPipe } from './core/i18n/t.pipe';
+import { TabBar } from './shared/tab-bar';
 
 @Component({
   selector: 'buyer-root',
   standalone: true,
-  imports: [RouterOutlet, TPipe],
+  imports: [RouterOutlet, TPipe, TabBar],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (auth.error()) {
@@ -25,6 +26,7 @@ import { TPipe } from './core/i18n/t.pipe';
       <main class="page fade-enter">
         <router-outlet />
       </main>
+      <buyer-tabbar />
     }
   `,
 })
