@@ -218,7 +218,8 @@ export class ProductForm implements OnInit, OnDestroy {
 
   async onDelete() {
     if (!this.id) return;
-    if (!confirm(this.locale.t('miniapp.seller.add_product.delete_confirm'))) return;
+    const ok = await this.tg.confirm(this.locale.t('miniapp.seller.add_product.delete_confirm'));
+    if (!ok) return;
     this.tg.haptic('warning');
     try {
       await firstValueFrom(this.api.delete(`/products/${this.id}`));

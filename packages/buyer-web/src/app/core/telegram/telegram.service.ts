@@ -51,6 +51,7 @@ interface TelegramWebApp {
   expand(): void;
   ready(): void;
   close(): void;
+  showConfirm?(message: string, cb: (confirmed: boolean) => void): void;
   onEvent(event: string, cb: () => void): void;
   offEvent(event: string, cb: () => void): void;
   MainButton: {
@@ -287,6 +288,20 @@ export class TelegramService {
 
   close() {
     try { this.webApp.close(); } catch { /* noop */ }
+  }
+
+  // Нативный Telegram-диалог подтверждения. window.confirm в Telegram WebView
+  // (особенно iOS) ненадёжен — может молча вернуть false. Fallback на него
+  // только если showConfirm недоступен (локальная разработка / старый клиент).
+  confirm(message: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      const sc = this.webApp.showConfirm;
+      if (typeof sc === 'function') {
+        try { sc.call(this.webApp, message, (ok) => resolve(!!ok)); return; }
+        catch { /* fall through */ }
+      }
+      try { resolve(window.confirm(message)); } catch { resolve(false); }
+    });
   }
 
   // ─── Применение темы ────────────────────────────────────────────

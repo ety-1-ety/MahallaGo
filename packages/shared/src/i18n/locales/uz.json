@@ -237,7 +237,10 @@
         "EXPIRED": "Sessiya muddati tugadi. Mini App ni qayta oching.",
         "INVALID_USER": "Telegram foydalanuvchisi aniqlanmadi.",
         "INVALID_BODY": "Soʻrov notoʻgʻri tuzilgan. Qaytadan urinib koʻring.",
-        "INTERNAL_ERROR": "Server ichki xatosi. Keyinroq urinib koʻring."
+        "INTERNAL_ERROR": "Server ichki xatosi. Keyinroq urinib koʻring.",
+        "UNAUTHORIZED": "Sessiya tugadi. Mini App ni Telegram orqali qayta oching.",
+        "FORBIDDEN": "Ruxsat yoʻq.",
+        "INVALID_LANGUAGE_CODE": "Bu til qoʻllab-quvvatlanmaydi."
       }
     },
     "buyer": {
@@ -317,7 +320,9 @@
         "ADDRESS_REQUIRED":      "Yetkazib berish manzilini koʻrsating",
         "PHONE_REQUIRED":        "Aloqa telefonini koʻrsating",
         "INVALID_COORDINATES":   "Yetkazib berish koordinatalari notoʻgʻri",
-        "SHOP_NOT_FOUND":        "Doʻkon endi mavjud emas"
+        "SHOP_NOT_FOUND":        "Doʻkon endi mavjud emas",
+        "INVALID_ITEM_QTY":      "Mahsulot miqdori notoʻgʻri",
+        "INVALID_DELIVERY_ADDRESS": "Yetkazib berish manzili notoʻgʻri"
       },
       "orders": {
         "title": "Mening buyurtmalarim",
@@ -395,7 +400,8 @@
         "UNSUPPORTED_MIME": "Faqat JPG, PNG, WEBP, HEIC qoʻllab-quvvatlanadi",
         "FILE_TOO_LARGE": "Fayl juda katta (maksimum 6 MB)",
         "NO_SHOP": "Hozircha doʻkoningiz yoʻq. Chat-botida roʻyxatdan oʻtkazing.",
-        "SHOP_INACTIVE": "Doʻkon vaqtinchalik mavjud emas."
+        "SHOP_INACTIVE": "Doʻkon vaqtinchalik mavjud emas.",
+        "EXPECTED_MULTIPART": "Foto yuklab boʻlmadi. Qayta urinib koʻring."
       }
     }
   }

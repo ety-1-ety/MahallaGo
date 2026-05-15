@@ -34,6 +34,14 @@ interface OrderRow {
           <div class="card"><div class="skeleton" style="height:18px;width:60%"></div></div>
         }
       </div>
+    } @else if (loadError()) {
+      <div class="empty">
+        <div class="icon">⚠️</div>
+        <div class="h2">{{ 'miniapp.common.error_generic' | t }}</div>
+        <button class="btn btn-primary btn-block mt-3" (click)="reload()">
+          {{ 'miniapp.common.retry' | t }}
+        </button>
+      </div>
     } @else if (orders().length === 0) {
       <div class="empty">
         <div class="icon">📦</div>
@@ -70,6 +78,7 @@ export class OrdersPage implements OnInit, OnDestroy {
 
   readonly orders = signal<OrderRow[]>([]);
   readonly loading = signal(true);
+  readonly loadError = signal<string | null>(null);
 
   async ngOnInit() {
     this.tg.showBackButton(() => this.back());
@@ -84,11 +93,17 @@ export class OrdersPage implements OnInit, OnDestroy {
   formatDate(iso: string) { return formatTashkentDate(iso); }
   statusKey(s: OrderRow['status']) { return `miniapp.buyer.orders.status_${s}`; }
 
+  reload() { this.tg.haptic('selection'); void this.load(); }
+
   private async load() {
     this.loading.set(true);
+    this.loadError.set(null);
     try {
       const res = await firstValueFrom(this.api.get<{ orders: OrderRow[] }>('/orders/me'));
       this.orders.set(res.orders);
+    } catch (e) {
+      this.loadError.set((e as { code?: string }).code || 'INTERNAL_ERROR');
+      this.tg.haptic('error');
     } finally {
       this.loading.set(false);
     }

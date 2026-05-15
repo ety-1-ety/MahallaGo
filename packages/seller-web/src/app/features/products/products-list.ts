@@ -71,6 +71,14 @@ interface SellerCategory {
           <div class="card"><div class="skeleton" style="height:18px;width:60%"></div></div>
         }
       </div>
+    } @else if (loadError()) {
+      <div class="empty">
+        <div class="icon">⚠️</div>
+        <div class="h2">{{ 'miniapp.common.error_generic' | t }}</div>
+        <button class="btn btn-primary btn-block mt-3" (click)="retry()">
+          {{ 'miniapp.common.retry' | t }}
+        </button>
+      </div>
     } @else if (products().length === 0) {
       <div class="empty">
         <div class="icon">📦</div>
@@ -122,6 +130,7 @@ export class ProductsList implements OnInit, OnDestroy {
   readonly search = signal<string>('');
   readonly total = signal<number>(0);
   readonly loading = signal<boolean>(true);
+  readonly loadError = signal<string | null>(null);
 
   private searchTimer?: ReturnType<typeof setTimeout>;
 
@@ -168,8 +177,11 @@ export class ProductsList implements OnInit, OnDestroy {
       this.categories.set(res.categories);
     } catch { /* ok */ }
   }
+  retry() { this.tg.haptic('selection'); this.loadProducts(); }
+
   private async loadProducts() {
     this.loading.set(true);
+    this.loadError.set(null);
     try {
       const params: Record<string, string | number | boolean> = { page: 1, per_page: 50 };
       if (this.selectedCat()) params['category_id'] = this.selectedCat()!;
@@ -178,6 +190,10 @@ export class ProductsList implements OnInit, OnDestroy {
       const res = await firstValueFrom(this.api.get<{ products: SellerProduct[]; total: number }>('/products', params));
       this.products.set(res.products);
       this.total.set(res.total);
+    } catch (e) {
+      this.products.set([]);
+      this.loadError.set((e as { code?: string }).code || 'INTERNAL_ERROR');
+      this.tg.haptic('error');
     } finally {
       this.loading.set(false);
     }

@@ -101,8 +101,9 @@ export class CartPage implements OnInit, OnDestroy {
   inc(pid: string) { this.tg.haptic('light'); this.cart.setQty(pid, this.cart.qtyOf(pid) + 1); }
   dec(pid: string) { this.tg.haptic('light'); this.cart.setQty(pid, this.cart.qtyOf(pid) - 1); }
 
-  onClear() {
-    if (!confirm(this.locale.t('miniapp.buyer.cart.clear_confirm'))) return;
+  async onClear() {
+    const ok = await this.tg.confirm(this.locale.t('miniapp.buyer.cart.clear_confirm'));
+    if (!ok) return;
     this.tg.haptic('warning');
     this.cart.clear();
   }

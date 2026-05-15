@@ -22,7 +22,7 @@ interface ShopDetail {
   free_delivery_from: number | null;
   is_accepting_orders: boolean;
 }
-interface CategoryRow { id: string; name: string; product_count: number; }
+interface CategoryRow { id: string; name_uz: string; name_ru: string; emoji: string; product_count: number; }
 interface Product {
   id: string;
   name: string;
@@ -86,12 +86,20 @@ interface Product {
         </button>
         @for (c of categories(); track c.id) {
           <button class="chip" [class.chip-primary]="selectedCat() === c.id" (click)="filter(c.id)">
-            {{ c.name }} · {{ c.product_count }}
+            {{ c.emoji }} {{ catName(c) }} · {{ c.product_count }}
           </button>
         }
       </div>
 
-      @if (products().length === 0) {
+      @if (productsError()) {
+        <div class="empty">
+          <div class="icon">⚠️</div>
+          <div class="muted">{{ 'miniapp.common.error_generic' | t }}</div>
+          <button class="btn btn-primary btn-block mt-2" (click)="retryProducts()">
+            {{ 'miniapp.common.retry' | t }}
+          </button>
+        </div>
+      } @else if (products().length === 0) {
         <div class="empty">
           <div class="icon">📦</div>
           <div class="muted">{{ 'miniapp.buyer.shop.no_products' | t }}</div>
@@ -146,6 +154,7 @@ export class ShopPage implements OnInit, OnDestroy {
   readonly selectedCat = signal<string | null>(null);
   readonly loading = signal(true);
   readonly loadError = signal<string | null>(null);
+  readonly productsError = signal<string | null>(null);
 
   readonly cartItemsCount = computed(() => this.cart.itemsCount());
   readonly cartSubtotal = computed(() => this.cart.subtotal());
@@ -184,6 +193,9 @@ export class ShopPage implements OnInit, OnDestroy {
   }
 
   qtyOf(pid: string) { return this.cart.qtyOf(pid); }
+
+  catName(c: CategoryRow) { return this.locale.current() === 'uz' ? c.name_uz : c.name_ru; }
+  retryProducts() { this.tg.haptic('selection'); void this.loadProducts(this.selectedCat()); }
 
   formatPrice(n: number) { return formatUZS(n); }
 
@@ -231,11 +243,13 @@ export class ShopPage implements OnInit, OnDestroy {
   }
 
   private async loadProducts(catId: string | null) {
+    this.productsError.set(null);
     try {
       const res = await firstValueFrom(this.api.get<{ products: Product[] }>(`/shops/${this.id}/products`, catId ? { category_id: catId } : undefined));
       this.products.set(res.products);
-    } catch {
+    } catch (e) {
       this.products.set([]);
+      this.productsError.set((e as { code?: string }).code || 'INTERNAL_ERROR');
     }
   }
 }
