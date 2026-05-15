@@ -12,14 +12,14 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withComponentInputBinding()),
     provideHttpClient(withInterceptorsFromDi()),
     provideAppInitializer(async () => {
-      // 1) Поднимаем Telegram WebApp адаптер (читает initData, тему, viewport)
-      inject(TelegramService);
-      // 2) Загружаем словари uz + ru до первого рендера
+      // ВСЕ inject() — синхронно ДО первого await: после await Angular
+      // теряет injection-контекст и inject() бросает NG0203.
+      inject(TelegramService); // Telegram WebApp адаптер (initData, тема, viewport)
       const locale = inject(LocaleService);
-      await locale.load();
-      // 3) Авторизация — посылаем initData на /auth/init, ждём ответ.
-      //    Если упадёт — AuthService.error будет выставлен, App покажет экран ошибки.
       const auth = inject(AuthService);
+      // Словари uz+ru до первого рендера, затем авторизация по initData.
+      // Если auth упадёт — AuthService.error, App покажет экран ошибки.
+      await locale.load();
       await auth.init();
     }),
   ],

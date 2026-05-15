@@ -12,10 +12,12 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withComponentInputBinding()),
     provideHttpClient(withInterceptorsFromDi()),
     provideAppInitializer(async () => {
+      // ВСЕ inject() — синхронно ДО первого await: после await Angular
+      // теряет injection-контекст и inject() бросает NG0203.
       inject(TelegramService);
       const locale = inject(LocaleService);
-      await locale.load();
       const auth = inject(AuthService);
+      await locale.load();
       await auth.init();
     }),
   ],
