@@ -109,6 +109,10 @@ interface Product {
           @for (p of products(); track p.id) {
             <article class="card">
               <div class="flex gap-2 items-center">
+                @if (p.photo_path) {
+                  <img [src]="photoUrl(p.photo_path)" alt="" loading="lazy"
+                       style="width:64px;height:64px;border-radius:12px;object-fit:cover;flex:none;background:var(--mgo-surface-mute)" />
+                }
                 <div class="grow">
                   <div class="semibold">{{ p.name }}</div>
                   @if (p.description) {
@@ -195,6 +199,7 @@ export class ShopPage implements OnInit, OnDestroy {
   qtyOf(pid: string) { return this.cart.qtyOf(pid); }
 
   catName(c: CategoryRow) { return this.locale.current() === 'uz' ? c.name_uz : c.name_ru; }
+  photoUrl(p: string) { return `/photos/${p}`; }
   retryProducts() { this.tg.haptic('selection'); void this.loadProducts(this.selectedCat()); }
 
   formatPrice(n: number) { return formatUZS(n); }

@@ -43,8 +43,11 @@ interface SellerCategory {
     } @else {
       <section class="card mb-3">
         <label class="label">{{ 'miniapp.seller.add_product.field_photo' | t }}</label>
-        <button type="button" class="btn btn-ghost btn-block" (click)="filePicker.click()"
-                style="min-height: 120px; flex-direction: column;">
+        <!-- Telegram WebView блокирует программный input.click() по скрытому
+             полю. Поэтому сам <input type=file> лежит прозрачным слоем
+             поверх кнопки внутри <label> — тап попадает прямо в него. -->
+        <label class="btn btn-ghost btn-block"
+                style="min-height:120px;flex-direction:column;position:relative;overflow:hidden;cursor:pointer">
           @if (photoPreview()) {
             <img [src]="photoPreview()" alt="" style="max-height:96px;max-width:100%;border-radius:10px;object-fit:cover" />
             <span class="muted text-sm mt-1">{{ 'miniapp.seller.add_product.field_photo_replace' | t }}</span>
@@ -52,8 +55,9 @@ interface SellerCategory {
             <span style="font-size:32px">📷</span>
             <span class="muted text-sm">{{ 'miniapp.seller.add_product.field_photo_hint' | t }}</span>
           }
-        </button>
-        <input #filePicker type="file" accept="image/*" style="display:none" (change)="onFile($event)">
+          <input type="file" accept="image/*" (change)="onFile($event)"
+                 style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer">
+        </label>
       </section>
 
       <section class="card mb-3">
