@@ -111,7 +111,8 @@ interface Product {
               <div class="flex gap-2 items-center">
                 @if (p.photo_path) {
                   <img [src]="photoUrl(p.photo_path)" alt="" loading="lazy"
-                       style="width:64px;height:64px;border-radius:12px;object-fit:cover;flex:none;background:var(--mgo-surface-mute)" />
+                       (click)="openZoom(p.photo_path); $event.stopPropagation()"
+                       style="width:64px;height:64px;border-radius:12px;object-fit:cover;flex:none;background:var(--mgo-surface-mute);cursor:zoom-in" />
                 }
                 <div class="grow">
                   <div class="semibold">{{ p.name }}</div>
@@ -141,6 +142,11 @@ interface Product {
         </div>
       }
     }
+    @if (zoomPhoto(); as zp) {
+      <div class="photo-zoom" (click)="closeZoom()">
+        <img [src]="photoUrl(zp)" alt="" />
+      </div>
+    }
   `,
 })
 export class ShopPage implements OnInit, OnDestroy {
@@ -159,6 +165,7 @@ export class ShopPage implements OnInit, OnDestroy {
   readonly loading = signal(true);
   readonly loadError = signal<string | null>(null);
   readonly productsError = signal<string | null>(null);
+  readonly zoomPhoto = signal<string | null>(null);
 
   readonly cartItemsCount = computed(() => this.cart.itemsCount());
   readonly cartSubtotal = computed(() => this.cart.subtotal());
@@ -200,6 +207,8 @@ export class ShopPage implements OnInit, OnDestroy {
 
   catName(c: CategoryRow) { return this.locale.current() === 'uz' ? c.name_uz : c.name_ru; }
   photoUrl(p: string) { return `/photos/${p}`; }
+  openZoom(p: string) { this.tg.haptic('light'); this.zoomPhoto.set(p); }
+  closeZoom() { this.tg.haptic('selection'); this.zoomPhoto.set(null); }
   retryProducts() { this.tg.haptic('selection'); void this.loadProducts(this.selectedCat()); }
 
   formatPrice(n: number) { return formatUZS(n); }
