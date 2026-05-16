@@ -36,6 +36,25 @@ interface ShopNearby {
 
     <p class="subtitle mb-3">{{ 'miniapp.buyer.home.subtitle' | t }}</p>
 
+    @if (recentShops().length > 0 && (state() === 'idle' || state() === 'denied' || state() === 'error')) {
+      <h2 class="h2">{{ 'miniapp.buyer.home.order_again' | t }}</h2>
+      <div class="list mb-3">
+        @for (r of recentShops(); track r.id) {
+          <article class="card tappable" (click)="openShop(r.id)">
+            <div class="flex items-center gap-2">
+              <div class="grow">
+                <div class="semibold">{{ r.name }}</div>
+                <span class="chip mt-1" [class.chip-primary]="r.is_open_now" [class.chip-danger]="!r.is_open_now">
+                  {{ (r.is_open_now ? 'miniapp.buyer.shop_card.open_now' : 'miniapp.buyer.shop_card.closed_now') | t }}
+                </span>
+              </div>
+              <span style="font-size:20px">↻</span>
+            </div>
+          </article>
+        }
+      </div>
+    }
+
     @if (state() === 'idle') {
       <div class="empty">
         <div class="icon">📍</div>
@@ -117,12 +136,23 @@ export class Home implements OnInit, OnDestroy {
 
   readonly state = signal<'idle' | 'locating' | 'denied' | 'loading' | 'ready' | 'error'>('idle');
   readonly shops = signal<ShopNearby[]>([]);
+  readonly recentShops = signal<{ id: string; name: string; is_open_now: boolean }[]>([]);
 
   ngOnInit() {
     // Home — корневой экран без MainButton/BackButton.
     // Скрываем оставшиеся от предыдущих экранов (cart / checkout / shop).
     this.tg.hideMainButton();
     this.tg.hideBackButton();
+    void this.loadRecent();
+  }
+
+  private async loadRecent() {
+    try {
+      const res = await firstValueFrom(
+        this.api.get<{ shops: { id: string; name: string; is_open_now: boolean }[] }>('/shops/recent'),
+      );
+      this.recentShops.set(res.shops || []);
+    } catch { /* блок «Заказать снова» просто не покажется */ }
   }
   ngOnDestroy() { /* leave buttons to next page to manage */ }
 

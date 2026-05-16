@@ -230,6 +230,29 @@ export default async function miniappBuyerRoutes(app) {
     };
   });
 
+  // ─── GET /shops/recent — магазины из истории заказов покупателя ──
+  // Для блока «Заказать снова» на главной: вернуться в магазин без
+  // повторного запроса геолокации.
+  app.get('/shops/recent', { preHandler: app.requireBuyer }, async (request) => {
+    const { rows } = await query(
+      `SELECT s.id, s.name, s.working_hours, s.timezone, MAX(o.created_at) AS last_at
+         FROM orders.orders o
+         JOIN shops.shops s ON s.id = o.shop_id
+        WHERE o.buyer_id = $1 AND s.status = 'active'
+        GROUP BY s.id, s.name, s.working_hours, s.timezone
+        ORDER BY last_at DESC
+        LIMIT 6`,
+      [request.miniappUser.id],
+    );
+    return {
+      shops: rows.map((s) => ({
+        id: s.id,
+        name: s.name,
+        is_open_now: isOpenNow(s.working_hours, s.timezone),
+      })),
+    };
+  });
+
   // ─── POST /orders ──────────────────────────────────────────────
   app.post('/orders', { preHandler: app.requireBuyer }, async (request, reply) => {
     const { shop_id, items, delivery_lat, delivery_lng, delivery_address, phone, notes } = request.body || {};
