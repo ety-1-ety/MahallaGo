@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, signal, OnInit, OnDestroy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
@@ -70,7 +70,7 @@ interface OrderRow {
     }
   `,
 })
-export class OrdersPage implements OnInit, OnDestroy {
+export class OrdersPage implements OnInit {
   private readonly api = inject(ApiService);
   private readonly tg = inject(TelegramService);
   private readonly router = inject(Router);
@@ -81,10 +81,11 @@ export class OrdersPage implements OnInit, OnDestroy {
   readonly loadError = signal<string | null>(null);
 
   async ngOnInit() {
-    this.tg.showBackButton(() => this.back());
+    // Orders — top-level tab destination: без нативной Telegram BackButton
+    // (навигация через нижний таб-бар). Скрываем оставшуюся от прошлых экранов.
+    this.tg.hideBackButton();
     await this.load();
   }
-  ngOnDestroy() { this.tg.hideBackButton(); }
 
   back() { this.tg.haptic('selection'); this.router.navigateByUrl('/'); }
   goHome() { this.router.navigateByUrl('/'); }

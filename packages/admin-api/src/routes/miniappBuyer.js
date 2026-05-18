@@ -240,7 +240,7 @@ export default async function miniappBuyerRoutes(app) {
          JOIN shops.shops s ON s.id = o.shop_id
         WHERE o.buyer_id = $1 AND s.status = 'active'
         GROUP BY s.id, s.name, s.working_hours, s.timezone
-        ORDER BY last_at DESC
+        ORDER BY last_at DESC, s.id
         LIMIT 6`,
       [request.miniappUser.id],
     );
