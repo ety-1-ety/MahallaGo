@@ -7,13 +7,13 @@ Fastify backend для админ-панели MahallaGo. Слушает `localh
 `POST /api/auth/telegram` принимает payload от Telegram Login Widget.
 Поток:
 
-1. `verifyTelegramAuth` — проверяет hash через bot token (HMAC-SHA256 отсортированных полей по spec Telegram).
-2. `auth.upsert_user` — создаёт или обновляет пользователя.
+1. `verifyTelegramAuth` - проверяет hash через bot token (HMAC-SHA256 отсортированных полей по spec Telegram).
+2. `auth.upsert_user` - создаёт или обновляет пользователя.
 3. Доступ разрешён если `telegram_id ∈ ADMIN_TG_IDS` ИЛИ `auth.users.is_admin = true`. Первый whitelisted-вход поднимает `is_admin=true` в БД через `auth.mark_as_admin`.
 4. JWT 24h в httpOnly cookie `mgo_admin`.
 
-`POST /api/auth/logout` — стирает cookie.
-`GET  /api/auth/me`     — текущий пользователь (требует cookie).
+`POST /api/auth/logout` - стирает cookie.
+`GET  /api/auth/me`     - текущий пользователь (требует cookie).
 
 ## Эндпоинты
 
@@ -50,7 +50,7 @@ Fastify backend для админ-панели MahallaGo. Слушает `localh
 cp .env.example .env
 # Заполнить:
 #   JWT_SECRET (32+ random bytes)
-#   BOT_TOKEN (тот же что у buyer-bot — Login Widget настраивается на него)
+#   BOT_TOKEN (тот же что у buyer-bot - Login Widget настраивается на него)
 #   ADMIN_TG_IDS=12345,67890 (свой Telegram ID для первого входа)
 
 pnpm --filter @mahallago/admin-api dev
@@ -68,21 +68,21 @@ pnpm --filter @mahallago/admin-api dev
 
 ```
 src/
-├── index.js              — Fastify bootstrap, plugin chain, /api префикс, graceful shutdown
+├── index.js              - Fastify bootstrap, plugin chain, /api префикс, graceful shutdown
 ├── plugins/
-│   ├── cors.js            — @fastify/cors с CORS_ORIGIN из env
-│   ├── auth.js            — @fastify/cookie + @fastify/jwt, verifyTelegramAuth, requireAuth
-│   └── errorHandler.js    — DomainError → 400 + код, прочее → 500
+│   ├── cors.js            - @fastify/cors с CORS_ORIGIN из env
+│   ├── auth.js            - @fastify/cookie + @fastify/jwt, verifyTelegramAuth, requireAuth
+│   └── errorHandler.js    - DomainError → 400 + код, прочее → 500
 ├── routes/
-│   ├── health.js          — / (без /api префикса)
-│   ├── auth.js            — POST /telegram, POST /logout, GET /me
-│   ├── dashboard.js       — KPIs, orders-by-hour, gmv-trend
-│   ├── shops.js           — CRUD + действия модерации
-│   ├── orders.js          — list + detail (header + items + timeline)
-│   ├── users.js           — list + mark-admin
-│   ├── analytics.js       — shops-growth, top-categories, active-shops-map
-│   └── settings.js        — admins, whitelist
+│   ├── health.js          - / (без /api префикса)
+│   ├── auth.js            - POST /telegram, POST /logout, GET /me
+│   ├── dashboard.js       - KPIs, orders-by-hour, gmv-trend
+│   ├── shops.js           - CRUD + действия модерации
+│   ├── orders.js          - list + detail (header + items + timeline)
+│   ├── users.js           - list + mark-admin
+│   ├── analytics.js       - shops-growth, top-categories, active-shops-map
+│   └── settings.js        - admins, whitelist
 └── services/
-    ├── notifyBots.js      — Redis publish в shops:moderation
-    └── telegramPhoto.js   — getFile API + 30-min in-memory cache
+    ├── notifyBots.js      - Redis publish в shops:moderation
+    └── telegramPhoto.js   - getFile API + 30-min in-memory cache
 ```

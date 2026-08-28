@@ -1,6 +1,6 @@
 # @mahallago/seller-bot
 
-Telegram-бот продавца — `@MahallaGo_SellerBot`.
+Telegram-бот продавца - `@MahallaGo_SellerBot`.
 
 ## Возможности
 
@@ -13,7 +13,7 @@ Telegram-бот продавца — `@MahallaGo_SellerBot`.
 - **Push-уведомления об одобрении/отклонении** магазина (канал `shops:moderation`).
 - **i18n uz/ru**, английского нет.
 - **Rate limit** 10 req/sec/пользователь через Redis sliding window.
-- **Status guard** — блокирует управление магазином пока он не `active`.
+- **Status guard** - блокирует управление магазином пока он не `active`.
 
 ## Запуск
 
@@ -27,9 +27,9 @@ pnpm --filter @mahallago/seller-bot dev
 ## Окружение
 
 См. `.env.example`. Обязательные:
-- `BOT_TOKEN` — от @BotFather
-- `DATABASE_URL` — postgresql://...
-- `REDIS_URL` — redis://...
+- `BOT_TOKEN` - от @BotFather
+- `DATABASE_URL` - postgresql://...
+- `REDIS_URL` - redis://...
 
 Опциональные (с дефолтами):
 - `REDIS_PREFIX=seller:`
@@ -42,28 +42,28 @@ pnpm --filter @mahallago/seller-bot dev
 
 ```
 src/
-├── index.js              — bot setup, middleware chain, graceful shutdown
+├── index.js              - bot setup, middleware chain, graceful shutdown
 ├── middleware/
-│   ├── session.js         — Redis session storage (RedisAdapter)
-│   ├── i18n.js            — auth.upsert_user + загрузка магазина в ctx
-│   ├── rateLimit.js       — sliding window 10 req/sec через Redis
-│   ├── statusGuard.js     — блокирует действия для не-active магазинов
-│   └── errorHandler.js    — bot.catch — DomainError → локализованное сообщение
+│   ├── session.js         - Redis session storage (RedisAdapter)
+│   ├── i18n.js            - auth.upsert_user + загрузка магазина в ctx
+│   ├── rateLimit.js       - sliding window 10 req/sec через Redis
+│   ├── statusGuard.js     - блокирует действия для не-active магазинов
+│   └── errorHandler.js    - bot.catch - DomainError → локализованное сообщение
 ├── handlers/
-│   ├── start.js           — /start: онбординг или меню
-│   ├── menu.js            — router reply-кнопок главного меню
-│   ├── toggleAccepting.js — переключатель is_accepting_orders
-│   ├── myProducts.js      — список товаров магазина
-│   ├── stats.js           — orders.get_dashboard_stats за today/week/month
-│   ├── settings.js        — открыть inline-меню + applySettingUpdate
-│   └── orders.js          — список активных заказов + callback-кнопки
+│   ├── start.js           - /start: онбординг или меню
+│   ├── menu.js            - router reply-кнопок главного меню
+│   ├── toggleAccepting.js - переключатель is_accepting_orders
+│   ├── myProducts.js      - список товаров магазина
+│   ├── stats.js           - orders.get_dashboard_stats за today/week/month
+│   ├── settings.js        - открыть inline-меню + applySettingUpdate
+│   └── orders.js          - список активных заказов + callback-кнопки
 ├── conversations/
-│   ├── onboarding.js      — 6-шаговый wizard регистрации магазина
-│   ├── addProduct.js      — 5-шаговый wizard добавления товара
-│   └── editSetting.js     — редактирование одной настройки (универсальный)
+│   ├── onboarding.js      - 6-шаговый wizard регистрации магазина
+│   ├── addProduct.js      - 5-шаговый wizard добавления товара
+│   └── editSetting.js     - редактирование одной настройки (универсальный)
 ├── keyboards/
-│   ├── mainMenu.js        — Reply Keyboard 2x3
-│   ├── settings.js        — Inline-меню настроек с текущими значениями
-│   └── orderCard.js       — кнопки заказа по статусу
-└── notifier.js            — подписка на orders:new и shops:moderation
+│   ├── mainMenu.js        - Reply Keyboard 2x3
+│   ├── settings.js        - Inline-меню настроек с текущими значениями
+│   └── orderCard.js       - кнопки заказа по статусу
+└── notifier.js            - подписка на orders:new и shops:moderation
 ```
