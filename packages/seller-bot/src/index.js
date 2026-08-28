@@ -47,7 +47,7 @@ const cfg = loadConfig({
 
 const bot = new Bot(cfg.BOT_TOKEN);
 
-// ─── Middleware (порядок важен) ────────────────────────────────────
+// - Middleware (порядок важен) -
 bot.use(buildSession());
 bot.use(buildRateLimit(log, cfg.RATE_LIMIT_PER_SEC));
 bot.use(buildAuthI18n(log));
@@ -68,7 +68,7 @@ bot.command('start', async (ctx, next) => {
   return next();
 });
 
-// /reset — ручная очистка застрявшего conversation-state.
+// /reset - ручная очистка застрявшего conversation-state.
 bot.command('reset', async (ctx) => {
   await ctx.conversation.exit();
   await clearConversationFromSession({
@@ -83,7 +83,7 @@ bot.command('reset', async (ctx) => {
   );
 });
 
-// ─── Handlers ──────────────────────────────────────────────────────
+// - Handlers -
 registerStart(bot);
 
 // Callback-кнопки заказов: накладываем guard вручную (чтобы не ловить
@@ -93,7 +93,7 @@ bot.callbackQuery(/^order:/, statusGuard(), handleOrderCallback);
 // Кнопки управления товарами в карточке (price/stock/toggle/delete)
 bot.callbackQuery(/^prod_mgr:/, statusGuard(), handleProductMgrCallback);
 
-// Навигация «Мои товары» — категории/пагинация/карточка/поиск
+// Навигация «Мои товары» - категории/пагинация/карточка/поиск
 bot.callbackQuery(/^mp:/, statusGuard(), handleMyProductsCallback);
 
 // Скачивание готового PDF-стикера с QR покупательского бота
@@ -140,7 +140,7 @@ bot.callbackQuery(/^lang:/, async (ctx) => {
 
   await ctx.answerCallbackQuery({ text: tFn(lang, 'language.saved') });
 
-  // Закрываем сообщение настроек — старая inline-клавиатура была в прежнем языке.
+  // Закрываем сообщение настроек - старая inline-клавиатура была в прежнем языке.
   await ctx.deleteMessage().catch(() => {});
 
   // Перерисовываем нижнюю reply-клавиатуру (главное меню) на новом языке.
@@ -149,7 +149,7 @@ bot.callbackQuery(/^lang:/, async (ctx) => {
     reply_markup: ctx.shop ? mainMenuKeyboard(ctx) : { remove_keyboard: true },
   });
 
-  // И сразу заново открываем меню настроек — уже на новом языке.
+  // И сразу заново открываем меню настроек - уже на новом языке.
   if (ctx.shop) {
     await ctx.reply(tFn(lang, 'seller.settings.title'), {
       parse_mode: 'Markdown',
@@ -158,7 +158,7 @@ bot.callbackQuery(/^lang:/, async (ctx) => {
   }
 });
 
-// «Сборщик» причины reject — должен идти ДО main-menu router
+// «Сборщик» причины reject - должен идти ДО main-menu router
 bot.on('message:text', async (ctx, next) => {
   if (ctx.session?.rejecting_order_id) {
     return handleRejectReason(ctx, next);
@@ -166,10 +166,10 @@ bot.on('message:text', async (ctx, next) => {
   return next();
 });
 
-// Главное меню (reply-кнопки) — для активного магазина
+// Главное меню (reply-кнопки) - для активного магазина
 bot.on('message:text', statusGuard(), handleMainMenuMessage);
 
-// Если ни один handler не сработал и магазина нет — мягкая подсказка пройти онбординг
+// Если ни один handler не сработал и магазина нет - мягкая подсказка пройти онбординг
 bot.on('message', async (ctx) => {
   if (!ctx.shop) {
     await ctx.reply(
@@ -180,13 +180,13 @@ bot.on('message', async (ctx) => {
   }
 });
 
-// ─── Error handler ─────────────────────────────────────────────────
+// - Error handler -
 bot.catch(errorHandler(log));
 
-// ─── Notifier (Redis pub/sub) ──────────────────────────────────────
+// - Notifier (Redis pub/sub) -
 startNotifier(bot, log);
 
-// ─── Запуск + graceful shutdown ────────────────────────────────────
+// - Запуск + graceful shutdown -
 async function shutdown(signal) {
   log.info({ signal }, 'shutting down');
   try { await bot.stop(); } catch (err) { log.warn({ err: err.message }, 'bot.stop'); }
@@ -198,14 +198,14 @@ async function shutdown(signal) {
 process.on('SIGINT',  () => shutdown('SIGINT'));
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 
-// Перед стартом — чистим Redis от протухших conversation-state
+// Перед стартом - чистим Redis от протухших conversation-state
 // (см. shared/sessionHygiene.js).
 await sweepStaleConversations({
   prefix: cfg.REDIS_PREFIX || 'seller:',
   log,
 }).catch((err) => log.warn({ err: err.message }, 'sweep failed'));
 
-// + периодический sweep каждые 10 минут — страховка для idle-сессий,
+// + периодический sweep каждые 10 минут - страховка для idle-сессий,
 // чтобы не ждать рестарта бота. Per-message expire в i18n-middleware
 // фиксит UX мгновенно при следующем сообщении, а это убирает blob'ы у
 // тех, кто вообще не возвращается.

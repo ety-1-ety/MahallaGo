@@ -2,7 +2,6 @@ import fp from 'fastify-plugin';
 import cookie from '@fastify/cookie';
 import jwt from '@fastify/jwt';
 
-// ─────────────────────────────────────────────────────────────────
 // Telegram Mini App · auth plugin
 //
 // Параллельно с существующим admin-auth (login/password → cookie mgo_admin)
@@ -17,16 +16,15 @@ import jwt from '@fastify/jwt';
 //     shop_id?: <UUID> (только для seller) }
 //
 // Decorators:
-//   - app.requireBuyer  — preHandler, проверяет cookie mgo_mini_b → request.miniappUser
-//   - app.requireSeller — preHandler, проверяет cookie mgo_mini_s → request.miniappUser, request.miniappShop
-//   - app.signMiniappToken({ payload, role }) — выдаёт JWT для cookie
-//   - app.miniappCookieName(role) — резолвит имя cookie по роли
-//   - app.miniappCookieOptions(role) — общие опции (httpOnly, secure, sameSite, path, maxAge)
+//   - app.requireBuyer  - preHandler, проверяет cookie mgo_mini_b → request.miniappUser
+//   - app.requireSeller - preHandler, проверяет cookie mgo_mini_s → request.miniappUser, request.miniappShop
+//   - app.signMiniappToken({ payload, role }) - выдаёт JWT для cookie
+//   - app.miniappCookieName(role) - резолвит имя cookie по роли
+//   - app.miniappCookieOptions(role) - общие опции (httpOnly, secure, sameSite, path, maxAge)
 //
 // ВАЖНО: основной admin-auth (auth.js) уже регистрирует @fastify/cookie и
 // @fastify/jwt с namespace 'jwt' и cookie 'mgo_admin'. Чтобы не конфликтовать,
 // здесь регистрируем JWT под именем 'miniappJwt' (через `namespace`).
-// ─────────────────────────────────────────────────────────────────
 
 export default fp(async (app) => {
   // cookie plugin уже зарегистрирован в auth.js, повторно не регистрируем
@@ -35,7 +33,7 @@ export default fp(async (app) => {
   await app.register(jwt, {
     secret: process.env.JWT_SECRET || 'dev-secret-change-me-please-32-bytes-min',
     namespace: 'miniapp',  // даёт app.jwt.miniapp.sign() / request.miniappJwtVerify()
-    // cookie-настройка здесь не указываем — извлекаем cookie вручную в preHandler,
+    // cookie-настройка здесь не указываем - извлекаем cookie вручную в preHandler,
     // потому что нам нужны РАЗНЫЕ имена cookie на разные роли.
     sign: { expiresIn: process.env.MINIAPP_JWT_EXPIRES_IN || '24h' },
   });
@@ -71,7 +69,7 @@ export default fp(async (app) => {
     return app.jwt.miniapp.sign({ ...payload, role });
   });
 
-  // ─── Guards ────────────────────────────────────────────────────
+  // - Guards -
   app.decorate('requireBuyer',  buildGuard('buyer'));
   app.decorate('requireSeller', buildGuard('seller'));
 

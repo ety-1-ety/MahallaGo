@@ -29,7 +29,7 @@ export function buildSession() {
       ttl: 60 * 60 * 24 * 30,  // 30 дней
     }),
     getSessionKey: (ctx) => {
-      // Один пользователь может писать боту в нескольких чатах — но
+      // Один пользователь может писать боту в нескольких чатах - но
       // у seller-bot всегда личка, поэтому ключ от user.id достаточно.
       const id = ctx.from?.id;
       return id ? `${prefix}sess:${id}` : undefined;

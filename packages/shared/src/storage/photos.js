@@ -1,11 +1,9 @@
-// ─────────────────────────────────────────────────────────────────
 // Фотографии Telegram → локальный диск.
 //
 // Telegram file_id привязан к боту-загрузчику. Чтобы buyer-bot мог
 // показать фото товара, загруженного seller-bot'ом, мы скачиваем байты
 // сразу после загрузки и кладём в общий каталог `data/photos/`.
-// Имя файла — sha1 содержимого (детерминированно, дедупликация бесплатно).
-// ─────────────────────────────────────────────────────────────────
+// Имя файла - sha1 содержимого (детерминированно, дедупликация бесплатно).
 
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
@@ -14,7 +12,7 @@ import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
 // Якорим путь к расположению ЭТОГО файла, а не к process.cwd().
-// CWD у seller-bot и buyer-bot разный (каждый — своя package-папка),
+// CWD у seller-bot и buyer-bot разный (каждый - своя package-папка),
 // поэтому если опереться на cwd, фотки seller'а уезжают в его подпапку,
 // а buyer туда не смотрит.
 //   packages/shared/src/storage/photos.js → подняться 4 уровня → repo root.
@@ -36,20 +34,20 @@ export function getPhotoDir() {
  *
  * Pipeline: rotate (применить EXIF-ориентацию) → resize до 1024×1024 inside
  * (без увеличения) → JPEG quality 82 mozjpeg progressive → strip metadata.
- * Имя файла — sha1(outBuf).slice(0,16) + '.jpg', что даёт дедупликацию
+ * Имя файла - sha1(outBuf).slice(0,16) + '.jpg', что даёт дедупликацию
  * идентичных изображений и стабильное имя для CDN-кэша.
  *
- * Если sharp по какой-то причине упал (битый файл / не-картинка) — пишем
+ * Если sharp по какой-то причине упал (битый файл / не-картинка) - пишем
  * исходный буфер как есть с расширением .jpg. Лучше показать «как есть»
  * чем потерять файл.
  *
  * Используется и `downloadTelegramPhoto`, и Mini App'овским multipart
- * upload'ом — один и тот же контракт.
+ * upload'ом - один и тот же контракт.
  *
- * @param {Buffer} rawBuf            — исходные байты фото
+ * @param {Buffer} rawBuf            - исходные байты фото
  * @param {Object} [opts]
- * @param {string} [opts.baseDir]    — каталог сохранения (default getPhotoDir())
- * @returns {Promise<string>}        — имя файла (например 'a3f4b2c1d4e5f6a7.jpg')
+ * @param {string} [opts.baseDir]    - каталог сохранения (default getPhotoDir())
+ * @returns {Promise<string>}        - имя файла (например 'a3f4b2c1d4e5f6a7.jpg')
  */
 export async function optimizeAndSave(rawBuf, { baseDir } = {}) {
   if (!Buffer.isBuffer(rawBuf) || rawBuf.length === 0) {
@@ -84,9 +82,9 @@ export async function optimizeAndSave(rawBuf, { baseDir } = {}) {
  * через `optimizeAndSave` (sharp resize/compress).
  *
  * @param {Object} opts
- * @param {string} opts.token   — bot token боту, которому принадлежит file_id
- * @param {string} opts.fileId  — Telegram file_id
- * @param {string} [opts.baseDir] — куда сохранять (по умолчанию getPhotoDir())
+ * @param {string} opts.token   - bot token боту, которому принадлежит file_id
+ * @param {string} opts.fileId  - Telegram file_id
+ * @param {string} [opts.baseDir] - куда сохранять (по умолчанию getPhotoDir())
  * @returns {Promise<string>} имя файла (относительно baseDir), например 'a3f4b2c1.jpg'
  */
 export async function downloadTelegramPhoto({ token, fileId, baseDir }) {
@@ -108,7 +106,7 @@ export async function downloadTelegramPhoto({ token, fileId, baseDir }) {
 
 /**
  * Возвращает абсолютный путь к ранее сохранённому фото.
- * Если фото нет — null.
+ * Если фото нет - null.
  */
 export async function resolvePhotoPath(fileName) {
   if (!fileName) return null;

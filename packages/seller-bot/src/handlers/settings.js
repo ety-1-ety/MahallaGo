@@ -26,7 +26,7 @@ export async function refreshShop(ctx) {
 /**
  * Применить изменение одной настройки.
  *
- * @param {string} field — min_order | max_order | delivery_fee | free_delivery | radius | hours
+ * @param {string} field - min_order | max_order | delivery_fee | free_delivery | radius | hours
  * @param {*} value
  */
 export async function applySettingUpdate(ctx, field, value) {

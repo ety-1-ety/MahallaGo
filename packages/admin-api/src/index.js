@@ -44,7 +44,7 @@ const cfg = loadConfig({
 const app = Fastify({
   loggerInstance: log,
   trustProxy: true,
-  bodyLimit: 1 * 1024 * 1024,  // 1MB — фото грузятся через бот, тут только JSON
+  bodyLimit: 1 * 1024 * 1024,  // 1MB - фото грузятся через бот, тут только JSON
 });
 
 // Plugins (порядок важен: cookie/jwt из authPlugin переиспользуется miniappAuth'ом)
@@ -53,7 +53,7 @@ await app.register(authPlugin);
 await app.register(miniappAuthPlugin);
 await app.register(errorPlugin);
 
-// Health не требует /api префикса — бывает удобно для liveness probe
+// Health не требует /api префикса - бывает удобно для liveness probe
 await app.register(healthRoutes);
 
 // Все API-маршруты под /api
@@ -66,9 +66,9 @@ await app.register(async (api) => {
   await api.register(analyticsRoutes);
   await api.register(settingsRoutes);
 
-  // Mini App routes — отдельные namespace'ы под `/api/miniapp/buyer/*`
+  // Mini App routes - отдельные namespace'ы под `/api/miniapp/buyer/*`
   // и `/api/miniapp/seller/*`. multipart регистрируем ТОЛЬКО на seller'е
-  // (Стадия 4), сейчас оба — JSON.
+  // (Стадия 4), сейчас оба - JSON.
   await api.register(async (mini) => {
     await mini.register(miniappBuyerRoutes,  { prefix: '/buyer'  });
     await mini.register(miniappSellerRoutes, { prefix: '/seller' });

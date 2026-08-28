@@ -57,14 +57,14 @@ async function refreshCartMessage(ctx) {
 
 /**
  * Обработчик callback-кнопок корзины.
- *   cart:show         — показать корзину (из reminder под товарами)
- *   cart:edit         — вернуться в магазин для добавления товаров
- *   cart:clear        — очистить
- *   cart:checkout     — оформить заказ (заходим в checkout conversation)
- *   cart:dec:<pid>    — qty -= 1, если 0 — удалить
- *   cart:inc:<pid>    — qty += 1 (с проверкой stock из БД)
- *   cart:rm:<pid>     — удалить товар из корзины
- *   cart:noop         — кнопка-подпись (имя/qty), ответ просто закрывает toast
+ *   cart:show         - показать корзину (из reminder под товарами)
+ *   cart:edit         - вернуться в магазин для добавления товаров
+ *   cart:clear        - очистить
+ *   cart:checkout     - оформить заказ (заходим в checkout conversation)
+ *   cart:dec:<pid>    - qty -= 1, если 0 - удалить
+ *   cart:inc:<pid>    - qty += 1 (с проверкой stock из БД)
+ *   cart:rm:<pid>     - удалить товар из корзины
+ *   cart:noop         - кнопка-подпись (имя/qty), ответ просто закрывает toast
  */
 export async function handleCartCallback(ctx) {
   const data = ctx.callbackQuery?.data;
@@ -104,7 +104,7 @@ export async function handleCartCallback(ctx) {
     return;
   }
 
-  // ── Изменение количества/удаление позиции ──────────────────
+  // - Изменение количества/удаление позиции -
   const [, action, productId] = data.split(':');
   if (!productId || !['dec', 'inc', 'rm'].includes(action)) {
     return ctx.answerCallbackQuery();

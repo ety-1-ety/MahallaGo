@@ -139,7 +139,7 @@ export class Home implements OnInit, OnDestroy {
   readonly recentShops = signal<{ id: string; name: string; is_open_now: boolean }[]>([]);
 
   ngOnInit() {
-    // Home — корневой экран без MainButton/BackButton.
+    // Home - корневой экран без MainButton/BackButton.
     // Скрываем оставшиеся от предыдущих экранов (cart / checkout / shop).
     this.tg.hideMainButton();
     this.tg.hideBackButton();

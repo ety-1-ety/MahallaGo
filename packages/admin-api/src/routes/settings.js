@@ -1,7 +1,7 @@
 import { query } from '@mahallago/shared';
 
 /**
- * Системные настройки. В MVP — список админов и whitelist.
+ * Системные настройки. В MVP - список админов и whitelist.
  */
 export default async function settingsRoutes(app) {
   app.get('/settings/admins', { preHandler: app.requireAuth }, async () => {

@@ -1,4 +1,3 @@
-// ─────────────────────────────────────────────────────────────────
 // Migration Runner
 //
 // Применяет SQL-миграции в правильном порядке:
@@ -10,7 +9,6 @@
 //
 // Используется через scripts/migrate.js, scripts/seed.js,
 // scripts/refresh-functions.js.
-// ─────────────────────────────────────────────────────────────────
 
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
@@ -21,7 +19,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
 
 // Порядок применения модулей фиксирован: auth → shops → catalog → orders → delivery
-// (delivery — placeholder, может не содержать .sql)
+// (delivery - placeholder, может не содержать .sql)
 const MODULE_ORDER = ['auth', 'shops', 'catalog', 'orders', 'delivery'];
 
 const MIGRATIONS_TABLE_SQL = `
@@ -127,8 +125,8 @@ async function applyFile(client, name, content, log) {
 /**
  * Применить базовые миграции: extensions + все модули.
  * @param {Object} opts
- * @param {string} opts.databaseUrl    — DATABASE_URL
- * @param {string} [opts.dbDir]        — путь к папке db/ (по умолчанию рядом)
+ * @param {string} opts.databaseUrl    - DATABASE_URL
+ * @param {string} [opts.dbDir]        - путь к папке db/ (по умолчанию рядом)
  * @param {(msg: string) => void} [opts.log]
  */
 export async function migrate({ databaseUrl, dbDir, log = console.log } = {}) {

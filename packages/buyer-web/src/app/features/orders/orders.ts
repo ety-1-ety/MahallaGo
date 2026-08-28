@@ -81,7 +81,7 @@ export class OrdersPage implements OnInit {
   readonly loadError = signal<string | null>(null);
 
   async ngOnInit() {
-    // Orders — top-level tab destination: без нативной Telegram BackButton
+    // Orders - top-level tab destination: без нативной Telegram BackButton
     // (навигация через нижний таб-бар). Скрываем оставшуюся от прошлых экранов.
     this.tg.hideBackButton();
     await this.load();

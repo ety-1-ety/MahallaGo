@@ -34,6 +34,6 @@ export class I18nService {
   private readInitial(): Locale {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved === 'uz' || saved === 'ru') return saved;
-    return 'ru';  // дефолт админки — русский
+    return 'ru';  // дефолт админки - русский
   }
 }

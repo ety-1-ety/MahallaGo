@@ -55,7 +55,7 @@ bot.command('start', async (ctx, next) => {
   return next();
 });
 
-// /reset — ручная очистка застрявшего conversation-state в Redis.
+// /reset - ручная очистка застрявшего conversation-state в Redis.
 // Если /start не помогает (баг или несовместимость state), пользователь
 // может выбраться через /reset и продолжить работу.
 bot.command('reset', async (ctx) => {
@@ -90,7 +90,7 @@ bot.callbackQuery(/^prod:/, handleProductCallback);
 bot.callbackQuery(/^cart:/, handleCartCallback);
 bot.callbackQuery('loc:reuse', handleReuseLocation);
 
-// Fallback для notes:skip / notes:cancel — основная обработка идёт внутри
+// Fallback для notes:skip / notes:cancel - основная обработка идёт внутри
 // checkout conversation; этот хэндлер ловит лишь повторные клики по
 // «протухшим» кнопкам после завершения flow, чтобы не висел спиннер.
 bot.callbackQuery(/^notes:/, async (ctx) => {
@@ -131,7 +131,7 @@ async function shutdown(signal) {
 process.on('SIGINT',  () => shutdown('SIGINT'));
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 
-// Перед стартом — чистим Redis от протухших conversation-state.
+// Перед стартом - чистим Redis от протухших conversation-state.
 // Если предыдущая сессия бота крашнулась посреди checkout/onboarding,
 // в session.conversation останется битый replay-state, который при
 // следующем сообщении пользователя зацикливает обработку updates.
@@ -140,7 +140,7 @@ await sweepStaleConversations({
   log,
 }).catch((err) => log.warn({ err: err.message }, 'sweep failed'));
 
-// Периодическая страховка для idle-сессий — каждые 10 минут.
+// Периодическая страховка для idle-сессий - каждые 10 минут.
 const sweepInterval = setInterval(() => {
   sweepStaleConversations({
     prefix: cfg.REDIS_PREFIX || 'buyer:',

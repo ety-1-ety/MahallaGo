@@ -1,24 +1,22 @@
 import { callFn, callFnRow, query, verifyInitData } from '@mahallago/shared';
 import { savePhotoUpload } from '../services/uploadPhoto.js';
 
-// ─────────────────────────────────────────────────────────────────
 // Mini App · SELLER routes (`/api/miniapp/seller/*`)
 //
 // Stage 4: расширили Stage-1 скаффолд endpoint'ами для управления товарами.
-// Регистрация / заказы / настройки магазина — остаются в seller-bot.
+// Регистрация / заказы / настройки магазина - остаются в seller-bot.
 //
-//   POST   /auth/init                          — initData → JWT cookie + shop
-//   GET    /me, /shop/me                       — текущие user/shop
-//   POST   /me/language                        — смена языка
-//   GET    /products?category_id&search&page   — список товаров магазина
-//   GET    /products/categories                — категории + count в магазине
-//   GET    /products/:id                       — деталь товара
-//   POST   /products                           — multipart: name/category/price/stock/photo?
-//   PATCH  /products/:id                       — частичный update
-//   DELETE /products/:id                       — soft delete
+//   POST   /auth/init                          - initData → JWT cookie + shop
+//   GET    /me, /shop/me                       - текущие user/shop
+//   POST   /me/language                        - смена языка
+//   GET    /products?category_id&search&page   - список товаров магазина
+//   GET    /products/categories                - категории + count в магазине
+//   GET    /products/:id                       - деталь товара
+//   POST   /products                           - multipart: name/category/price/stock/photo?
+//   PATCH  /products/:id                       - частичный update
+//   DELETE /products/:id                       - soft delete
 //
 // Photo upload идёт через @fastify/multipart, sharp-pipeline в shared.
-// ─────────────────────────────────────────────────────────────────
 
 const VALID_PRODUCT_ERRORS = new Set([
   'INVALID_PRODUCT_NAME', 'INVALID_PRODUCT_PRICE', 'INVALID_PRODUCT_STOCK', 'PRODUCT_NOT_FOUND',
@@ -46,7 +44,7 @@ export default async function miniappSellerRoutes(app) {
 
   app.get('/health', async () => ({ ok: true, role: 'seller' }));
 
-  // ─── /auth/init ────────────────────────────────────────────────
+  // - /auth/init -
   app.post('/auth/init', async (request, reply) => {
     const { initData } = request.body || {};
     if (typeof initData !== 'string' || initData.length === 0) {
@@ -133,7 +131,7 @@ export default async function miniappSellerRoutes(app) {
     };
   });
 
-  // ─── /me ───────────────────────────────────────────────────────
+  // - /me -
   app.get('/me', { preHandler: app.requireSeller }, async (request) => {
     const { rows } = await query(
       'SELECT id, telegram_id, first_name, last_name, username, language_code, phone FROM auth.users WHERE id = $1',
@@ -154,7 +152,7 @@ export default async function miniappSellerRoutes(app) {
     };
   });
 
-  // ─── GET /shop/me ──────────────────────────────────────────────
+  // - GET /shop/me -
   app.get('/shop/me', { preHandler: app.requireSeller }, async (request, reply) => {
     const { rows } = await query(
       `SELECT id, name, description, category, photo_file_id, status, is_accepting_orders,
@@ -186,7 +184,7 @@ export default async function miniappSellerRoutes(app) {
     };
   });
 
-  // ─── POST /me/language ─────────────────────────────────────────
+  // - POST /me/language -
   app.post('/me/language', { preHandler: app.requireSeller }, async (request, reply) => {
     const { lang } = request.body || {};
     if (lang !== 'uz' && lang !== 'ru') {
@@ -200,9 +198,9 @@ export default async function miniappSellerRoutes(app) {
     }
   });
 
-  // ─── GET /products/categories ──────────────────────────────────
+  // - GET /products/categories -
   app.get('/products/categories', { preHandler: app.requireSeller }, async (request) => {
-    // catalog.list_categories_for_seller — все категории магазина (без stock-фильтра)
+    // catalog.list_categories_for_seller - все категории магазина (без stock-фильтра)
     const rows = await callFn('catalog.list_categories_for_seller', [request.miniappShop.id]);
     return {
       categories: rows.map((c) => ({
@@ -215,7 +213,7 @@ export default async function miniappSellerRoutes(app) {
     };
   });
 
-  // ─── GET /categories — ВСЕ активные глобальные категории ───────
+  // - GET /categories - ВСЕ активные глобальные категории -
   // Для формы добавления/редактирования товара: продавец должен
   // выбирать из полного справочника, а не только из категорий, где
   // у него уже есть товары (это делает /products/categories для фильтра).
@@ -229,7 +227,7 @@ export default async function miniappSellerRoutes(app) {
     return { categories: rows };
   });
 
-  // ─── GET /products ─────────────────────────────────────────────
+  // - GET /products -
   app.get('/products', { preHandler: app.requireSeller }, async (request) => {
     const shopId = request.miniappShop.id;
     const categoryId = request.query.category_id || null;
@@ -289,7 +287,7 @@ export default async function miniappSellerRoutes(app) {
     };
   });
 
-  // ─── GET /products/:id ─────────────────────────────────────────
+  // - GET /products/:id -
   app.get('/products/:id', { preHandler: app.requireSeller }, async (request, reply) => {
     const { id } = request.params;
     const { rows } = await query(
@@ -317,7 +315,7 @@ export default async function miniappSellerRoutes(app) {
     };
   });
 
-  // ─── POST /products ────────────────────────────────────────────
+  // - POST /products -
   // multipart: name, category_id, description?, price, stock, photo (optional)
   app.post('/products', { preHandler: app.requireSeller }, async (request, reply) => {
     let name, categoryId, description, price, stock, photoFilename = null;
@@ -363,7 +361,7 @@ export default async function miniappSellerRoutes(app) {
         categoryId || null,
         name,
         description,
-        null,                   // photo_file_id — у нас локальное фото, не Telegram
+        null,                   // photo_file_id - у нас локальное фото, не Telegram
         price,
         Math.round(stock),
       ]);
@@ -402,7 +400,7 @@ export default async function miniappSellerRoutes(app) {
     };
   });
 
-  // ─── PATCH /products/:id ───────────────────────────────────────
+  // - PATCH /products/:id -
   // multipart-friendly: либо JSON, либо multipart (если меняется фото).
   app.patch('/products/:id', { preHandler: app.requireSeller }, async (request, reply) => {
     const { id } = request.params;
@@ -503,7 +501,7 @@ export default async function miniappSellerRoutes(app) {
     };
   });
 
-  // ─── DELETE /products/:id (soft) ───────────────────────────────
+  // - DELETE /products/:id (soft) -
   app.delete('/products/:id', { preHandler: app.requireSeller }, async (request, reply) => {
     const { id } = request.params;
     if (!(await ensureOwnedProduct(request.miniappShop.id, id))) {

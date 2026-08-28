@@ -8,15 +8,15 @@ import { mainMenuKeyboard } from '../keyboards/mainMenu.js';
  *   1) Выбор языка (если ещё не выбран)
  *   2) Запрос номера телефона (если ещё не сохранён)
  *
- * Шаги независимые — запускаются только если соответствующего поля нет.
+ * Шаги независимые - запускаются только если соответствующего поля нет.
  * Это удобно для существующих пользователей: им зайдёт только phone-step,
- * новым — оба шага подряд.
+ * новым - оба шага подряд.
  */
 async function chooseLanguageConv(conversation, ctx) {
   let lang = ctx.session.language || ctx.user?.language_code || 'uz';
   let lastCtx = ctx;
 
-  // ── 1. Выбор языка ──────────────────────────────────────────
+  // - 1. Выбор языка -
   if (!ctx.session.language_chosen) {
     await ctx.reply(tFn('uz', 'language.choose_title') + '\n' + tFn('ru', 'language.choose_title'), {
       parse_mode: 'Markdown',
@@ -29,11 +29,11 @@ async function chooseLanguageConv(conversation, ctx) {
     lang = cb.callbackQuery.data.split(':')[1];
     await cb.answerCallbackQuery();
 
-    // UPDATE через external — replay не должен повторно дёргать БД.
+    // UPDATE через external - replay не должен повторно дёргать БД.
     await conversation.external(() => callFnRow('auth.set_language', [ctx.user.id, lang]));
 
     // ВАЖНО: мутируем сессию через cb, а НЕ ctx.
-    // ctx в grammY conversations 1.x — это исходный контекст, мутации
+    // ctx в grammY conversations 1.x - это исходный контекст, мутации
     // его session не персистятся. Сохраняется session ПОСЛЕДНЕГО wait-ctx.
     cb.session.language = lang;
     cb.session.language_chosen = true;
@@ -44,8 +44,8 @@ async function chooseLanguageConv(conversation, ctx) {
     lastCtx = cb;
   }
 
-  // ── 2. Запрос телефона ──────────────────────────────────────
-  // Продавцу понадобится связь с покупателем — собираем номер
+  // - 2. Запрос телефона -
+  // Продавцу понадобится связь с покупателем - собираем номер
   // один раз при регистрации. На последующих /start этот шаг скипается.
   if (!ctx.user?.phone) {
     await lastCtx.reply(tFn(lang, 'buyer.checkout.ask_phone'), {
@@ -79,11 +79,11 @@ async function chooseLanguageConv(conversation, ctx) {
     ));
     ctx.user.phone = phone;  // локально, чтобы ctx был согласован
 
-    // m из последней итерации — берём свежий ctx
+    // m из последней итерации - берём свежий ctx
     lastCtx.session = lastCtx.session || ctx.session;
   }
 
-  // ── 3. Главное меню ─────────────────────────────────────────
+  // - 3. Главное меню -
   const t = (k, v) => tFn(lang, k, v);
   await lastCtx.reply(tFn(lang, 'buyer.menu.title'), {
     parse_mode: 'Markdown',

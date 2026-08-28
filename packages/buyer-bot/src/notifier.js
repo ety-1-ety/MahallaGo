@@ -3,7 +3,7 @@ import { getRedisSubscriber, query, t } from '@mahallago/shared';
 /**
  * Подписка на Redis pub/sub:
  *
- *   orders:status   — публикует seller-bot после успешного update_status
+ *   orders:status   - публикует seller-bot после успешного update_status
  *                     payload: {
  *                       order_id,
  *                       buyer_telegram_id,
@@ -11,7 +11,7 @@ import { getRedisSubscriber, query, t } from '@mahallago/shared';
  *                       reason?  (для rejected/cancelled)
  *                     }
  *
- * Получив сообщение — собираем локализованный текст и шлём покупателю
+ * Получив сообщение - собираем локализованный текст и шлём покупателю
  * («✅ Заказ #N принят», «🚚 в пути», и т.п.).
  */
 export function startBuyerNotifier(bot, log) {
@@ -71,7 +71,7 @@ async function handleOrderStatus(bot, log, { order_id, buyer_telegram_id, new_st
     reason: reason || '—',
   });
 
-  // Если ключа нет в i18n, t() вернёт сам ключ как fallback — не отправляем
+  // Если ключа нет в i18n, t() вернёт сам ключ как fallback - не отправляем
   // мусор пользователю.
   if (msg === key) {
     log.warn({ new_status }, 'no i18n key for status notification');

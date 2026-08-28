@@ -6,7 +6,7 @@ export const authGuard: CanActivateFn = async () => {
   const auth = inject(AuthService);
   const router = inject(Router);
 
-  // Если уже знаем пользователя — пропускаем
+  // Если уже знаем пользователя - пропускаем
   if (auth.user()) return true;
 
   // Проверяем cookie через /api/auth/me

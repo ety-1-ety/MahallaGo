@@ -1,4 +1,3 @@
-// ─────────────────────────────────────────────────────────────────
 // i18n loader.
 //
 // Грузит uz.json и ru.json при старте, кеширует. Поддерживает
@@ -10,7 +9,6 @@
 //   t('uz', 'buyer.menu.find_shops')              // "📍 Yaqin doʻkonlar"
 //   t('ru', 'buyer.errors.BELOW_MIN_ORDER',       // "❌ Минимальная сумма заказа: 30 000 сум"
 //     { min: '30 000 сум' })
-// ─────────────────────────────────────────────────────────────────
 
 import { promises as fs } from 'node:fs';
 import { readFileSync } from 'node:fs';
@@ -23,7 +21,7 @@ const __dirname  = path.dirname(__filename);
 export const SUPPORTED_LOCALES = Object.freeze(['uz', 'ru']);
 export const DEFAULT_LOCALE = 'uz';
 
-// Грузим синхронно один раз при импорте — словари маленькие, не блокируют.
+// Грузим синхронно один раз при импорте - словари маленькие, не блокируют.
 const LOCALES = {};
 for (const locale of SUPPORTED_LOCALES) {
   const filePath = path.join(__dirname, 'locales', `${locale}.json`);
@@ -50,7 +48,7 @@ function interpolate(template, vars) {
 
 /**
  * Перевести ключ на указанный локаль.
- * Если ключ не найден — возвращает сам ключ (для лёгкой диагностики).
+ * Если ключ не найден - возвращает сам ключ (для лёгкой диагностики).
  */
 export function t(locale, key, vars) {
   const lang = SUPPORTED_LOCALES.includes(locale) ? locale : DEFAULT_LOCALE;
@@ -78,7 +76,7 @@ export function hasKey(locale, key) {
 
 /**
  * Локализованное сообщение для известного DomainError.
- * Соглашение: ключ ошибки лежит в `{role}.errors.{CODE}` где role —
+ * Соглашение: ключ ошибки лежит в `{role}.errors.{CODE}` где role -
  * 'buyer' или 'seller'.
  */
 export function tError(locale, role, code, vars) {

@@ -2,11 +2,11 @@ import { DomainError, t, ORDER_ERRORS, clearConversationFromSession } from '@mah
 
 /**
  * Глобальный обработчик ошибок для buyer-bot.
- * Если ошибка из orders.create_order — она уже обрабатывается в handler
+ * Если ошибка из orders.create_order - она уже обрабатывается в handler
  * checkout с локализованным сообщением. Сюда попадают только неожиданные.
  *
  * Дополнительно: при любой неожиданной ошибке стираем conversation-blob
- * из session — иначе следующий update пользователя пойдёт в replay
+ * из session - иначе следующий update пользователя пойдёт в replay
  * битого state и зациклит обработку.
  */
 export function errorHandler(log) {

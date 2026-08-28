@@ -23,11 +23,10 @@ function buildToken(): string {
 }
 const BUILD = buildToken();
 
-// ─────────────────────────────────────────────────────────────────────
 // LocaleService
 //
 // Грузит uz.json + ru.json как статические ассеты (Angular копирует их из
-// packages/shared/src/i18n/locales/ — см. angular.json assets).
+// packages/shared/src/i18n/locales/ - см. angular.json assets).
 //
 // Использование:
 //   this.locale.t('miniapp.buyer.home.title')
@@ -35,7 +34,6 @@ const BUILD = buildToken();
 //   this.locale.setLanguage('ru')
 //
 // Также есть TPipe для шаблонов: `{{ 'miniapp.common.loading' | t }}`
-// ─────────────────────────────────────────────────────────────────────
 
 @Injectable({ providedIn: 'root' })
 export class LocaleService {

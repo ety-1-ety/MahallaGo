@@ -2,7 +2,7 @@ import { createConversation } from '@grammyjs/conversations';
 import { Keyboard, InlineKeyboard } from 'grammy';
 import { callFnRow, query } from '@mahallago/shared';
 
-// Если AUTO_APPROVE_SHOPS=true — магазин сразу активируется без ожидания
+// Если AUTO_APPROVE_SHOPS=true - магазин сразу активируется без ожидания
 // модератора. Удобно на этапе разработки/тестирования; в production
 // поставьте false (или удалите переменную) и используйте админ-панель.
 const AUTO_APPROVE = process.env.AUTO_APPROVE_SHOPS === 'true';
@@ -16,7 +16,7 @@ import { mainMenuKeyboard } from '../keyboards/mainMenu.js';
  *   3/6  Геолокация магазина
  *   4/6  Контактный телефон
  *   5/6  Фото (или skip)
- *   6/6  Часы работы (24/7 или вручную) — для MVP только 24/7 или 09:00-22:00
+ *   6/6  Часы работы (24/7 или вручную) - для MVP только 24/7 или 09:00-22:00
  *
  * По завершении: shops.register → status=pending_approval, уведомление пользователю.
  */
@@ -42,7 +42,7 @@ async function onboardingConv(conversation, ctx) {
   const t = ctx.t;
   const lang = ctx.locale;
 
-  // ── 1/6 Название ───────────────────────────────────────────
+  // - 1/6 Название -
   await ctx.reply(`${stepHeader(ctx, 1)}\n${t('seller.onboarding.ask_name')}`, {
     parse_mode: 'Markdown',
     reply_markup: new Keyboard().text(t('common.cancel')).resized().oneTime(),
@@ -59,7 +59,7 @@ async function onboardingConv(conversation, ctx) {
   }
   const shopName = nameMsg.message.text.trim();
 
-  // ── 2/6 Категории (multi-select) ───────────────────────────
+  // - 2/6 Категории (multi-select) -
   // Чтения БД из conversations должны идти через conversation.external(),
   // иначе при replay результат будет перевыполняться и может расходиться.
   const cats = await conversation.external(() => fetchCategories());
@@ -127,7 +127,7 @@ async function onboardingConv(conversation, ctx) {
     });
   } catch { /* ignore */ }
 
-  // ── 3/6 Геолокация ─────────────────────────────────────────
+  // - 3/6 Геолокация -
   await ctx.reply(`${stepHeader(ctx, 3)}\n${t('seller.onboarding.ask_address')}`, {
     parse_mode: 'Markdown',
     reply_markup: new Keyboard()
@@ -151,7 +151,7 @@ async function onboardingConv(conversation, ctx) {
   const lat = locationMsg.message.location.latitude;
   const lng = locationMsg.message.location.longitude;
 
-  // Адрес текстом (опционально). Кнопка отмены обязательна — иначе
+  // Адрес текстом (опционально). Кнопка отмены обязательна - иначе
   // пользователь, написавший «Отмена», получит «Отмена» в качестве адреса.
   await ctx.reply(
     lang === 'uz'
@@ -178,7 +178,7 @@ async function onboardingConv(conversation, ctx) {
       : '❌ Слишком короткий адрес.');
   }
 
-  // ── 4/6 Телефон ────────────────────────────────────────────
+  // - 4/6 Телефон -
   await ctx.reply(`${stepHeader(ctx, 4)}\n${t('seller.onboarding.ask_phone')}`, {
     parse_mode: 'Markdown',
     reply_markup: new Keyboard()
@@ -207,7 +207,7 @@ async function onboardingConv(conversation, ctx) {
       : '❌ Отправьте номер телефона (контактом или +998901234567).');
   }
 
-  // ── 5/6 Фото (skip разрешён) ───────────────────────────────
+  // - 5/6 Фото (skip разрешён) -
   await ctx.reply(`${stepHeader(ctx, 5)}\n${t('seller.onboarding.ask_photo')}`, {
     parse_mode: 'Markdown',
     reply_markup: new Keyboard().text(t('common.skip')).text(t('common.cancel')).resized().oneTime(),
@@ -227,13 +227,13 @@ async function onboardingConv(conversation, ctx) {
       photoFileId = photoMsg.message.photo[photoMsg.message.photo.length - 1].file_id;
       break;
     }
-    // Стикер, документ, гифка, голосовое — не подходят. Просим ещё раз.
+    // Стикер, документ, гифка, голосовое - не подходят. Просим ещё раз.
     await ctx.reply(lang === 'uz'
       ? '❌ Iltimos, suratni yuboring yoki «Oʻtkazib yuborish».'
       : '❌ Пришлите фото или нажмите «Пропустить».');
   }
 
-  // ── 6/6 Часы работы ────────────────────────────────────────
+  // - 6/6 Часы работы -
   await ctx.reply(`${stepHeader(ctx, 6)}\n${t('seller.onboarding.ask_hours')}`, {
     parse_mode: 'Markdown',
     reply_markup: new InlineKeyboard()
@@ -251,12 +251,12 @@ async function onboardingConv(conversation, ctx) {
   }
   // 24x7 → пустой объект = всегда открыт
 
-  // ── Регистрация в БД ───────────────────────────────────────
-  // INSERT обязательно через external — иначе при replay создастся дубликат магазина.
+  // - Регистрация в БД -
+  // INSERT обязательно через external - иначе при replay создастся дубликат магазина.
   const shop = await conversation.external(() => callFnRow('shops.register', [
     ctx.user.id,
     shopName,
-    chosenSlugs,           // TEXT[] — slug-и выбранных категорий
+    chosenSlugs,           // TEXT[] - slug-и выбранных категорий
     null,                  // description
     photoFileId,
     phone,
@@ -267,7 +267,7 @@ async function onboardingConv(conversation, ctx) {
     'Asia/Tashkent',
   ]));
 
-  // Авто-активация (без модерации) — управляется AUTO_APPROVE_SHOPS.
+  // Авто-активация (без модерации) - управляется AUTO_APPROVE_SHOPS.
   // Идём через прямой UPDATE, чтобы не плодить запись в moderation_log
   // от имени самого продавца.
   if (AUTO_APPROVE) {
@@ -281,7 +281,7 @@ async function onboardingConv(conversation, ctx) {
     ));
   }
 
-  // Мутируем сессию через hoursCb — последний wait-ctx, его session
+  // Мутируем сессию через hoursCb - последний wait-ctx, его session
   // персистится. ctx.session не сохранится в conversations 1.x.
   hoursCb.session.shop_id = shop.id;
 

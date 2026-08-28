@@ -173,7 +173,7 @@ export class ShopPage implements OnInit, OnDestroy {
   constructor() {
     // MainButton: показываем «Перейти в корзину · сумма», если есть товары этого магазина
     effect(() => {
-      // @Input id ещё не привязан в конструкторе (withComponentInputBinding) —
+      // @Input id ещё не привязан в конструкторе (withComponentInputBinding) -
       // первый прогон эффекта без id ничего не должен решать про MainButton.
       if (!this.id) return;
       const count = this.cartItemsCount();

@@ -1,4 +1,3 @@
-// ─────────────────────────────────────────────────────────────────
 // ioredis singleton.
 //
 // Использование:
@@ -10,7 +9,6 @@
 //   const sub = getRedisSubscriber();
 //   sub.subscribe('orders:new');
 //   sub.on('message', (channel, msg) => ...);
-// ─────────────────────────────────────────────────────────────────
 
 import Redis from 'ioredis';
 
@@ -50,7 +48,7 @@ export function getRedis() {
  * ioredis НЕ позволяет использовать обычный клиент для команд после
  * подписки, поэтому нужен второй.
  *
- * keyPrefix НЕ применяется к pub/sub каналам — они идут напрямую.
+ * keyPrefix НЕ применяется к pub/sub каналам - они идут напрямую.
  */
 export function getRedisSubscriber() {
   if (_subscriber) return _subscriber;

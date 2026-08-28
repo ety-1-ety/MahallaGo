@@ -4,9 +4,9 @@ import { orderCardKeyboard } from './keyboards/orderCard.js';
 /**
  * Подписка на Redis pub/sub каналы:
  *
- *   orders:new        — публикует buyer-bot после успешного create_order
+ *   orders:new        - публикует buyer-bot после успешного create_order
  *                       payload: { order_id, shop_id, owner_telegram_id }
- *   shops:moderation  — публикует admin-api при approve/reject/suspend
+ *   shops:moderation  - публикует admin-api при approve/reject/suspend
  *                       payload: { shop_id, action, owner_telegram_id, reason? }
  *
  * При получении сообщения находим Telegram-аккаунт владельца магазина

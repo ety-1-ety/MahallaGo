@@ -1,20 +1,18 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { environment } from '../../../environments/environment';
 
-// ─────────────────────────────────────────────────────────────────────
 // Telegram WebApp адаптер
 //
 // Источник: window.Telegram.WebApp (загружен через telegram-web-app.js в index.html)
-// На локалке (environment.useTelegramSdkMock = true) — синтезируем mock-объект,
+// На локалке (environment.useTelegramSdkMock = true) - синтезируем mock-объект,
 // чтобы SPA можно было открыть в обычном Chrome.
 //
 // Что отдаёт сервис:
 //   • initData (строка для отправки на backend /auth/init)
 //   • themeParams (для CSS-переменных)
-//   • MainButton / BackButton / HapticFeedback — обёртки с null-safe
+//   • MainButton / BackButton / HapticFeedback - обёртки с null-safe
 //   • signal<colorScheme> для реактивного переключения light/dark
 //   • signal<viewportStableHeight> для CSS var --tg-viewport-stable-height
-// ─────────────────────────────────────────────────────────────────────
 
 interface TelegramThemeParams {
   bg_color?: string;
@@ -97,7 +95,7 @@ function buildMock(): TelegramWebApp {
   // Для локалки: mock-юзер берётся из environment.mockTelegramUser, если задан.
   // Это позволяет seller-web подставлять telegram_id владельца магазина из БД
   // без ручного редактирования сервиса.
-  // initData собираем валидной формы, но HMAC будет провален на проде — OK для local dev.
+  // initData собираем валидной формы, но HMAC будет провален на проде - OK для local dev.
   const fromEnv = environment.mockTelegramUser;
   const mockUser: TelegramUser = fromEnv ?? {
     id: 35767754,
@@ -217,7 +215,7 @@ export class TelegramService {
       this.isMock = true;
       console.warn('[telegram] Using mock Telegram WebApp for local dev');
     } else {
-      // Production без initData — деградируем на пустой stub, ошибку покажет authService.
+      // Production без initData - деградируем на пустой stub, ошибку покажет authService.
       this.webApp = native ?? (buildMock());
       this.isMock = !native;
     }
@@ -237,14 +235,14 @@ export class TelegramService {
     return this.webApp.initData || '';
   }
 
-  // ─── MainButton ────────────────────────────────────────────────
+  // - MainButton -
   showMainButton(text: string, onClick: () => void, opts: { progress?: boolean; active?: boolean } = {}) {
     this.webApp.MainButton.setText(text);
     if (opts.active === false) this.webApp.MainButton.disable();
     else this.webApp.MainButton.enable();
     if (opts.progress) this.webApp.MainButton.showProgress(false);
     else this.webApp.MainButton.hideProgress();
-    // offClick + onClick — Telegram не даёт читать привязанные коллбэки, поэтому держим один последний.
+    // offClick + onClick - Telegram не даёт читать привязанные коллбэки, поэтому держим один последний.
     if (this.currentMainClick) this.webApp.MainButton.offClick(this.currentMainClick);
     this.currentMainClick = onClick;
     this.webApp.MainButton.onClick(onClick);
@@ -261,7 +259,7 @@ export class TelegramService {
   }
   private currentMainClick?: () => void;
 
-  // ─── BackButton ────────────────────────────────────────────────
+  // - BackButton -
   showBackButton(onClick: () => void) {
     if (this.currentBackClick) this.webApp.BackButton.offClick(this.currentBackClick);
     this.currentBackClick = onClick;
@@ -275,7 +273,7 @@ export class TelegramService {
   }
   private currentBackClick?: () => void;
 
-  // ─── Haptics ───────────────────────────────────────────────────
+  // - Haptics -
   haptic(kind: 'light' | 'medium' | 'heavy' | 'success' | 'error' | 'warning' | 'selection' = 'light') {
     try {
       if (kind === 'success' || kind === 'error' || kind === 'warning') {
@@ -293,7 +291,7 @@ export class TelegramService {
   }
 
   // Нативный Telegram-диалог подтверждения. window.confirm в Telegram WebView
-  // (особенно iOS) ненадёжен — может молча вернуть false. Fallback на него
+  // (особенно iOS) ненадёжен - может молча вернуть false. Fallback на него
   // только если showConfirm недоступен (локальная разработка / старый клиент).
   confirm(message: string): Promise<boolean> {
     return new Promise((resolve) => {
@@ -306,7 +304,7 @@ export class TelegramService {
     });
   }
 
-  // ─── Применение темы ────────────────────────────────────────────
+  // - Применение темы -
   private applyState() {
     this.colorScheme.set(this.webApp.colorScheme || 'light');
     this.themeParams.set(this.webApp.themeParams || {});

@@ -11,7 +11,7 @@ const RECENT_SHOPS_LIMIT = 5;
  * он уже заказывал.
  *
  * Покупатель чаще ходит в одни и те же магазины, поэтому начинаем
- * с inline-списка «ваши магазины». Если ничего нет — обычный location-prompt.
+ * с inline-списка «ваши магазины». Если ничего нет - обычный location-prompt.
  */
 export async function askLocation(ctx) {
   const t = ctx.t;
@@ -32,7 +32,7 @@ export async function askLocation(ctx) {
     );
   }
 
-  // 2) Свежая геолокация в session — короткий путь.
+  // 2) Свежая геолокация в session - короткий путь.
   const last = ctx.session.last_location;
   const fresh = last && last.ts && (Date.now() - last.ts) < LOCATION_CACHE_MS;
 
@@ -124,7 +124,7 @@ async function renderNearbyShops(ctx, lat, lng) {
   for (const s of shops) {
     const card = shopCard(ctx, s);
     // Photo file_id привязан к боту-загрузчику (seller-bot). Buyer-bot
-    // не может отправить тот же file_id — Telegram вернёт ошибку
+    // не может отправить тот же file_id - Telegram вернёт ошибку
     // «wrong file identifier». Поэтому пытаемся, но мягко падаем на text.
     let sent = false;
     if (s.photo_file_id) {

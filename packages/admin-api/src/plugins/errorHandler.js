@@ -17,7 +17,7 @@ export default fp(async (app) => {
       return reply.code(400).send({ error: err.code, detail: err.detail });
     }
 
-    // PostgreSQL `invalid_text_representation` (22P02) — обычно невалидный UUID
+    // PostgreSQL `invalid_text_representation` (22P02) - обычно невалидный UUID
     // в URL-параметре (например `/shops/foo`). Отдаём 400 с понятным кодом,
     // вместо 500 со стеком в логах.
     if (err && err.code === '22P02') {

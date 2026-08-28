@@ -133,7 +133,7 @@ export class ProductForm implements OnInit, OnDestroy {
   readonly categories = signal<SellerCategory[]>([]);
 
   constructor() {
-    // MainButton — "Сохранить"
+    // MainButton - "Сохранить"
     effect(() => {
       const text = this.locale.t(
         this.submitting()

@@ -64,7 +64,7 @@ export class ApiService {
   whitelist()      { return this.get<{ admin_tg_ids: number[] }>('/settings/whitelist'); }
 }
 
-// ─── Типы ответов API ────────────────────────────────────────────
+// - Типы ответов API -
 export interface DashboardKpis {
   shops:  { active: number; pending: number; suspended: number; rejected: number };
   orders: { active: number; completed: number; cancelled: number; today: number; this_week: number };

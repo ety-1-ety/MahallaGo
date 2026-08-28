@@ -1,16 +1,14 @@
 import { Injectable, signal, computed, effect } from '@angular/core';
 
-// ─────────────────────────────────────────────────────────────────────
 // CartService
 //
 // Корзина живёт в localStorage, ключ "mgo.cart.<shop_id>".
 // В Mini App покупатель видит карточку магазина и наполняет КОРЗИНУ ОДНОГО МАГАЗИНА.
-// Если переключился на другой магазин — старая корзина сохраняется по своему ключу
-// (мы не очищаем автоматически), но активная корзина — это всегда корзина текущего открытого магазина.
+// Если переключился на другой магазин - старая корзина сохраняется по своему ключу
+// (мы не очищаем автоматически), но активная корзина - это всегда корзина текущего открытого магазина.
 //
 // Структура:
 //   cart = { shop_id, shop_name, items: [{ product_id, name, price, photo_path, qty }] }
-// ─────────────────────────────────────────────────────────────────────
 
 export interface CartItem {
   product_id: string;
@@ -49,7 +47,7 @@ export class CartService {
     } catch { /* storage may be blocked */ }
 
     // Авто-персист при изменениях. localStorage может бросить QuotaExceededError
-    // (особенно на iOS Safari Private Mode), молча проглатываем — корзина
+    // (особенно на iOS Safari Private Mode), молча проглатываем - корзина
     // продолжит жить in-memory в текущей сессии.
     effect(() => {
       const c = this._cart();
@@ -90,7 +88,7 @@ export class CartService {
   addItem(shopId: string, shopName: string, item: Omit<CartItem, 'qty'> & { qty?: number }) {
     const desiredShop = this._shopId();
     if (desiredShop && desiredShop !== shopId) {
-      // переключаемся на другой магазин — старую корзину сохранили эффектом, теперь свежая.
+      // переключаемся на другой магазин - старую корзину сохранили эффектом, теперь свежая.
       this.loadShop(shopId);
     }
     // Текущая корзина этого магазина или новая. Пустая корзина = _cart() === null,

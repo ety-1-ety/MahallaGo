@@ -1,12 +1,12 @@
 import bcrypt from 'bcrypt';
 
 /**
- * POST /api/auth/login   — username + password
- * POST /api/auth/logout  — стирает cookie
- * GET  /api/auth/me      — возвращает текущего админа
+ * POST /api/auth/login   - username + password
+ * POST /api/auth/logout  - стирает cookie
+ * GET  /api/auth/me      - возвращает текущего админа
  *
  * Хранение для одного админа: ADMIN_USERNAME + ADMIN_PASSWORD_HASH в .env
- * (bcrypt hash). Когда понадобится несколько админов — переезд на таблицу.
+ * (bcrypt hash). Когда понадобится несколько админов - переезд на таблицу.
  */
 export default async function authRoutes(app) {
   app.post('/auth/login', async (request, reply) => {

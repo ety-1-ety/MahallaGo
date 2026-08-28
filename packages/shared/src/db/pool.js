@@ -1,5 +1,4 @@
-// ─────────────────────────────────────────────────────────────────
-// pg.Pool factory — singleton-пул на процесс.
+// pg.Pool factory - singleton-пул на процесс.
 //
 // Использование:
 //   import { getPool } from '@mahallago/shared/db';
@@ -8,7 +7,6 @@
 //
 // Закрытие при graceful shutdown:
 //   await closePool();
-// ─────────────────────────────────────────────────────────────────
 
 import pg from 'pg';
 
@@ -31,7 +29,7 @@ export function getPool(connectionString) {
   });
 
   _pool.on('error', (err) => {
-    // не падаем — pg.Pool сам переподнимет соединение
+    // не падаем - pg.Pool сам переподнимет соединение
     // eslint-disable-next-line no-console
     console.error('[pg.Pool] idle client error:', err.message);
   });

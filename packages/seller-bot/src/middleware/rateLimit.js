@@ -2,11 +2,11 @@ import { getRedis } from '@mahallago/shared';
 
 /**
  * Sliding-window rate limit через Redis.
- * При превышении лимита — silent drop (без ответа), чтобы не давать спамеру
+ * При превышении лимита - silent drop (без ответа), чтобы не давать спамеру
  * ещё одну причину писать.
  *
- * @param {object} log — pino logger
- * @param {number} perSec — макс. запросов в секунду на пользователя
+ * @param {object} log - pino logger
+ * @param {number} perSec - макс. запросов в секунду на пользователя
  */
 export function buildRateLimit(log, perSec = 10) {
   const redis = getRedis();
@@ -36,7 +36,7 @@ export function buildRateLimit(log, perSec = 10) {
         return;  // silent drop
       }
     } catch (err) {
-      // Если Redis отвалился — пропускаем, не блокируем работу бота
+      // Если Redis отвалился - пропускаем, не блокируем работу бота
       log.warn({ err: err.message }, 'rate limit redis error, skipping');
     }
 

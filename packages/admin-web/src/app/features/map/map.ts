@@ -94,7 +94,7 @@ export class Map implements AfterViewInit, OnDestroy {
       this.renderMarkers(data ?? []);
     } finally {
       this.loading.set(false);
-      // Карта инициализирована скрытой через .hidden — после показа нужно
+      // Карта инициализирована скрытой через .hidden - после показа нужно
       // принудительно пересчитать размеры, иначе тайлы не догружаются.
       setTimeout(() => this.map?.invalidateSize(), 0);
     }

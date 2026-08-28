@@ -16,8 +16,8 @@ import { mainMenuKeyboard } from '../keyboards/mainMenu.js';
  *   1. Спросить адрес (текст или геолокация)
  *   2. Спросить заметку (или skip)
  *   3. Подтверждение → orders.create_order
- *   4. При ошибке — локализованное сообщение по коду (все 6 валидаций)
- *   5. При успехе — Redis publish 'orders:new', сообщение покупателю
+ *   4. При ошибке - локализованное сообщение по коду (все 6 валидаций)
+ *   5. При успехе - Redis publish 'orders:new', сообщение покупателю
  */
 async function checkoutConv(conversation, ctx) {
   const t = ctx.t;
@@ -29,8 +29,8 @@ async function checkoutConv(conversation, ctx) {
     return;
   }
 
-  // ── 0. Телефон (только если ещё не сохранён) ───────────────
-  // Продавцу нужно как-то связаться с покупателем — собираем номер
+  // - 0. Телефон (только если ещё не сохранён) -
+  // Продавцу нужно как-то связаться с покупателем - собираем номер
   // один раз при первом checkout и сохраняем в auth.users.phone.
   // На последующих заказах этот шаг скипается.
   if (!ctx.user?.phone) {
@@ -63,7 +63,7 @@ async function checkoutConv(conversation, ctx) {
       await ctx.reply(t('buyer.checkout.phone_invalid'));
     }
 
-    // UPDATE через external — replay не должен повторно дёрнуть БД.
+    // UPDATE через external - replay не должен повторно дёрнуть БД.
     await conversation.external(() => query(
       'UPDATE auth.users SET phone = $1, updated_at = NOW() WHERE id = $2',
       [phone, ctx.user.id],
@@ -74,9 +74,9 @@ async function checkoutConv(conversation, ctx) {
     await ctx.reply(t('buyer.checkout.phone_saved'));
   }
 
-  // ── 1. Адрес ───────────────────────────────────────────────
-  // Если у покупателя есть прошлые заказы — предлагаем выбрать один
-  // из 3 недавних адресов (inline-кнопками). Параллельно — обычный
+  // - 1. Адрес -
+  // Если у покупателя есть прошлые заказы - предлагаем выбрать один
+  // из 3 недавних адресов (inline-кнопками). Параллельно - обычный
   // запрос геолокации/текста для нового адреса.
   const recentAddrs = await conversation.external(async () => {
     const { rows } = await query(
@@ -159,7 +159,7 @@ async function checkoutConv(conversation, ctx) {
     }
 
     if (m.message?.text) {
-      // Только текст — используем последнюю известную геолокацию из session
+      // Только текст - используем последнюю известную геолокацию из session
       if (!ctx.session.last_location) {
         await ctx.reply(lang === 'uz'
           ? '❌ Avval joylashuvni yuboring.'
@@ -177,11 +177,11 @@ async function checkoutConv(conversation, ctx) {
       : '❌ Отправьте адрес.');
   }
 
-  // ── 2. Заметка (опционально) ────────────────────────────────
-  // Inline-кнопки на сообщении вместо reply-клавиатуры — на Android
+  // - 2. Заметка (опционально) -
+  // Inline-кнопки на сообщении вместо reply-клавиатуры - на Android
   // нижняя клавиатура иногда прячется за soft-кнопками, и юзер думает,
   // что «Пропустить» нет. Inline всегда видна. Текст комментария тоже
-  // принимаем — пользователь может написать вручную.
+  // принимаем - пользователь может написать вручную.
   const notesKb = new InlineKeyboard()
     .text(t('common.skip'),   'notes:skip')
     .text(t('common.cancel'), 'notes:cancel');
@@ -221,12 +221,12 @@ async function checkoutConv(conversation, ctx) {
       ).catch(() => {});
       break;
     }
-    // Иные апдейты (фото, стикеры) — игнорируем, ждём дальше.
+    // Иные апдейты (фото, стикеры) - игнорируем, ждём дальше.
   }
 
-  // ── 3. Подтверждение ───────────────────────────────────────
+  // - 3. Подтверждение -
   // Получаем магазин и считаем итог для предпросмотра.
-  // SELECT через external — между replay'ями состояние магазина может смениться.
+  // SELECT через external - между replay'ями состояние магазина может смениться.
   const shop = await conversation.external(async () => {
     const { rows } = await query('SELECT * FROM shops.shops WHERE id = $1', [cart.shop_id]);
     return rows[0] || null;
@@ -237,11 +237,11 @@ async function checkoutConv(conversation, ctx) {
     return;
   }
 
-  // ── Pre-checkout валидация cart-items ──────────────────────
+  // - Pre-checkout валидация cart-items -
   // Корзина в Redis может содержать продукты, которые продавец удалил/скрыл
   // или у которых не хватает stock. Проверяем НА СТАРТЕ checkout, чтобы не
   // дать пользователю увидеть старый summary и не упасть с ITEM_NOT_AVAILABLE
-  // в SQL. Если что-то изменилось — поправляем cart и выходим, пользователь
+  // в SQL. Если что-то изменилось - поправляем cart и выходим, пользователь
   // увидит реальное состояние при следующем нажатии «Оформить».
   const validation = await conversation.external(async () => {
     const ids = cart.items.map((i) => i.product_id);
@@ -274,7 +274,7 @@ async function checkoutConv(conversation, ctx) {
   }
 
   if (removed.length > 0 || adjusted.length > 0) {
-    // Сохраняем поправленный cart через session — мутация ctx.session не
+    // Сохраняем поправленный cart через session - мутация ctx.session не
     // персистится в conversations 1.x, нужно через текущий wait-ctx или
     // через external().
     await conversation.external(async () => {
@@ -311,7 +311,7 @@ async function checkoutConv(conversation, ctx) {
     return;
   }
 
-  // На этом шаге cart прошёл валидацию — можно обновить локальную копию
+  // На этом шаге cart прошёл валидацию - можно обновить локальную копию
   // (для расчёта summary) актуальными ценами из БД.
   cart.items = newItems;
   const subtotal = cart.items.reduce((s, i) => s + Number(i.price) * Number(i.qty), 0);
@@ -344,14 +344,14 @@ async function checkoutConv(conversation, ctx) {
   const cb = await conversation.waitForCallbackQuery(/^checkout:/);
   await cb.answerCallbackQuery();
   if (cb.callbackQuery.data === 'checkout:cancel') {
-    // Edit через cb (callback-контекст), не ctx — ctx уже устаревший /start.
+    // Edit через cb (callback-контекст), не ctx - ctx уже устаревший /start.
     try { await cb.editMessageReplyMarkup({ reply_markup: undefined }); } catch {}
     await ctx.reply(t('common.cancel'), { reply_markup: mainMenuKeyboard(ctx) });
     return;
   }
 
-  // ── 4. Создание заказа в БД ────────────────────────────────
-  // INSERT через external — replay не должен создать второй заказ.
+  // - 4. Создание заказа в БД -
+  // INSERT через external - replay не должен создать второй заказ.
   // Ошибки тоже фиксируем внутри external, чтобы наружу выехало стабильное значение.
   const itemsJson = cart.items.map((i) => ({ product_id: i.product_id, qty: i.qty }));
 
@@ -385,16 +385,16 @@ async function checkoutConv(conversation, ctx) {
   }
   const order = result.order;
 
-  // ── 5. Успех: pubsub + сообщение покупателю + очистка корзины ──
-  // Мутируем cb.session — мутации ctx.session не персистятся в conversations 1.x.
+  // - 5. Успех: pubsub + сообщение покупателю + очистка корзины -
+  // Мутируем cb.session - мутации ctx.session не персистятся в conversations 1.x.
   cb.session.cart = { shop_id: null, items: [] };
   cb.session.current_shop_id = null;
-  // Сброс id «sticky» reminder'а корзины — следующий цикл «добавил → reminder»
+  // Сброс id «sticky» reminder'а корзины - следующий цикл «добавил → reminder»
   // должен начаться с чистого сообщения.
   delete cb.session.cart_reminder_msg_id;
 
   // Публикуем в Redis pub/sub для seller-bot.
-  // external() — replay не должен публиковать дубликат сообщения.
+  // external() - replay не должен публиковать дубликат сообщения.
   await conversation.external(async () => {
     try {
       const redis = getRedis();

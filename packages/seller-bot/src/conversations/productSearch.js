@@ -1,11 +1,9 @@
-// ─────────────────────────────────────────────────────────────────
-// Поиск товаров продавцом — короткий conversation на 1 шаг.
+// Поиск товаров продавцом - короткий conversation на 1 шаг.
 //
 // Вход через mp:search:enter; в ctx.session.product_search хранится
-// контекст (chat_id, message_id, category_id, no_category) — после
+// контекст (chat_id, message_id, category_id, no_category) - после
 // получения текста передаём управление обратно в myProducts.applySearchQuery,
 // которая откроет отфильтрованный список на месте старого сообщения.
-// ─────────────────────────────────────────────────────────────────
 
 import { createConversation } from '@grammyjs/conversations';
 import { Keyboard } from 'grammy';
@@ -27,7 +25,7 @@ async function productSearchConv(conversation, ctx) {
 
     if (txt === t('common.cancel')) {
       await m.reply(t('common.cancelled'), { reply_markup: mainMenuKeyboard(ctx) });
-      // Очищаем «хвост» из сессии — иначе при следующем поиске данные старого мс перепутаются.
+      // Очищаем «хвост» из сессии - иначе при следующем поиске данные старого мс перепутаются.
       delete m.session.product_search;
       return;
     }

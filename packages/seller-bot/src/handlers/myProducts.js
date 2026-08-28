@@ -1,19 +1,17 @@
-// ─────────────────────────────────────────────────────────────────
-// «Мои товары» — навигация по товарам магазина в seller-bot.
+// «Мои товары» - навигация по товарам магазина в seller-bot.
 //
 // Архитектура (v2):
-//   Stage 1 — Categories view: список категорий (2 колонки) с count'ами.
-//   Stage 2 — List view:       пагинируемый список товаров внутри категории
+//   Stage 1 - Categories view: список категорий (2 колонки) с count'ами.
+//   Stage 2 - List view:       пагинируемый список товаров внутри категории
 //                               (или «все», или «без категории», или поиск).
-//   Stage 3 — Search:           отдельный conversation 'productSearch'
+//   Stage 3 - Search:           отдельный conversation 'productSearch'
 //                               (см. conversations/productSearch.js).
-//   Stage 4 — Card view:        карточка одного товара с фото и кнопками
+//   Stage 4 - Card view:        карточка одного товара с фото и кнопками
 //                               управления (price/stock/toggle/delete).
 //
-// Состояние страницы хранится в Redis по {chat_id, message_id} — см.
+// Состояние страницы хранится в Redis по {chat_id, message_id} - см.
 // myProductsState.js. В callback_data передаём только action; полное
 // состояние (категория, страница, поиск) подтягивается из Redis.
-// ─────────────────────────────────────────────────────────────────
 
 import { query, callFnRow, formatUZS } from '@mahallago/shared';
 import { InlineKeyboard } from 'grammy';
@@ -21,13 +19,13 @@ import { loadState, saveState, clearState } from './myProductsState.js';
 
 const PER_PAGE = 8;
 
-// ─── Точка входа из reply-кнопки «📦 Мои товары» ──────────────────
+// - Точка входа из reply-кнопки «📦 Мои товары» -
 export async function handleMyProducts(ctx) {
   if (!ctx.shop) return;
   await renderCategoriesView(ctx, { send: true });
 }
 
-// ─── Главный роутер callback'ов mp:* ─────────────────────────────
+// - Главный роутер callback'ов mp:* -
 export async function handleMyProductsCallback(ctx) {
   const data = ctx.callbackQuery?.data;
   if (!data || !data.startsWith('mp:')) return;
@@ -78,7 +76,7 @@ export async function handleMyProductsCallback(ctx) {
   }
 
   if (action === 'p') {
-    // Кнопка «{page}/{pages}» — статический индикатор, без действия.
+    // Кнопка «{page}/{pages}» - статический индикатор, без действия.
     if (parts[2] === 'noop') {
       await ctx.answerCallbackQuery();
       return;
@@ -86,7 +84,7 @@ export async function handleMyProductsCallback(ctx) {
     const page = Math.max(1, Number(parts[2]) || 1);
     const state = await loadState(chatId, messageId);
     if (!state || state.view !== 'list') {
-      // State expired — show categories instead (graceful degradation).
+      // State expired - show categories instead (graceful degradation).
       await ctx.answerCallbackQuery();
       return renderCategoriesView(ctx, { editChatId: chatId, editMessageId: messageId });
     }
@@ -107,7 +105,7 @@ export async function handleMyProductsCallback(ctx) {
     const state = await loadState(chatId, messageId);
     await ctx.answerCallbackQuery();
     if (!state || !state.return) {
-      // No return-to-list state — fall back to categories.
+      // No return-to-list state - fall back to categories.
       return renderCategoriesView(ctx, { deleteChatId: chatId, deleteMessageId: messageId });
     }
     return renderListView(ctx, state.return, { deleteChatId: chatId, deleteMessageId: messageId });
@@ -143,16 +141,16 @@ export async function handleMyProductsCallback(ctx) {
     }
   }
 
-  // Неизвестное действие — закроем callback тихо.
+  // Неизвестное действие - закроем callback тихо.
   await ctx.answerCallbackQuery();
 }
 
-// ─── Вспомогательная: чистый state для view='list' ──────────────
+// - Вспомогательная: чистый state для view='list' -
 function freshListState({ category_id, no_category, search = null, page = 1 }) {
   return { view: 'list', category_id, no_category: !!no_category, search, page };
 }
 
-// ─── Stage 1: Categories view ───────────────────────────────────
+// - Stage 1: Categories view -
 async function renderCategoriesView(ctx, opts) {
   const lang = ctx.locale;
   const cats = await loadCategoriesWithCounts(ctx.shop.id);
@@ -193,7 +191,7 @@ async function renderCategoriesView(ctx, opts) {
   return sendOrEdit(ctx, text, kb, opts, { view: 'categories' });
 }
 
-// ─── Stage 2: Paginated list view ────────────────────────────────
+// - Stage 2: Paginated list view -
 async function renderListView(ctx, state, opts) {
   const lang = ctx.locale;
 
@@ -256,7 +254,7 @@ async function renderListView(ctx, state, opts) {
   return sendOrEdit(ctx, text, kb, opts, state);
 }
 
-// ─── Stage 4: Single product card ────────────────────────────────
+// - Stage 4: Single product card -
 async function renderCardView(ctx, productId, listState, opts) {
   const lang = ctx.locale;
 
@@ -274,7 +272,7 @@ async function renderCardView(ctx, productId, listState, opts) {
       await ctx.api.deleteMessage(opts.deleteChatId, opts.deleteMessageId).catch(() => {});
     }
     await ctx.reply(ctx.t('seller.products.card_not_found'));
-    // Возвращаемся к списку — товар мог быть только что удалён/скрыт.
+    // Возвращаемся к списку - товар мог быть только что удалён/скрыт.
     if (listState && listState.view === 'list') {
       return renderListView(ctx, listState, { send: true });
     }
@@ -301,7 +299,7 @@ async function renderCardView(ctx, productId, listState, opts) {
   // На UX это даёт ~½ задержки vs последовательного flow (раньше шло
   // ~deleteMessage 300ms → sendPhoto 500ms; теперь обе одновременно).
   // Кратковременно может быть видно «оба» сообщения, но пользователь и
-  // так смотрит вниз — новое появляется поверх старого, и старое исчезает.
+  // так смотрит вниз - новое появляется поверх старого, и старое исчезает.
   const deletePromise = (opts.deleteChatId && opts.deleteMessageId)
     ? ctx.api.deleteMessage(opts.deleteChatId, opts.deleteMessageId).catch(() => {})
     : Promise.resolve();
@@ -328,12 +326,12 @@ async function renderCardView(ctx, productId, listState, opts) {
   });
 }
 
-// ─── Универсальная отправка/редактирование текстового сообщения ──
+// - Универсальная отправка/редактирование текстового сообщения -
 //
 // opts:
-//   - {send: true}                               — просто послать новое
-//   - {editChatId, editMessageId}                — попытаться edit, упало → delete+send
-//   - {deleteChatId, deleteMessageId}            — delete старое, send новое
+//   - {send: true}                               - просто послать новое
+//   - {editChatId, editMessageId}                - попытаться edit, упало → delete+send
+//   - {deleteChatId, deleteMessageId}            - delete старое, send новое
 async function sendOrEdit(ctx, text, kb, opts, stateToSave) {
   const replyMarkup = kb || undefined;
 
@@ -347,13 +345,13 @@ async function sendOrEdit(ctx, text, kb, opts, stateToSave) {
       chatId    = opts.editChatId;
       messageId = (edited && typeof edited === 'object' && edited.message_id) || opts.editMessageId;
     } catch (err) {
-      // «message is not modified» — пользователь дважды кликнул то же
+      // «message is not modified» - пользователь дважды кликнул то же
       // действие, нечего перерисовывать. Просто оставляем как было.
       const desc = err && err.description ? String(err.description) : '';
       if (desc.includes('message is not modified')) {
         return;
       }
-      // Иное (старое сообщение / message type mismatch) — удаляем и шлём свежее.
+      // Иное (старое сообщение / message type mismatch) - удаляем и шлём свежее.
       await ctx.api.deleteMessage(opts.editChatId, opts.editMessageId).catch(() => {});
       await clearState(opts.editChatId, opts.editMessageId);
       const sent = await ctx.reply(text, { parse_mode: 'Markdown', reply_markup: replyMarkup });
@@ -361,7 +359,7 @@ async function sendOrEdit(ctx, text, kb, opts, stateToSave) {
       messageId = sent.message_id;
     }
   } else if (opts.deleteChatId && opts.deleteMessageId) {
-    // Параллельно delete старого + send нового — экономит ~один Telegram-roundtrip.
+    // Параллельно delete старого + send нового - экономит ~один Telegram-roundtrip.
     const [, sent] = await Promise.all([
       ctx.api.deleteMessage(opts.deleteChatId, opts.deleteMessageId).catch(() => {}),
       ctx.reply(text, { parse_mode: 'Markdown', reply_markup: replyMarkup }),
@@ -380,7 +378,7 @@ async function sendOrEdit(ctx, text, kb, opts, stateToSave) {
   }
 }
 
-// ─── DB helpers ─────────────────────────────────────────────────
+// - DB helpers -
 async function loadCategoriesWithCounts(shopId) {
   const { rows } = await query('SELECT * FROM catalog.list_categories_for_seller($1)', [shopId]);
   return rows;
@@ -402,7 +400,7 @@ async function listProducts(shopId, state) {
   return rows;
 }
 
-// ─── Заголовок списка («Хлеб», «Все товары», «Без категории», «🔎 …»)
+// - Заголовок списка («Хлеб», «Все товары», «Без категории», «🔎 …»)
 async function categoryHeader(ctx, state) {
   const lang = ctx.locale;
   if (state.no_category) {
@@ -421,7 +419,7 @@ async function categoryHeader(ctx, state) {
   return `${c.emoji || '📦'} ${name}`;
 }
 
-// ─── Bridge: после успешной подачи поискового запроса ─────────────
+// - Bridge: после успешной подачи поискового запроса -
 //
 // Вызывается из conversations/productSearch.js, передаёт сюда query
 // и оригинальный chat/message_id, чтобы на месте старого сообщения
@@ -444,8 +442,8 @@ export async function applySearchQuery(ctx, queryText) {
   return renderListView(ctx, state, { send: true });
 }
 
-// ─── prod_mgr callbacks (price/stock/toggle/delete) ──────────────
-// Существующая логика, без изменений — все ссылки идут из card view.
+// - prod_mgr callbacks (price/stock/toggle/delete) -
+// Существующая логика, без изменений - все ссылки идут из card view.
 export async function handleProductMgrCallback(ctx) {
   const data = ctx.callbackQuery?.data;
   if (!data) return;

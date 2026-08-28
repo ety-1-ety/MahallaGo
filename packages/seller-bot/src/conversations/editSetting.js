@@ -11,7 +11,7 @@ import { mainMenuKeyboard } from '../keyboards/mainMenu.js';
  * Поддерживаемые поля:
  *   min_order, max_order, delivery_fee, free_delivery, radius
  *
- * Поле hours редактируется отдельным wizard'ом — пока упрощённый: только
+ * Поле hours редактируется отдельным wizard'ом - пока упрощённый: только
  * 24/7 ↔ 09:00-22:00 (как в онбординге).
  */
 async function editSettingConv(conversation, ctx) {
@@ -40,7 +40,7 @@ async function editSettingConv(conversation, ctx) {
       const day = { open: '09:00', close: '22:00' };
       hours = { mon: day, tue: day, wed: day, thu: day, fri: day, sat: day, sun: day };
     }
-    // UPDATE через external — replay не должен переоткрывать транзакцию.
+    // UPDATE через external - replay не должен переоткрывать транзакцию.
     await conversation.external(() => applySettingUpdate(ctx, 'hours', JSON.stringify(hours)));
     // Мутируем сессию + отвечаем через cb (последний wait-ctx),
     // мутации ctx.session в conversations 1.x не персистятся.
@@ -84,7 +84,7 @@ async function editSettingConv(conversation, ctx) {
 
   await ctx.reply(promptKey, { reply_markup: cancelBtn.resized().oneTime() });
 
-  // Будет хранить последний wait-ctx — на нём выполняем session-мутации
+  // Будет хранить последний wait-ctx - на нём выполняем session-мутации
   // и финальные reply, иначе изменения session не сохранятся.
   let lastCtx = ctx;
   let value = null;
@@ -121,7 +121,7 @@ async function editSettingConv(conversation, ctx) {
     value = field === 'radius' ? Math.round(n) : Math.round(n * 100) / 100;
   }
 
-  // UPDATE через external — replay не должен переоткрывать транзакцию.
+  // UPDATE через external - replay не должен переоткрывать транзакцию.
   const finalValue = value === 'CLEAR' ? null : value;
   await conversation.external(() => applySettingUpdate(ctx, field, finalValue));
 

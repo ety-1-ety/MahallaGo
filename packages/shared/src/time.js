@@ -1,8 +1,6 @@
-// ─────────────────────────────────────────────────────────────────
 // Время и часовой пояс Asia/Tashkent.
 //
 // База данных хранит TIMESTAMPTZ. Отображаем пользователю в Ташкенте.
-// ─────────────────────────────────────────────────────────────────
 
 export const DEFAULT_TZ = 'Asia/Tashkent';
 
@@ -41,14 +39,14 @@ export function formatTime(date, tz = DEFAULT_TZ) {
  */
 export function dayKeyAt(date, tz = DEFAULT_TZ) {
   const d = (date instanceof Date) ? date : new Date(date);
-  // Воспользуемся Intl.DateTimeFormat — самый надёжный способ
+  // Воспользуемся Intl.DateTimeFormat - самый надёжный способ
   // получить день недели в произвольной зоне.
   const fmt = new Intl.DateTimeFormat('en-US', {
     timeZone: tz,
     weekday: 'short',
   });
   const wd = fmt.format(d).toLowerCase();
-  // 'mon', 'tue', ... — у Intl они совпадают по 3-буквенному префиксу
+  // 'mon', 'tue', ... - у Intl они совпадают по 3-буквенному префиксу
   if (DAY_KEYS.includes(wd)) return wd;
   return wd.slice(0, 3);
 }
@@ -73,7 +71,7 @@ export function timeOfDayAt(date = new Date(), tz = DEFAULT_TZ) {
  *   { mon: { open: '09:00', close: '22:00' }, sun: { closed: true } }
  * Пустой объект = всегда открыт.
  *
- * (Дублируется в orders._is_shop_open_now на стороне БД — здесь нужно
+ * (Дублируется в orders._is_shop_open_now на стороне БД - здесь нужно
  * для UI-подсказок «открыт до 22:00» в карточке магазина.)
  */
 export function isShopOpenNow(workingHours, tz = DEFAULT_TZ, at = new Date()) {

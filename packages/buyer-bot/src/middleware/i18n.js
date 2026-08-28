@@ -1,7 +1,7 @@
 import { callFnRow, t, tError, DEFAULT_LOCALE, expireStaleConversation } from '@mahallago/shared';
 
 /**
- * Auth + i18n. Проще чем у seller — не нужно тащить shop в ctx.
+ * Auth + i18n. Проще чем у seller - не нужно тащить shop в ctx.
  */
 export function buildAuthI18n(log) {
   return async (ctx, next) => {

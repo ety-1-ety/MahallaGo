@@ -7,7 +7,7 @@ import { mainMenuLabels } from '../keyboards/mainMenu.js';
  * Уведомить покупателя о смене статуса заказа через Redis pub/sub.
  * buyer-bot подписан на канал и шлёт локализованное сообщение.
  *
- * Отдельная функция чтобы не путать с прямым ответом в Telegram —
+ * Отдельная функция чтобы не путать с прямым ответом в Telegram -
  * pub/sub нужен потому что seller-bot и buyer-bot работают как
  * разные процессы с разными bot-токенами.
  */
@@ -32,7 +32,7 @@ async function publishStatusUpdate(orderId, newStatus, reason) {
       new_status: newStatus,
       reason: reason || null,
     }));
-  } catch { /* не критично — buyer увидит статус при следующем открытии «Мои заказы» */ }
+  } catch { /* не критично - buyer увидит статус при следующем открытии «Мои заказы» */ }
 }
 
 const ACTIVE_STATUSES = ['pending', 'accepted', 'ready', 'delivering'];
@@ -132,7 +132,7 @@ export async function handleOrderCallback(ctx) {
   const [, action, orderId] = data.split(':');
   if (!orderId) return ctx.answerCallbackQuery();
 
-  // Отмена режима reject — обрабатывается ПЕРВОЙ, до маппинга в статус,
+  // Отмена режима reject - обрабатывается ПЕРВОЙ, до маппинга в статус,
   // т.к. reject_cancel не входит в statusMap.
   if (action === 'reject_cancel') {
     delete ctx.session.rejecting_order_id;
@@ -194,10 +194,10 @@ export async function handleOrderCallback(ctx) {
 }
 
 /**
- * Если в session.rejecting_order_id есть id — следующее текстовое
+ * Если в session.rejecting_order_id есть id - следующее текстовое
  * сообщение трактуем как причину отклонения.
  *
- * Тексты главного меню НЕ принимаются как причина — иначе нажатие на
+ * Тексты главного меню НЕ принимаются как причина - иначе нажатие на
  * любую reply-кнопку («🛒 Заказы», «⚙️ Настройки», и т.п.) во время
  * ожидания причины случайно отклонило бы заказ.
  */

@@ -8,8 +8,8 @@ import { mainMenuKeyboard } from '../keyboards/mainMenu.js';
  * Поле и id товара хранятся в session перед conversation.enter('editProduct').
  *
  * Поддерживаемые поля:
- *   price  — цена (число)
- *   stock  — остаток (целое неотрицательное)
+ *   price  - цена (число)
+ *   stock  - остаток (целое неотрицательное)
  */
 async function editProductConv(conversation, ctx) {
   const t = ctx.t;
@@ -63,7 +63,7 @@ async function editProductConv(conversation, ctx) {
     }
   }
 
-  // INSERT через external — replay не должен повторно дёрнуть SQL.
+  // INSERT через external - replay не должен повторно дёрнуть SQL.
   await conversation.external(() => callFnRow('catalog.update_product', [
     productId,
     null, null, null, null,

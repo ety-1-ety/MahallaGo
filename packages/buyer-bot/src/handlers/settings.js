@@ -3,7 +3,7 @@ import { callFnRow, t as tFn } from '@mahallago/shared';
 import { mainMenuKeyboard } from '../keyboards/mainMenu.js';
 
 /**
- * Настройки покупателя — пока только переключение языка.
+ * Настройки покупателя - пока только переключение языка.
  */
 export async function handleSettings(ctx) {
   const t = ctx.t;

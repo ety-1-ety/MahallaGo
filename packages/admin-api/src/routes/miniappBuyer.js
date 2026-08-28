@@ -1,28 +1,26 @@
 import { callFn, callFnRow, query, verifyInitData, getRedis, ORDER_ERRORS } from '@mahallago/shared';
 
-// ─────────────────────────────────────────────────────────────────
 // Mini App · BUYER routes (`/api/miniapp/buyer/*`)
 //
 // Stage 2: расширили скаффолд из Stage 1 полноценным набором endpoint'ов:
-//   POST   /auth/init                  — initData → JWT cookie
-//   GET    /me                         — текущий профиль
-//   POST   /me/language                — смена языка (sync с auth.users.language_code)
-//   GET    /shops/nearby?lat&lng       — открытые магазины в радиусе 2 км
-//   GET    /shops/:id                  — детали магазина + категории с count
-//   GET    /shops/:id/products?...     — товары категории (с пагинацией)
-//   POST   /orders                     — создать заказ + публикация в Redis pub/sub
-//   GET    /orders/me                  — мои заказы
-//   GET    /health                     — smoke
+//   POST   /auth/init                  - initData → JWT cookie
+//   GET    /me                         - текущий профиль
+//   POST   /me/language                - смена языка (sync с auth.users.language_code)
+//   GET    /shops/nearby?lat&lng       - открытые магазины в радиусе 2 км
+//   GET    /shops/:id                  - детали магазина + категории с count
+//   GET    /shops/:id/products?...     - товары категории (с пагинацией)
+//   POST   /orders                     - создать заказ + публикация в Redis pub/sub
+//   GET    /orders/me                  - мои заказы
+//   GET    /health                     - smoke
 //
 // Логика create_order повторяет buyer-bot/checkout.js, чтобы оба транспорта
 // (бот + Mini App) использовали единый SQL-источник правды.
-// ─────────────────────────────────────────────────────────────────
 
 const ORDER_ERROR_CODES = new Set(Object.values(ORDER_ERRORS));
 
 function isOpenNow(workingHours, tz) {
   // Зеркало orders._is_shop_open_now (read-only превью для UI).
-  // Если working_hours отсутствуют — считаем «открыто».
+  // Если working_hours отсутствуют - считаем «открыто».
   if (!workingHours || typeof workingHours !== 'object') return true;
   if (workingHours.is_24_7 === true) return true;
   const now = new Date();
@@ -48,7 +46,7 @@ function isOpenNow(workingHours, tz) {
 export default async function miniappBuyerRoutes(app) {
   app.get('/health', async () => ({ ok: true, role: 'buyer' }));
 
-  // ─── /auth/init ────────────────────────────────────────────────
+  // - /auth/init -
   app.post('/auth/init', async (request, reply) => {
     const { initData } = request.body || {};
     if (typeof initData !== 'string' || initData.length === 0) {
@@ -101,7 +99,7 @@ export default async function miniappBuyerRoutes(app) {
     };
   });
 
-  // ─── /me ───────────────────────────────────────────────────────
+  // - /me -
   app.get('/me', { preHandler: app.requireBuyer }, async (request) => {
     const { rows } = await query(
       'SELECT id, telegram_id, first_name, last_name, username, language_code, phone FROM auth.users WHERE id = $1',
@@ -122,7 +120,7 @@ export default async function miniappBuyerRoutes(app) {
     };
   });
 
-  // ─── POST /me/language ─────────────────────────────────────────
+  // - POST /me/language -
   app.post('/me/language', { preHandler: app.requireBuyer }, async (request, reply) => {
     const { lang } = request.body || {};
     if (lang !== 'uz' && lang !== 'ru') {
@@ -137,7 +135,7 @@ export default async function miniappBuyerRoutes(app) {
     }
   });
 
-  // ─── GET /shops/nearby ─────────────────────────────────────────
+  // - GET /shops/nearby -
   app.get('/shops/nearby', { preHandler: app.requireBuyer }, async (request, reply) => {
     const lat = Number(request.query.lat);
     const lng = Number(request.query.lng);
@@ -163,7 +161,7 @@ export default async function miniappBuyerRoutes(app) {
     };
   });
 
-  // ─── GET /shops/:id ────────────────────────────────────────────
+  // - GET /shops/:id -
   app.get('/shops/:id', { preHandler: app.requireBuyer }, async (request, reply) => {
     const { id } = request.params;
     const { rows } = await query(
@@ -203,7 +201,7 @@ export default async function miniappBuyerRoutes(app) {
     };
   });
 
-  // ─── GET /shops/:id/products ───────────────────────────────────
+  // - GET /shops/:id/products -
   app.get('/shops/:id/products', { preHandler: app.requireBuyer }, async (request, reply) => {
     const { id } = request.params;
     const categoryId = request.query.category_id || null;
@@ -230,7 +228,7 @@ export default async function miniappBuyerRoutes(app) {
     };
   });
 
-  // ─── GET /shops/recent — магазины из истории заказов покупателя ──
+  // - GET /shops/recent - магазины из истории заказов покупателя -
   // Для блока «Заказать снова» на главной: вернуться в магазин без
   // повторного запроса геолокации.
   app.get('/shops/recent', { preHandler: app.requireBuyer }, async (request) => {
@@ -253,7 +251,7 @@ export default async function miniappBuyerRoutes(app) {
     };
   });
 
-  // ─── POST /orders ──────────────────────────────────────────────
+  // - POST /orders -
   app.post('/orders', { preHandler: app.requireBuyer }, async (request, reply) => {
     const { shop_id, items, delivery_lat, delivery_lng, delivery_address, phone, notes } = request.body || {};
 
@@ -266,7 +264,7 @@ export default async function miniappBuyerRoutes(app) {
     if (!delivery_address || typeof delivery_address !== 'string' || !delivery_address.trim()) {
       return reply.code(400).send({ error: 'ADDRESS_REQUIRED' });
     }
-    // Координаты опциональны для текстового адреса. Если есть — должны быть валидны.
+    // Координаты опциональны для текстового адреса. Если есть - должны быть валидны.
     const lat = delivery_lat === null || delivery_lat === undefined ? null : Number(delivery_lat);
     const lng = delivery_lng === null || delivery_lng === undefined ? null : Number(delivery_lng);
     if ((lat === null) !== (lng === null)) {
@@ -276,7 +274,7 @@ export default async function miniappBuyerRoutes(app) {
       return reply.code(400).send({ error: 'INVALID_COORDINATES' });
     }
 
-    // Если координат нет — возьмём центр магазина (доставка точно в радиусе).
+    // Если координат нет - возьмём центр магазина (доставка точно в радиусе).
     let finalLat = lat;
     let finalLng = lng;
     if (finalLat === null) {
@@ -324,7 +322,7 @@ export default async function miniappBuyerRoutes(app) {
       return reply.code(500).send({ error: 'INTERNAL_ERROR' });
     }
 
-    // Redis pub/sub — тот же канал, что использует buyer-bot/checkout.js
+    // Redis pub/sub - тот же канал, что использует buyer-bot/checkout.js
     try {
       const { rows: ownerRows } = await query(
         `SELECT u.telegram_id FROM auth.users u
@@ -356,7 +354,7 @@ export default async function miniappBuyerRoutes(app) {
     };
   });
 
-  // ─── GET /orders/me ────────────────────────────────────────────
+  // - GET /orders/me -
   app.get('/orders/me', { preHandler: app.requireBuyer }, async (request) => {
     const page = Math.max(1, Number(request.query.page) || 1);
     const perPage = Math.min(50, Number(request.query.per_page) || 20);

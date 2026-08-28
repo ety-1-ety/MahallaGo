@@ -34,7 +34,7 @@ async function addProductConv(conversation, ctx) {
     return;
   }
 
-  // ── 1/5 Название ───────────────────────────────────────────
+  // - 1/5 Название -
   // Reply-клавиатура «Отмена» висит persistent через все шаги wizard'а:
   // тогда даже на шаге категорий (там inline-меню) кнопка снизу остаётся
   // видимой. Убирается явно при выходе (cancel/успех).
@@ -55,7 +55,7 @@ async function addProductConv(conversation, ctx) {
   }
   const name = nameMsg.message.text.trim();
 
-  // ── 2/5 Категория ──────────────────────────────────────────
+  // - 2/5 Категория -
   // Чтения БД через conversation.external(), чтобы не было повторного запроса
   // при replay (категории могут смениться между прогонами).
   const cats = await conversation.external(() => fetchCategories());
@@ -67,7 +67,7 @@ async function addProductConv(conversation, ctx) {
   if (cats.length % 2 === 1) catKb.row();
   catKb.text(lang === 'uz' ? '⏭ Toifasiz' : '⏭ Без категории', 'addp:cat:none').row();
   // Inline-копия «Отмены»: на Android persistent reply-клавиатура иногда
-  // сворачивается за soft-кнопками, и кнопка снизу не видна — поэтому
+  // сворачивается за soft-кнопками, и кнопка снизу не видна - поэтому
   // дублируем её здесь, чтобы выход был под рукой в любом клиенте.
   catKb.text(t('common.cancel'), 'addp:cat:cancel');
   await ctx.reply(`${stepHeader(ctx, 2)}\n${t('seller.products.add_step_category')}`, {
@@ -76,7 +76,7 @@ async function addProductConv(conversation, ctx) {
   });
 
   // Слушаем оба варианта: тап по inline-кнопке или текст «Отмена» с
-  // нижней reply-клавиатуры — оба должны вести в главное меню.
+  // нижней reply-клавиатуры - оба должны вести в главное меню.
   let catVal = null;
   while (catVal === null) {
     const upd = await conversation.wait();
@@ -97,7 +97,7 @@ async function addProductConv(conversation, ctx) {
   }
   const categoryId = catVal === 'none' ? null : catVal;
 
-  // ── 3/5 Цена ───────────────────────────────────────────────
+  // - 3/5 Цена -
   await ctx.reply(`${stepHeader(ctx, 3)}\n${t('seller.products.add_step_price')}`, {
     parse_mode: 'Markdown',
   });
@@ -117,7 +117,7 @@ async function addProductConv(conversation, ctx) {
     }
   }
 
-  // ── 4/5 Остаток ────────────────────────────────────────────
+  // - 4/5 Остаток -
   await ctx.reply(`${stepHeader(ctx, 4)}\n${t('seller.products.add_step_stock')}`);
   let stock = null;
   while (stock === null) {
@@ -134,8 +134,8 @@ async function addProductConv(conversation, ctx) {
     }
   }
 
-  // ── 5/5 Фото (skip разрешён) ───────────────────────────────
-  // На этом шаге к persistent-«Отмене» добавляем «Пропустить» —
+  // - 5/5 Фото (skip разрешён) -
+  // На этом шаге к persistent-«Отмене» добавляем «Пропустить» -
   // отправляем новый reply_markup, persistent сохраняется.
   await ctx.reply(`${stepHeader(ctx, 5)}\n${t('seller.products.add_step_photo')}`, {
     parse_mode: 'Markdown',
@@ -164,8 +164,8 @@ async function addProductConv(conversation, ctx) {
       : '❌ Пришлите фото товара или нажмите «Пропустить».');
   }
 
-  // ── Создание ───────────────────────────────────────────────
-  // INSERT через external — replay не должен создать второй товар.
+  // - Создание -
+  // INSERT через external - replay не должен создать второй товар.
   // Уникальный индекс uniq_products_shop_name_active отвергает повторное
   // имя в том же активном магазине; ловим SQLSTATE 23505 (unique_violation)
   // и показываем дружелюбное сообщение пользователю.
@@ -204,7 +204,7 @@ async function addProductConv(conversation, ctx) {
 
   const product = result.product;
 
-  // Если есть фото — скачиваем байты в общее хранилище data/photos/
+  // Если есть фото - скачиваем байты в общее хранилище data/photos/
   // (anchor'ится к project root, не CWD), чтобы buyer-bot тоже мог
   // отобразить. Telegram file_id привязан к загрузчику и не работает
   // в другом боте, поэтому без байтов на диске у покупателя фото не появится.

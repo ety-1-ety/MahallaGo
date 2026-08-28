@@ -1,5 +1,5 @@
 // Главные экспорты пакета @mahallago/shared.
-// Подмодули также доступны через subpath imports — см. exports в package.json:
+// Подмодули также доступны через subpath imports - см. exports в package.json:
 //   import { getPool } from '@mahallago/shared/db';
 //   import { t } from '@mahallago/shared/i18n';
 

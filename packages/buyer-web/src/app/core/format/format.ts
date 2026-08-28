@@ -1,4 +1,4 @@
-// Утилиты форматирования — соответствуют тому, что используется в ботах.
+// Утилиты форматирования - соответствуют тому, что используется в ботах.
 
 export function formatUZS(amount: number | string | null | undefined): string {
   if (amount === null || amount === undefined) return '—';

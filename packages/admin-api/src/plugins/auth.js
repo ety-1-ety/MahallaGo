@@ -9,7 +9,7 @@ import jwt from '@fastify/jwt';
  *   1. POST /api/auth/login (login + password) → выдаём JWT 24h в httpOnly cookie.
  *   2. Все защищённые endpoint'ы используют preHandler: app.requireAuth.
  *
- * Декоратор: app.requireAuth — middleware, проверяющий JWT в cookie.
+ * Декоратор: app.requireAuth - middleware, проверяющий JWT в cookie.
  */
 export default fp(async (app) => {
   await app.register(cookie, {

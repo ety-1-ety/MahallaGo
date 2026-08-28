@@ -1,4 +1,3 @@
-// ─────────────────────────────────────────────────────────────────
 // Логгер pino. В development использует pino-pretty для читабельного
 // вывода. В production пишет JSON-строки для агрегации.
 //
@@ -6,7 +5,6 @@
 //   import { createLogger } from '@mahallago/shared/logger';
 //   const log = createLogger('buyer-bot');
 //   log.info({ user_id }, 'user started');
-// ─────────────────────────────────────────────────────────────────
 
 import pino from 'pino';
 

@@ -15,7 +15,7 @@ export async function handleMainMenuMessage(ctx, next) {
   if (text === labels.my_orders)  return handleMyOrders(ctx);
   if (text === labels.settings)   return handleSettings(ctx);
 
-  // «🏠 Главное меню» / «🏠 Bosh menyu» — кнопка возврата (например из
+  // «🏠 Главное меню» / «🏠 Bosh menyu» - кнопка возврата (например из
   // экрана запроса геолокации). Восстанавливаем reply-клавиатуру.
   if (text === ctx.t('common.main_menu')) {
     await ctx.reply(ctx.t('buyer.menu.title'), {

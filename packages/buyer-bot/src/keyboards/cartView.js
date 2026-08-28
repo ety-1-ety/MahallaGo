@@ -44,8 +44,8 @@ export function cartView(ctx, shop) {
   lines.push(`${t('buyer.cart.delivery')}  ${formatUZS(deliveryFee, lang)}`);
   lines.push(`${t('buyer.cart.total')}  ${formatUZS(total, lang)}`);
 
-  // Inline-клавиатура: для каждого товара — отдельная строка с +/-/🗑.
-  // В конце — оформить и очистить.
+  // Inline-клавиатура: для каждого товара - отдельная строка с +/-/🗑.
+  // В конце - оформить и очистить.
   const kb = new InlineKeyboard();
   for (const it of cart.items) {
     // Имя обрезаем до 18 символов чтобы строка не вылезала за ширину.

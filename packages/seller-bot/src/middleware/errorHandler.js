@@ -5,7 +5,7 @@ import { DomainError, t, clearConversationFromSession } from '@mahallago/shared'
  * DomainError → локализованное сообщение, прочее → системная ошибка.
  *
  * Дополнительно: при любой неожиданной ошибке стираем conversation-blob
- * из session — иначе следующий update пользователя пойдёт в replay
+ * из session - иначе следующий update пользователя пойдёт в replay
  * битого state и зациклит обработку.
  */
 export function errorHandler(log) {

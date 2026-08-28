@@ -88,7 +88,7 @@ function getCartQty(ctx, productId) {
 
 /**
  * Обработка callback'ов prod:inc / prod:dec / prod:add.
- * Корзина может содержать товары только одного магазина — если пользователь
+ * Корзина может содержать товары только одного магазина - если пользователь
  * пытается добавить из другого, показываем подтверждение.
  */
 export async function handleProductCallback(ctx) {
@@ -157,8 +157,8 @@ export async function handleProductCallback(ctx) {
       : (ctx.locale === 'uz' ? '✓ Olib tashlandi' : '✓ Удалено'),
   );
 
-  // На каждый inc/add — обновляем «sticky» reminder корзины. Если уже
-  // есть message_id в session — пытаемся отредактировать его, иначе
+  // На каждый inc/add - обновляем «sticky» reminder корзины. Если уже
+  // есть message_id в session - пытаемся отредактировать его, иначе
   // отправляем новое и сохраняем id в session для будущих обновлений.
   if ((action === 'inc' || action === 'add') && cart.items.length > 0) {
     await refreshCartReminder(ctx);
@@ -167,12 +167,12 @@ export async function handleProductCallback(ctx) {
 
 /**
  * Sticky cart reminder. Стратегия: ВСЕГДА удаляем предыдущее напоминание
- * и шлём новое — иначе оно остаётся выше в чате и пользователь его
+ * и шлём новое - иначе оно остаётся выше в чате и пользователь его
  * не видит после нескольких прокруток вниз. Зеркальный эффект «иногда
  * появляется два раза» получался когда editMessageText падал и мы
  * слали новое, не убирая старое.
  *
- * deleteMessage может упасть (сообщение старше 48h, удалено пользователем) —
+ * deleteMessage может упасть (сообщение старше 48h, удалено пользователем) -
  * это не критично, главное чтобы всегда было ровно одно «последнее»
  * напоминание внизу чата.
  */
@@ -196,7 +196,7 @@ async function refreshCartReminder(ctx) {
     if (chatId) {
       try {
         await ctx.api.deleteMessage(chatId, savedMsgId);
-      } catch { /* старше 48h / уже удалено / нет прав — не критично */ }
+      } catch { /* старше 48h / уже удалено / нет прав - не критично */ }
     }
   }
 

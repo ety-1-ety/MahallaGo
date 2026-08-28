@@ -12,13 +12,13 @@ export function buildAuthI18n(log) {
     if (!from) return next();
 
     if (!ctx.session) {
-      // session middleware ещё не отработал — это означает что мы в conversations re-entry
+      // session middleware ещё не отработал - это означает что мы в conversations re-entry
       // или запрос без session-key. Пропускаем без auth.
       return next();
     }
 
     // Если у пользователя залежался conversation-blob (>30 мин с момента
-    // последнего шага) — стираем ПЕРЕД conversations(), чтобы он не пытался
+    // последнего шага) - стираем ПЕРЕД conversations(), чтобы он не пытался
     // replay'ить протухший state. Следующий update пойдёт по нормальному
     // /start-flow без зависания на старом шаге.
     if (expireStaleConversation(ctx.session)) {
@@ -45,7 +45,7 @@ export function buildAuthI18n(log) {
     }
 
     // Подгружаем активный магазин продавца (берём первый по created_at).
-    // В MVP один владелец = один магазин, но в БД допускается несколько —
+    // В MVP один владелец = один магазин, но в БД допускается несколько -
     // пусть будет поведение «текущий = последний созданный».
     if (!ctx.session.shop_id) {
       const { rows } = await query(

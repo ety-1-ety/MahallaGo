@@ -1,13 +1,11 @@
 import { optimizeAndSave } from '@mahallago/shared';
 
-// ─────────────────────────────────────────────────────────────────
 // HTTP multipart photo upload → sharp pipeline → SHA1-named .jpg
 // Используется seller Mini App'ом при добавлении/редактировании товара.
 //
 // Контракт: фронт шлёт `multipart/form-data` с полем 'photo' (одна картинка).
-// Лимит размера и MIME-проверка — здесь же. Возврат: имя файла, которое
+// Лимит размера и MIME-проверка - здесь же. Возврат: имя файла, которое
 // потом кладётся в `catalog.products.photo_path`.
-// ─────────────────────────────────────────────────────────────────
 
 const ALLOWED_MIME = new Set([
   'image/jpeg',
@@ -23,12 +21,12 @@ const MAX_BYTES = 6 * 1024 * 1024;  // 6 МБ
  * Принимает multipart-файл (стрим от @fastify/multipart) и сохраняет на диск.
  *
  * @param {AsyncIterable | { file: AsyncIterable, mimetype: string, filename: string }} part
- *        — результат `await request.file()` от @fastify/multipart
+ *        - результат `await request.file()` от @fastify/multipart
  * @returns {Promise<{ filename: string }>}  имя сохранённого файла
  * @throws  с .code:
- *   - NO_FILE         — поле photo не пришло
- *   - UNSUPPORTED_MIME — не картинка
- *   - FILE_TOO_LARGE   — > 6 МБ
+ *   - NO_FILE         - поле photo не пришло
+ *   - UNSUPPORTED_MIME - не картинка
+ *   - FILE_TOO_LARGE   - > 6 МБ
  */
 export async function savePhotoUpload(part) {
   if (!part || !part.file) {

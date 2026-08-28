@@ -99,7 +99,7 @@ export class CheckoutPage implements OnInit, OnDestroy {
   readonly success = signal<{ number: number } | null>(null);
 
   constructor() {
-    // MainButton — "Подтвердить заказ · сумма"
+    // MainButton - "Подтвердить заказ · сумма"
     effect(() => {
       if (this.success()) {
         this.tg.hideMainButton();

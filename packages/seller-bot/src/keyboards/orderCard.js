@@ -31,7 +31,7 @@ export function orderCardKeyboard(ctx, order) {
               `order:completed:${order.id}`);
       break;
     default:
-      // completed / rejected / cancelled — без кнопок
+      // completed / rejected / cancelled - без кнопок
       return null;
   }
 
